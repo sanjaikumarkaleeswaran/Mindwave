@@ -29,6 +29,29 @@ router.post('/upload', auth, async (req, res) => {
     }
 });
 
+// @route   PUT api/music/:id
+// @desc    Update a song
+// @access  Private
+router.put('/:id', auth, async (req, res) => {
+    try {
+        const { title, artist, fileUrl, moodTags } = req.body;
+        let music = await Music.findById(req.params.id);
+        if (!music) return res.status(404).json({ msg: 'Not found' });
+        if (music.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+        music.title = title || music.title;
+        music.artist = artist || music.artist;
+        music.fileUrl = fileUrl || music.fileUrl;
+        music.moodTags = moodTags || music.moodTags;
+
+        await music.save();
+        res.json(music);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   GET api/music
 // @desc    Get all user's music
 // @access  Private
@@ -89,6 +112,27 @@ router.get('/playlists', auth, async (req, res) => {
     try {
         const playlists = await Playlist.find({ userId: req.user.id }).populate('songs');
         res.json(playlists);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE api/music/:id
+// @desc    Delete a song
+// @access  Private
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const music = await Music.findById(req.params.id);
+        if (!music) return res.status(404).json({ msg: 'Music not found' });
+
+        // Check user
+        if (music.userId.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'Not authorized' });
+        }
+
+        await music.deleteOne();
+        res.json({ msg: 'Song removed' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
