@@ -4,18 +4,27 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --primary: 263.4 70% 50.4%;
-    /* Purple */
-    --secondary: 240 3.7% 15.9%;
-    --accent: 240 3.7% 15.9%;
+    /* Spotify Dark Theme */
+    --background: #121212;
+    --foreground: #FFFFFF;
+    --primary: #1DB954;
+    /* Spotify Green */
   }
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  @apply antialiased;
+  @apply antialiased box-border;
   min-height: 100vh;
+}
+
+/* Hide Scrollbar but allow scroll */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

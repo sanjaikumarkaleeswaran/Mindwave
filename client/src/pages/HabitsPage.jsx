@@ -352,7 +352,7 @@ export default function HabitsPage() {
             {/* Stats */}
             <div className="flex gap-6 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <div className="text-center">
-                    <div className="text-3xl font-bold text-indigo-400">{Math.round(habits.reduce((sum, h) => sum + getWeeklyProgress(h), 0) / (habits.length || 1))}%</div>
+                    <div className="text-3xl font-bold text-indigo-400">{getDailyProgress(new Date())}%</div>
                     <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Today Progress</div>
                 </div>
                 <div className="text-center">

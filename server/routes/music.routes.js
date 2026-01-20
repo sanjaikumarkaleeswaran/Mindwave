@@ -3,14 +3,69 @@ const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const Music = require('../models/Music');
 const Playlist = require('../models/Playlist');
+const ytSearch = require('yt-search');
 
 // @route   POST api/music/upload
 // @desc    Add a song (Metadata + URL)
 // @access  Private
+const axios = require('axios');
+
+// ... (imports)
+
 router.post('/upload', auth, async (req, res) => {
     try {
-        const { title, artist, album, duration, fileUrl, moodTags } = req.body;
+        let { title, artist, album, duration, fileUrl, moodTags } = req.body;
 
+        // Auto-find URL if missing
+        if (!fileUrl) {
+            const query = `${title} ${artist} official audio`;
+            console.log(`Searching for: ${query}`);
+
+            // 1. Try Official YouTube Data API (if key exists)
+            if (process.env.YOUTUBE_API_KEY) {
+                try {
+                    console.log("Using YouTube Data API v3...");
+                    const ytRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+                        params: {
+                            part: 'snippet',
+                            q: query,
+                            type: 'video',
+                            videoCategoryId: '10', // Music Category
+                            key: process.env.YOUTUBE_API_KEY,
+                            maxResults: 1
+                        }
+                    });
+
+                    if (ytRes.data.items && ytRes.data.items.length > 0) {
+                        const item = ytRes.data.items[0];
+                        fileUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`;
+                        title = title || item.snippet.title;
+                        // Duration requires a second API call (videos endpoint), skipping for now or relying on client player
+                        console.log(`Found via API: ${fileUrl}`);
+                    }
+                } catch (apiErr) {
+                    console.error("YouTube API Error (falling back to scraper):", apiErr.message);
+                }
+            }
+
+            // 2. Fallback to scraping (yt-search)
+            if (!fileUrl) {
+                console.log("Using yt-search scraper...");
+                const r = await ytSearch(query);
+                if (r && r.videos.length > 0) {
+                    fileUrl = r.videos[0].url;
+                    title = title || r.videos[0].title;
+                    duration = r.videos[0].seconds || duration;
+                    console.log(`Found via Scraper: ${fileUrl}`);
+                }
+            }
+
+            if (!fileUrl) {
+                return res.status(400).json({ msg: 'Could not find song on YouTube.' });
+            }
+        }
+
+        // ... (rest of save logic)
         const newMusic = new Music({
             userId: req.user.id,
             title,
@@ -23,6 +78,61 @@ router.post('/upload', auth, async (req, res) => {
 
         const music = await newMusic.save();
         res.json(music);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET api/music/search
+// @desc    Search YouTube for songs
+// @access  Private
+router.get('/search', auth, async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) return res.status(400).json({ msg: 'Query is unique' });
+
+        console.log(`Searching for: ${query}`);
+        let results = [];
+
+        // 1. Try Official YouTube Data API
+        if (process.env.YOUTUBE_API_KEY) {
+            try {
+                const ytRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+                    params: {
+                        part: 'snippet',
+                        q: query,
+                        type: 'video',
+                        videoCategoryId: '10', // Music
+                        key: process.env.YOUTUBE_API_KEY,
+                        maxResults: 5
+                    }
+                });
+                results = ytRes.data.items.map(item => ({
+                    title: item.snippet.title,
+                    videoId: item.id.videoId,
+                    thumbnail: item.snippet.thumbnails.default.url,
+                    channel: item.snippet.channelTitle
+                }));
+            } catch (e) {
+                console.error("API Search failed, using fallback:", e.message);
+            }
+        }
+
+        // 2. Fallback to Scraper if needed
+        if (results.length === 0) {
+            const r = await ytSearch(query + " official audio");
+            if (r && r.videos.length > 0) {
+                results = r.videos.slice(0, 5).map(v => ({
+                    title: v.title,
+                    videoId: v.videoId,
+                    thumbnail: v.thumbnail,
+                    duration: v.timestamp
+                }));
+            }
+        }
+
+        res.json(results);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -112,6 +222,47 @@ router.get('/playlists', auth, async (req, res) => {
     try {
         const playlists = await Playlist.find({ userId: req.user.id }).populate('songs');
         res.json(playlists);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   PUT api/music/playlists/:id
+// @desc    Update a playlist (add/remove songs)
+// @access  Private
+router.put('/playlists/:id', auth, async (req, res) => {
+    try {
+        const { name, songs } = req.body;
+        let playlist = await Playlist.findById(req.params.id);
+
+        if (!playlist) return res.status(404).json({ msg: 'Playlist not found' });
+        if (playlist.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+        if (name) playlist.name = name;
+        if (songs) playlist.songs = songs;
+
+        await playlist.save();
+        // Return populated for frontend
+        const populated = await Playlist.findById(req.params.id).populate('songs');
+        res.json(populated);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE api/music/playlists/:id
+// @desc    Delete a playlist
+// @access  Private
+router.delete('/playlists/:id', auth, async (req, res) => {
+    try {
+        const playlist = await Playlist.findById(req.params.id);
+        if (!playlist) return res.status(404).json({ msg: 'Playlist not found' });
+        if (playlist.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+        await playlist.deleteOne();
+        res.json({ msg: 'Playlist removed' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

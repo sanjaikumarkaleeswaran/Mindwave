@@ -1,86 +1,115 @@
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Heart } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Heart, Mic2, Layers, MonitorSpeaker, Maximize2 } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
-import { formatTime } from '../lib/utils'; // We'll create this helper next
+import { formatTime } from '../lib/utils';
 
 export default function Player() {
     const { currentSong, isPlaying, togglePlay, volume, setVolume, progress, duration, seek } = usePlayer();
 
     if (!currentSong) {
-        return null;
+        return null; // Or return an empty state if you prefer the bar to always be there
     }
 
     return (
-        <div className="h-24 bg-zinc-950 border-t border-zinc-900 px-6 flex items-center justify-between fixed bottom-0 left-0 w-full z-50">
-            {/* Current Song */}
-            <div className="flex items-center gap-4 w-1/3">
-                <div className="w-14 h-14 bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-600 overflow-hidden">
-                    {/* Placeholder for album art logic */}
-                    <MusicNoteIcon />
+        <div className="h-[90px] bg-[#181818] border-t border-[#282828] px-4 flex items-center justify-between fixed bottom-0 left-0 w-full z-50">
+            {/* Left: Song Info */}
+            <div className="flex items-center gap-4 w-[30%] min-w-[180px]">
+                {/* Fake Album Art */}
+                <div className="w-14 h-14 bg-[#282828] rounded flex items-center justify-center text-[#b3b3b3] shadow-lg group relative overflow-hidden">
+                    <MusicNoteIcon className="w-8 h-8" />
+                    <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                        <Maximize2 className="w-4 h-4 text-white" />
+                    </div>
                 </div>
-                <div>
-                    <h4 className="text-white font-medium text-sm line-clamp-1">{currentSong.title}</h4>
-                    <p className="text-zinc-500 text-xs line-clamp-1">{currentSong.artist}</p>
+                <div className="flex flex-col justify-center overflow-hidden">
+                    <h4 className="text-white font-normal text-sm hover:underline cursor-pointer truncate">{currentSong.title}</h4>
+                    <p className="text-[#b3b3b3] text-xs hover:underline hover:text-white cursor-pointer truncate">{currentSong.artist}</p>
                 </div>
-                <button className={`hover:text-indigo-500 transition-colors ${currentSong.liked ? 'text-indigo-500' : 'text-zinc-500'}`}>
-                    <Heart className="w-4 h-4" />
+                <button className={`ml-2 hover:scale-105 transition-transform ${currentSong.liked ? 'text-[#1DB954]' : 'text-[#b3b3b3] hover:text-white'}`}>
+                    <Heart className={`w-4 h-4 ${currentSong.liked ? 'fill-[#1DB954]' : ''}`} />
                 </button>
             </div>
 
-            {/* Controls */}
-            <div className="flex flex-col items-center gap-2 w-1/3">
-                <div className="flex items-center gap-6">
-                    <button className="text-zinc-500 hover:text-white transition-colors">
+            {/* Center: Controls */}
+            <div className="flex flex-col items-center max-w-[40%] w-full px-4">
+                <div className="flex items-center gap-6 mb-2">
+                    <button className="text-[#b3b3b3] hover:text-white transition-colors">
                         <Shuffle className="w-4 h-4" />
                     </button>
-                    <button className="text-zinc-400 hover:text-white transition-colors">
-                        <SkipBack className="w-5 h-5" />
+                    <button className="text-[#b3b3b3] hover:text-white transition-colors">
+                        <SkipBack className="w-5 h-5 fill-current" />
                     </button>
                     <button
                         onClick={togglePlay}
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
                     >
-                        {isPlaying ? <Pause className="w-5 h-5 text-black" /> : <Play className="w-5 h-5 text-black ml-1" />}
+                        {isPlaying ? (
+                            <Pause className="w-4 h-4 text-black fill-black" />
+                        ) : (
+                            <Play className="w-4 h-4 text-black fill-black ml-0.5" />
+                        )}
                     </button>
-                    <button className="text-zinc-400 hover:text-white transition-colors">
-                        <SkipForward className="w-5 h-5" />
+                    <button className="text-[#b3b3b3] hover:text-white transition-colors">
+                        <SkipForward className="w-5 h-5 fill-current" />
                     </button>
-                    <button className="text-zinc-500 hover:text-white transition-colors">
+                    <button className="text-[#b3b3b3] hover:text-white transition-colors">
                         <Repeat className="w-4 h-4" />
                     </button>
                 </div>
-                <div className="w-full max-w-md flex items-center gap-2 text-xs text-zinc-500 font-mono">
-                    <span>{formatTime(progress)}</span>
-                    <input
-                        type="range"
-                        min="0"
-                        max={duration || 0}
-                        value={progress}
-                        onChange={(e) => seek(Number(e.target.value))}
-                        className="flex-1 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
-                    />
-                    <span>{formatTime(duration)}</span>
+
+                <div className="w-full flex items-center gap-2 text-xs text-[#b3b3b3] font-sans">
+                    <span className="min-w-[40px] text-right">{formatTime(progress)}</span>
+                    <div className="relative group w-full flex items-center">
+                        <input
+                            type="range"
+                            min="0"
+                            max={duration || 0}
+                            value={progress}
+                            onChange={(e) => seek(Number(e.target.value))}
+                            className="absolute z-10 w-full h-1 opacity-0 cursor-pointer"
+                        />
+                        <div className="w-full h-1 bg-[#4d4d4d] rounded-full overflow-hidden group-hover:h-1.5 transition-all">
+                            <div
+                                className="h-full bg-white group-hover:bg-[#1DB954] rounded-full"
+                                style={{ width: `${(progress / (duration || 1)) * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                    <span className="min-w-[40px]">{formatTime(duration)}</span>
                 </div>
             </div>
 
-            {/* Volume */}
-            <div className="flex items-center justify-end gap-2 w-1/3">
-                <Volume2 className="w-4 h-4 text-zinc-400" />
-                <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={volume}
-                    onChange={(e) => setVolume(Number(e.target.value))}
-                    className="w-24 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
-                />
+            {/* Right: Volume & Extras */}
+            <div className="flex items-center justify-end gap-3 w-[30%] min-w-[180px]">
+                <button className="text-[#b3b3b3] hover:text-white"><Mic2 className="w-4 h-4" /></button>
+                <button className="text-[#b3b3b3] hover:text-white"><Layers className="w-4 h-4" /></button>
+                <button className="text-[#b3b3b3] hover:text-white"><MonitorSpeaker className="w-4 h-4" /></button>
+                <div className="flex items-center gap-2 w-24 ml-1">
+                    <Volume2 className="w-4 h-4 text-[#b3b3b3]" />
+                    <div className="relative group w-full flex items-center">
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volume}
+                            onChange={(e) => setVolume(Number(e.target.value))}
+                            className="absolute z-10 w-full h-1 opacity-0 cursor-pointer"
+                        />
+                        <div className="w-full h-1 bg-[#4d4d4d] rounded-full overflow-hidden group-hover:h-1.5 transition-all">
+                            <div
+                                className="h-full bg-white group-hover:bg-[#1DB954] rounded-full"
+                                style={{ width: `${volume * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
 
-function MusicNoteIcon() {
+function MusicNoteIcon({ className }) {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" /></svg>
     )
 }
