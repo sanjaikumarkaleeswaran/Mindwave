@@ -12,6 +12,37 @@ const axios = require('axios');
 
 // ... (imports)
 
+// Helper: Parse ISO 8601 duration (PT#H#M#S) to Seconds (Number)
+function isoToSeconds(isoTag) {
+    if (!isoTag) return 0;
+    const matches = isoTag.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (!matches) return 0;
+
+    const h = matches[1] ? parseInt(matches[1].replace('H', '')) : 0;
+    const m = matches[2] ? parseInt(matches[2].replace('M', '')) : 0;
+    const s = matches[3] ? parseInt(matches[3].replace('S', '')) : 0;
+
+    return h * 3600 + m * 60 + s;
+}
+
+// Helper: Format Seconds to MM:SS or H:MM:SS (for frontend Search results)
+function formatSecondsToTime(totalSeconds) {
+    if (!totalSeconds) return "0:00";
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    const parts = [];
+    if (h > 0) {
+        parts.push(h);
+        parts.push(m.toString().padStart(2, '0'));
+    } else {
+        parts.push(m);
+    }
+    parts.push(s.toString().padStart(2, '0'));
+    return parts.join(':');
+}
+
 router.post('/upload', auth, async (req, res) => {
     try {
         let { title, artist, album, duration, fileUrl, moodTags } = req.body;
@@ -40,7 +71,25 @@ router.post('/upload', auth, async (req, res) => {
                         const item = ytRes.data.items[0];
                         fileUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`;
                         title = title || item.snippet.title;
-                        // Duration requires a second API call (videos endpoint), skipping for now or relying on client player
+
+                        // FETCH DURATION
+                        try {
+                            const detailsRes = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                                params: {
+                                    part: 'contentDetails',
+                                    id: item.id.videoId,
+                                    key: process.env.YOUTUBE_API_KEY
+                                }
+                            });
+                            if (detailsRes.data.items && detailsRes.data.items.length > 0) {
+                                const isoDuration = detailsRes.data.items[0].contentDetails.duration;
+                                duration = isoToSeconds(isoDuration);
+                                console.log(`Fetched Duration from API: ${duration}s`);
+                            }
+                        } catch (detailErr) {
+                            console.error("Failed to fetch duration details:", detailErr.message);
+                        }
+
                         console.log(`Found via API: ${fileUrl}`);
                     }
                 } catch (apiErr) {
@@ -71,7 +120,7 @@ router.post('/upload', auth, async (req, res) => {
             title,
             artist,
             album,
-            duration,
+            duration, // Should be Number (seconds)
             fileUrl,
             moodTags
         });
@@ -83,28 +132,6 @@ router.post('/upload', auth, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// Helper to parse ISO 8601 duration (PT#H#M#S) to H:MM:SS or MM:SS
-function formatDuration(isoTag) {
-    if (!isoTag) return "0:00";
-    const matches = isoTag.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-    if (!matches) return "0:00";
-
-    const h = matches[1] ? parseInt(matches[1].replace('H', '')) : 0;
-    const m = matches[2] ? parseInt(matches[2].replace('M', '')) : 0;
-    const s = matches[3] ? parseInt(matches[3].replace('S', '')) : 0;
-
-    const parts = [];
-    if (h > 0) {
-        parts.push(h);
-        parts.push(m.toString().padStart(2, '0'));
-    } else {
-        parts.push(m);
-    }
-    parts.push(s.toString().padStart(2, '0'));
-
-    return parts.join(':');
-}
 
 // @route   GET api/music/search
 // @desc    Search YouTube for songs
@@ -148,7 +175,7 @@ router.get('/search', auth, async (req, res) => {
                         videoId: item.id,
                         thumbnail: item.snippet.thumbnails.default.url,
                         channel: item.snippet.channelTitle,
-                        duration: formatDuration(item.contentDetails.duration)
+                        duration: formatSecondsToTime(isoToSeconds(item.contentDetails.duration)) // Frontend expects "MM:SS"
                     }));
                 }
 

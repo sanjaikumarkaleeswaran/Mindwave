@@ -21,17 +21,9 @@ export const PlayerProvider = ({ children }) => {
         if (currentSong?._id === song._id) {
             setIsPlaying(!isPlaying);
         } else {
-            // Clean switch: pause old -> set new -> play new
-            // We do NOT use null intermediate state to avoid UI flicker,
-            // but we ensure isPlaying is false during the transition.
-            setIsPlaying(false);
-
-            // Allow React to process the pause state
-            setTimeout(() => {
-                setCurrentSong(song);
-                setProgress(0);
-                setIsPlaying(true);
-            }, 50);
+            setCurrentSong(song);
+            setIsPlaying(true);
+            setProgress(0);
         }
     };
 
@@ -80,7 +72,6 @@ export const PlayerProvider = ({ children }) => {
         }}>
             {children}
 
-            {/* Hidden Player */}
             {/* Hidden Player - Off-screen but with size to satisfy YouTube API */}
             <div style={{ position: 'fixed', top: '-9999px', left: '-9999px' }}>
                 <ReactPlayer
@@ -106,8 +97,7 @@ export const PlayerProvider = ({ children }) => {
                             playerVars: {
                                 playsinline: 1,
                                 origin: window.location.origin,
-                                disablekb: 1,
-                                autoplay: 1
+                                disablekb: 1
                             }
                         }
                     }}
