@@ -77,7 +77,7 @@ export default function Sidebar() {
                         className={({ isActive }) => clsx(
                             "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm",
                             isActive || (item.path === '/chat' && isChat)
-                                ? "bg-indigo-500/10 text-indigo-400"
+                                ? "bg-primary/10 text-primary"
                                 : "text-zinc-400 hover:text-white hover:bg-zinc-900"
                         )}
                     >

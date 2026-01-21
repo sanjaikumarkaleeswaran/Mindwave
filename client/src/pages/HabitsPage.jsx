@@ -21,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 // Sortable Row Component
-function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getWeeklyProgress, handleUpdateName }) {
+function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMonthlyProgress, handleUpdateName }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: habit._id });
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(habit.name);
@@ -86,9 +86,9 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getWee
             </td>
             <td className="p-4">
                 <div className="w-full bg-zinc-800 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all" style={{ width: `${getWeeklyProgress(habit)}%` }}></div>
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all" style={{ width: `${getMonthlyProgress(habit)}%` }}></div>
                 </div>
-                <div className="text-xs text-zinc-500 mt-1">{getWeeklyProgress(habit)}%</div>
+                <div className="text-xs text-zinc-500 mt-1">{getMonthlyProgress(habit)}%</div>
             </td>
             <td className="p-4 text-right">
                 <button onClick={() => handleDelete(habit._id)} className="text-red-500 hover:text-red-400 transition-colors">
@@ -213,6 +213,25 @@ export default function HabitsPage() {
             days.push(d);
         }
         return days;
+    };
+
+    const getLast30Days = () => {
+        const days = [];
+        // Calculate based on last 30 days
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            days.push(d);
+        }
+        return days;
+    };
+
+    const getMonthlyProgress = (habit) => {
+        const last30 = getLast30Days();
+        // Check completion count in the last 30 days
+        const completed = last30.filter(d => habit.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0))).length;
+        // Return percentage
+        return Math.round((completed / 30) * 100);
     };
 
     const getWeeklyProgress = (habit) => {
@@ -439,7 +458,7 @@ export default function HabitsPage() {
                                                     tableDates={tableDates}
                                                     handleToggleDate={handleToggleDate}
                                                     handleDelete={handleDelete}
-                                                    getWeeklyProgress={getWeeklyProgress}
+                                                    getMonthlyProgress={getMonthlyProgress}
                                                     handleUpdateName={handleUpdateName}
                                                 />
                                             ))}

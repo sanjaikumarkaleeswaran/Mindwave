@@ -12,18 +12,26 @@ export const PlayerProvider = ({ children }) => {
 
     const playerRef = useRef(null);
 
-    const playSong = (song) => {
+    const playSong = async (song) => {
         if (!song.fileUrl) {
             alert("Error: This song has no audio URL.");
             return;
         }
-        // If it's the same song, just toggle. Otherwise new song.
+
         if (currentSong?._id === song._id) {
             setIsPlaying(!isPlaying);
         } else {
-            setCurrentSong(song);
-            setIsPlaying(true);
-            setProgress(0);
+            // Clean switch: pause old -> set new -> play new
+            // We do NOT use null intermediate state to avoid UI flicker,
+            // but we ensure isPlaying is false during the transition.
+            setIsPlaying(false);
+
+            // Allow React to process the pause state
+            setTimeout(() => {
+                setCurrentSong(song);
+                setProgress(0);
+                setIsPlaying(true);
+            }, 50);
         }
     };
 
@@ -38,7 +46,6 @@ export const PlayerProvider = ({ children }) => {
         }
     }
 
-    // Rename to avoid loop if any
     const setVolumeState = (val) => {
         const v = parseFloat(val);
         if (v >= 0 && v <= 1) setVolume(v);
@@ -52,10 +59,6 @@ export const PlayerProvider = ({ children }) => {
                 if (d && d !== duration) setDuration(d);
             }
         }
-    };
-
-    const handleDuration = (d) => {
-        setDuration(d);
     };
 
     const handleEnded = () => {
@@ -77,21 +80,21 @@ export const PlayerProvider = ({ children }) => {
         }}>
             {children}
 
-            {/* Hidden Player that powers the whole app - Always mounted */}
-            {/* Optimized: Starts MUTED to bypass autoplay block, then unmuted via logic */}
-            {/* Hidden Player that powers the whole app - Always mounted */}
-            {/* Strategy: "Ghost Player" - It is physically on top (z-10) but invisible. This satisfies 'visibility' checks. */}
+            {/* Hidden Player */}
             <div style={{ position: 'fixed', bottom: 10, right: 10, width: '1px', height: '1px', opacity: 0.001, zIndex: 10, pointerEvents: 'none' }}>
                 <ReactPlayer
                     ref={playerRef}
                     url={currentSong?.fileUrl}
                     playing={isPlaying && !!currentSong}
                     volume={volume}
+                    muted={false}
 
                     onProgress={handleProgress}
-                    onDuration={handleDuration}
                     onEnded={handleEnded}
-                    onError={(e) => console.error("Player Error:", e)}
+                    onError={(e) => {
+                        console.error("Player Error:", e);
+                        alert("Playback Error: Unable to play this track. The source might be restricted.");
+                    }}
                     onStart={() => console.log("Player Started")}
 
                     width="100%"
@@ -100,7 +103,8 @@ export const PlayerProvider = ({ children }) => {
                         youtube: {
                             playerVars: {
                                 playsinline: 1,
-                                origin: window.location.origin
+                                origin: window.location.origin,
+                                disablekb: 1
                             }
                         }
                     }}

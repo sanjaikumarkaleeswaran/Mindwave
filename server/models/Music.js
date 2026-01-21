@@ -8,6 +8,7 @@ const MusicSchema = new mongoose.Schema({
     duration: { type: Number },
     moodTags: [{ type: String }],
     fileUrl: { type: String, required: true },
+    imageUrl: { type: String },
     liked: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });

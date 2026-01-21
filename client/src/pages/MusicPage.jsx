@@ -22,8 +22,16 @@ export default function MusicPage() {
     const { playSong, currentSong, isPlaying } = usePlayer();
 
     // Song Form State
-    const [songForm, setSongForm] = useState({ id: null, title: '', artist: '', fileUrl: '', moodTags: '' });
+    const [songForm, setSongForm] = useState({ id: null, title: '', artist: '', fileUrl: '', moodTags: '', imageUrl: '', duration: 0 });
     const [searchResults, setSearchResults] = useState([]);
+
+    const parseDurationToSeconds = (durationStr) => {
+        if (!durationStr) return 0;
+        const parts = durationStr.split(':').map(Number);
+        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        return 0;
+    };
 
     const handleSearch = async () => {
         if (!songForm.title) return;
@@ -35,6 +43,8 @@ export default function MusicPage() {
             alert("Search failed or backend not running properly.");
         }
     };
+
+    // ... (lines 39-160 are fine)
 
     // Playlist Form State
     const [playlistName, setPlaylistName] = useState('');
@@ -80,7 +90,7 @@ export default function MusicPage() {
             if (songForm.id) await api.put(`/music/${songForm.id}`, payload);
             else await api.post('/music/upload', payload);
             setIsSongModalOpen(false);
-            setSongForm({ id: null, title: '', artist: '', fileUrl: '', moodTags: '' });
+            setSongForm({ id: null, title: '', artist: '', fileUrl: '', moodTags: '', imageUrl: '' });
             fetchData();
         } catch (err) { console.error(err); }
     };
@@ -132,33 +142,33 @@ export default function MusicPage() {
     }
 
     return (
-        <div className="bg-[#121212] min-h-screen text-white pb-32">
+        <div className="bg-background min-h-screen text-foreground pb-32">
 
             {/* Gradient Background */}
-            <div className="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-[#533483] to-[#121212] opacity-50 pointer-events-none" />
+            <div className="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-indigo-900/40 to-background opacity-50 pointer-events-none" />
 
             {/* Header/Nav */}
-            <div className="relative sticky top-0 z-40 bg-[#121212]/80 backdrop-blur-md px-8 py-4 flex items-center justify-between">
+            <div className="relative sticky top-0 z-40 bg-background/80 backdrop-blur-md px-8 py-4 flex items-center justify-between">
                 <div className="flex gap-4">
-                    <div className="flex bg-[#282828] rounded-full p-1">
-                        <button onClick={() => setView('songs')} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${view === 'songs' ? 'bg-[#3E3E3E] text-white' : 'text-[#b3b3b3] hover:text-white'}`}>Songs</button>
-                        <button onClick={() => setView('playlists')} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${view === 'playlists' ? 'bg-[#3E3E3E] text-white' : 'text-[#b3b3b3] hover:text-white'}`}>Playlists</button>
+                    <div className="flex bg-zinc-800 rounded-full p-1">
+                        <button onClick={() => setView('songs')} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${view === 'songs' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>Songs</button>
+                        <button onClick={() => setView('playlists')} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${view === 'playlists' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>Playlists</button>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
                     {/* Search Pill */}
                     <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b3b3b3] group-focus-within:text-white" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-white" />
                         <input
                             type="text"
                             placeholder="What do you want to play?"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2 bg-[#242424] hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] rounded-full text-sm text-white focus:outline-none focus:ring-2 focus:ring-white w-64 transition-all placeholder-[#b3b3b3]"
+                            className="pl-10 pr-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus:bg-zinc-700 rounded-full text-sm text-white focus:outline-none focus:ring-2 focus:ring-white w-64 transition-all placeholder-zinc-400"
                         />
                     </div>
                     <button
-                        onClick={() => { setSongForm({ id: null, title: '', artist: '', fileUrl: '', moodTags: '' }); setIsSongModalOpen(true); }}
+                        onClick={() => { setSongForm({ id: null, title: '', artist: '', fileUrl: '', moodTags: '', imageUrl: '' }); setIsSongModalOpen(true); }}
                         className="bg-white text-black px-4 py-1.5 rounded-full font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2"
                     >
                         <Plus className="w-4 h-4" />
@@ -181,7 +191,7 @@ export default function MusicPage() {
                                         onClick={() => setActiveMood(tag)}
                                         className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeMood === tag
                                             ? 'bg-white text-black'
-                                            : 'bg-[#2a2a2a] text-white hover:bg-[#3E3E3E]'
+                                            : 'bg-zinc-800 text-white hover:bg-zinc-700'
                                             }`}
                                     >
                                         {tag}
@@ -192,7 +202,7 @@ export default function MusicPage() {
 
                         {/* Song List */}
                         <div>
-                            <div className="sticky top-[72px] bg-[#121212] z-30 border-b border-[#282828] text-[#b3b3b3] text-sm font-medium mx-[-32px] px-[32px] py-2 mb-2 grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 items-center">
+                            <div className="sticky top-[72px] bg-background z-30 border-b border-zinc-800 text-zinc-400 text-sm font-medium mx-[-32px] px-[32px] py-2 mb-2 grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 items-center">
                                 <span className="w-8 text-center">#</span>
                                 <span>Title</span>
                                 <span>Album</span>
@@ -207,34 +217,38 @@ export default function MusicPage() {
                                         <div
                                             key={song._id}
                                             onClick={() => handlePlay(song)}
-                                            className={`group grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 items-center px-4 py-2 rounded-md hover:bg-[#2a2a2a] transition-colors cursor-pointer ${isCurrent ? 'bg-[#2a2a2a]' : ''}`}
+                                            className={`group grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 items-center px-4 py-2 rounded-md hover:bg-zinc-800 transition-colors cursor-pointer ${isCurrent ? 'bg-zinc-800' : ''}`}
                                         >
-                                            <div className="w-8 text-center text-[#b3b3b3] font-medium group-hover:hidden flex justify-center">
+                                            <div className="w-8 text-center text-zinc-400 font-medium group-hover:hidden flex justify-center">
                                                 {isCurrent && isPlaying ? <img src="https://open.spotifycdn.com/cdn/images/equaliser-animated-green.f93a2ef4.gif" className="h-3 w-3" alt="playing" /> : i + 1}
                                             </div>
                                             <div className="w-8 text-center hidden group-hover:flex items-center justify-center">
-                                                <Play className={`w-4 h-4 ${isCurrent ? 'text-[#1DB954] fill-[#1DB954]' : 'text-white fill-white'}`} />
+                                                <Play className={`w-4 h-4 ${isCurrent ? 'text-primary fill-primary' : 'text-white fill-white'}`} />
                                             </div>
 
                                             <div className="flex items-center gap-4 min-w-0">
-                                                <div className="w-10 h-10 bg-[#282828] flex items-center justify-center rounded text-[#b3b3b3]">
-                                                    <MusicIcon className="w-5 h-5" />
+                                                <div className="w-10 h-10 bg-zinc-800 flex items-center justify-center rounded text-zinc-400 overflow-hidden flex-shrink-0">
+                                                    {song.imageUrl ? (
+                                                        <img src={song.imageUrl} alt={song.title} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <MusicIcon className="w-5 h-5" />
+                                                    )}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <div className={`font-medium truncate ${isCurrent ? 'text-[#1DB954]' : 'text-white'}`}>{song.title}</div>
-                                                    <div className="text-sm text-[#b3b3b3] group-hover:text-white truncate">{song.artist}</div>
+                                                    <div className={`font-medium truncate ${isCurrent ? 'text-primary' : 'text-white'}`}>{song.title}</div>
+                                                    <div className="text-sm text-zinc-400 group-hover:text-white truncate">{song.artist}</div>
                                                 </div>
                                             </div>
 
-                                            <div className="text-sm text-[#b3b3b3] hover:text-white truncate min-w-0">{song.album || 'Unknown Album'}</div>
+                                            <div className="text-sm text-zinc-400 hover:text-white truncate min-w-0">{song.album || 'Unknown Album'}</div>
 
-                                            <div className="text-sm text-[#b3b3b3] min-w-0">{new Date(song.createdAt).toLocaleDateString()}</div>
+                                            <div className="text-sm text-zinc-400 min-w-0">{new Date(song.createdAt).toLocaleDateString()}</div>
 
-                                            <div className="w-12 flex items-center justify-center gap-4 text-[#b3b3b3]">
-                                                <button onClick={(e) => handleLikeSong(song._id, e)} className={`${song.liked ? 'text-[#1DB954] opacity-100' : 'opacity-0 group-hover:opacity-100 hover:text-white'}`}>
-                                                    <Heart className={`w-4 h-4 ${song.liked ? 'fill-[#1DB954]' : ''}`} />
+                                            <div className="w-12 flex items-center justify-center gap-4 text-zinc-400">
+                                                <button onClick={(e) => handleLikeSong(song._id, e)} className={`${song.liked ? 'text-primary opacity-100' : 'opacity-0 group-hover:opacity-100 hover:text-white'}`}>
+                                                    <Heart className={`w-4 h-4 ${song.liked ? 'fill-primary' : ''}`} />
                                                 </button>
-                                                <span className="text-sm font-mono group-hover:hidden">{formatTime(180)}</span>
+                                                <span className="text-sm font-mono group-hover:hidden">{formatTime(song.duration || 0)}</span>
                                                 <button onClick={(e) => { e.stopPropagation(); handleDeleteSong(song._id, e); }} className="opacity-0 group-hover:opacity-100 hover:text-white">
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -259,8 +273,12 @@ export default function MusicPage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                             {playlists.map(playlist => (
                                 <div key={playlist._id} className="bg-[#181818] p-4 rounded-md hover:bg-[#282828] transition-all group cursor-pointer relative" onClick={() => { if (playlist.songs[0]) handlePlay(playlist.songs[0]) }}>
-                                    <div className="aspect-square bg-[#282828] rounded-md mb-4 shadow-lg flex items-center justify-center text-[#b3b3b3] relative">
-                                        <ListMusic className="w-12 h-12" />
+                                    <div className="aspect-square bg-[#282828] rounded-md mb-4 shadow-lg flex items-center justify-center text-[#b3b3b3] relative overflow-hidden">
+                                        {playlist.songs[0]?.imageUrl ? (
+                                            <img src={playlist.songs[0].imageUrl} alt={playlist.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <ListMusic className="w-12 h-12" />
+                                        )}
                                         <button className="absolute bottom-2 right-2 w-12 h-12 bg-[#1DB954] rounded-full flex items-center justify-center shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-105">
                                             <Play className="w-6 h-6 text-black fill-black ml-1" />
                                         </button>
@@ -308,7 +326,8 @@ export default function MusicPage() {
                                         <div
                                             key={idx}
                                             onClick={() => {
-                                                setSongForm({ ...songForm, title: res.title, fileUrl: `https://www.youtube.com/watch?v=${res.videoId}` });
+                                                const seconds = parseDurationToSeconds(res.duration);
+                                                setSongForm({ ...songForm, title: res.title, fileUrl: `https://www.youtube.com/watch?v=${res.videoId}`, imageUrl: res.thumbnail, duration: seconds });
                                                 setSearchResults([]);
                                             }}
                                             className="flex items-center gap-3 p-2 hover:bg-[#3E3E3E] rounded cursor-pointer transition-colors"

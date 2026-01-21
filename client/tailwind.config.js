@@ -12,6 +12,8 @@ export default {
                 primary: "var(--primary)",
                 secondary: "var(--secondary)",
                 accent: "var(--accent)",
+                surface: "#181818",
+                muted: "#b3b3b3",
             }
         },
     },
