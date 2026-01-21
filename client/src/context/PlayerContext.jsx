@@ -81,7 +81,8 @@ export const PlayerProvider = ({ children }) => {
             {children}
 
             {/* Hidden Player */}
-            <div style={{ position: 'fixed', bottom: 10, right: 10, width: '1px', height: '1px', opacity: 0.001, zIndex: 10, pointerEvents: 'none' }}>
+            {/* Hidden Player - Off-screen but with size to satisfy YouTube API */}
+            <div style={{ position: 'fixed', top: '-9999px', left: '-9999px' }}>
                 <ReactPlayer
                     ref={playerRef}
                     url={currentSong?.fileUrl}
@@ -93,18 +94,20 @@ export const PlayerProvider = ({ children }) => {
                     onEnded={handleEnded}
                     onError={(e) => {
                         console.error("Player Error:", e);
-                        alert("Playback Error: Unable to play this track. The source might be restricted.");
+                        // Only alert if it's a genuine error, not just an interruption
+                        if (isPlaying) alert("Playback Error: Unable to play this track. The source might be restricted.");
                     }}
                     onStart={() => console.log("Player Started")}
 
-                    width="100%"
-                    height="100%"
+                    width="200px"
+                    height="200px"
                     config={{
                         youtube: {
                             playerVars: {
                                 playsinline: 1,
                                 origin: window.location.origin,
-                                disablekb: 1
+                                disablekb: 1,
+                                autoplay: 1
                             }
                         }
                     }}

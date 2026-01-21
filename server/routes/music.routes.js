@@ -84,6 +84,28 @@ router.post('/upload', auth, async (req, res) => {
     }
 });
 
+// Helper to parse ISO 8601 duration (PT#H#M#S) to H:MM:SS or MM:SS
+function formatDuration(isoTag) {
+    if (!isoTag) return "0:00";
+    const matches = isoTag.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (!matches) return "0:00";
+
+    const h = matches[1] ? parseInt(matches[1].replace('H', '')) : 0;
+    const m = matches[2] ? parseInt(matches[2].replace('M', '')) : 0;
+    const s = matches[3] ? parseInt(matches[3].replace('S', '')) : 0;
+
+    const parts = [];
+    if (h > 0) {
+        parts.push(h);
+        parts.push(m.toString().padStart(2, '0'));
+    } else {
+        parts.push(m);
+    }
+    parts.push(s.toString().padStart(2, '0'));
+
+    return parts.join(':');
+}
+
 // @route   GET api/music/search
 // @desc    Search YouTube for songs
 // @access  Private
@@ -100,7 +122,7 @@ router.get('/search', auth, async (req, res) => {
             try {
                 const ytRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
                     params: {
-                        part: 'snippet',
+                        part: 'snippet', // Search endpoint only returns snippet
                         q: query,
                         type: 'video',
                         videoCategoryId: '10', // Music
@@ -108,12 +130,28 @@ router.get('/search', auth, async (req, res) => {
                         maxResults: 5
                     }
                 });
-                results = ytRes.data.items.map(item => ({
-                    title: item.snippet.title,
-                    videoId: item.id.videoId,
-                    thumbnail: item.snippet.thumbnails.default.url,
-                    channel: item.snippet.channelTitle
-                }));
+
+                // Search API doesn't return duration. We need to fetch details for these video IDs.
+                const videoIds = ytRes.data.items.map(item => item.id.videoId).join(',');
+
+                if (videoIds) {
+                    const detailsRes = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                        params: {
+                            part: 'contentDetails,snippet',
+                            id: videoIds,
+                            key: process.env.YOUTUBE_API_KEY
+                        }
+                    });
+
+                    results = detailsRes.data.items.map(item => ({
+                        title: item.snippet.title,
+                        videoId: item.id,
+                        thumbnail: item.snippet.thumbnails.default.url,
+                        channel: item.snippet.channelTitle,
+                        duration: formatDuration(item.contentDetails.duration)
+                    }));
+                }
+
             } catch (e) {
                 console.error("API Search failed, using fallback:", e.message);
             }
@@ -127,7 +165,7 @@ router.get('/search', auth, async (req, res) => {
                     title: v.title,
                     videoId: v.videoId,
                     thumbnail: v.thumbnail,
-                    duration: v.timestamp
+                    duration: v.timestamp // yt-search returns "MM:SS" or "H:MM:SS"
                 }));
             }
         }
