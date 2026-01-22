@@ -29,10 +29,12 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
+console.log('Loading routes...');
 app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/music', require('./routes/music.routes'));
+
 app.use('/api/habits', require('./routes/habit.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
+console.log('All routes loaded.');
 
 app.get('/', (req, res) => res.send('API Running'));
 

@@ -3,7 +3,6 @@ const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const ChatHistory = require('../models/ChatHistory');
 const Conversation = require('../models/Conversation');
-const Music = require('../models/Music');
 const Habit = require('../models/Habit');
 const Groq = require('groq-sdk');
 
@@ -103,7 +102,6 @@ router.post('/send', auth, async (req, res) => {
 
         // 2. Fetch Context (RAG - Lite)
         const habits = await Habit.find({ userId: req.user.id });
-        const music = await Music.find({ userId: req.user.id }).limit(20);
         const recentHistory = await ChatHistory.find({ conversationId })
             .sort({ timestamp: -1 })
             .limit(10); // History *of this conversation only*
@@ -113,16 +111,13 @@ router.post('/send', auth, async (req, res) => {
         
         USER CONTEXT:
         - Habits: ${habits.map(h => `${h.name} (ID: ${h._id}, Streak: ${h.streak})`).join(', ') || 'None'}
-        - Recent Music: ${music.map(m => `${m.title}`).join(', ') || 'None'}
 
         CAPABILITIES:
-        1. PLAY_MUSIC: Listen to songs.
-        2. CREATE_HABIT: Track a new habit.
-        3. DELETE_HABIT: Remove a habit.
-        4. MARK_HABIT_COMPLETE: Mark a habit as done for today.
+        1. CREATE_HABIT: Track a new habit.
+        2. DELETE_HABIT: Remove a habit.
+        3. MARK_HABIT_COMPLETE: Mark a habit as done for today.
 
         INSTRUCTIONS:
-        - If the user wants to play music, output ONLY this JSON: {"action": "PLAY_MUSIC", "query": "..."}
         - If the user wants to ADD a habit, output ONLY this JSON: {"action": "CREATE_HABIT", "name": "...", "frequency": "daily"}
         - If the user wants to DELETE a habit, output ONLY this JSON: {"action": "DELETE_HABIT", "habitId": "..."}
         - If the user says they DID a habit (e.g., "I ran", "Drank water"), output ONLY this JSON: {"action": "MARK_HABIT_COMPLETE", "habitId": "..."} (Match closely to the context Name/ID).
@@ -207,13 +202,6 @@ router.post('/send', auth, async (req, res) => {
                         aiResponseContent = "Which habit did you complete? I wasn't sure.";
                     }
                     toolExecuted = true;
-                }
-                // PLAY_MUSIC is handled by Frontend, so we preserve the JSON for the frontend to see
-                else if (actionData.action === 'PLAY_MUSIC') {
-                    // Do nothing here, let frontend handle it.
-                    // But we might want to save a friendly text for history? 
-                    // No, let's keep the JSON or add a narration.
-                    // For now, pass it through. Content remains JSON.
                 }
             }
         } catch (e) {
