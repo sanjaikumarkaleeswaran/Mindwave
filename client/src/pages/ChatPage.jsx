@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User, Trash2, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
-import { usePlayer } from '../context/PlayerContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -13,7 +12,6 @@ export default function ChatPage() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef(null);
-    const { playSong } = usePlayer();
 
     // Model Selection State
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
@@ -97,25 +95,7 @@ export default function ChatPage() {
                 model: selectedModel
             });
 
-            let aiContent = res.data.response;
-
-            // 🧠 AI Command Parsing Logic
-            try {
-                const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    const command = JSON.parse(jsonMatch[0]);
-                    if (command.action === 'PLAY_MUSIC') {
-                        aiContent = aiContent.replace(jsonMatch[0], '').trim() || "Playing music...";
-                        const musicRes = await api.get('/music');
-                        const songs = musicRes.data;
-                        if (songs.length > 0) {
-                            const query = command.query?.toLowerCase();
-                            const match = songs.find(s => s.title.toLowerCase().includes(query) || s.moodTags.includes(query)) || songs[0];
-                            playSong(match);
-                        }
-                    }
-                }
-            } catch (e) { console.error(e); }
+            const aiContent = res.data.response;
 
             setMessages(prev => [...prev, { role: 'assistant', content: aiContent, timestamp: new Date() }]);
             // Sidebar listens to route changes so it should eventually update title if needed
@@ -127,10 +107,10 @@ export default function ChatPage() {
     };
 
     const suggestions = [
-        { icon: "🎵", text: "Play some lo-fi music" },
         { icon: "💪", text: "Help me set a new gym habit" },
         { icon: "🤔", text: "How are my habits going?" },
-        { icon: "🎸", text: "Play rock music" },
+        { icon: "📊", text: "Show me my progress" },
+        { icon: "✨", text: "Give me motivation" },
     ];
 
     const handleSuggestionClick = (text) => {
@@ -183,7 +163,7 @@ export default function ChatPage() {
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-2">How can I help you today?</h2>
                     <p className="text-zinc-400 max-w-md mb-8">
-                        I can play music, track your habits, and answer your questions.
+                        I can help you track your habits, analyze your progress, and answer your questions.
                     </p>
 
                     {/* Suggestions */}

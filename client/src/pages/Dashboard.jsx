@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Music } from 'lucide-react';
+import { Sparkles, Activity } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
 
@@ -28,6 +28,8 @@ export default function Dashboard() {
                     <p className="text-zinc-500 text-sm">Draft an email, plan your day, or just chat.</p>
                 </Link>
 
+
+
                 {/* Habits Status */}
                 <Link to="/habits" className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer group block">
                     <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -35,15 +37,6 @@ export default function Dashboard() {
                     </div>
                     <h3 className="text-xl font-semibold mb-2">Habit Streaks</h3>
                     <p className="text-zinc-500 text-sm">You're on a roll! Check your daily goals.</p>
-                </Link>
-
-                {/* Music Suggestions */}
-                <Link to="/music" className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer group block">
-                    <div className="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Music className="w-6 h-6 text-pink-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Jump Back In</h3>
-                    <p className="text-zinc-500 text-sm">Continue listening to your 'Focus' mix.</p>
                 </Link>
             </div>
         </div>

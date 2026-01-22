@@ -1,4 +1,4 @@
-import { Home, MessageSquare, Music2, CheckCircle, Settings, LogOut, Plus, Trash2 } from 'lucide-react';
+import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2 } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
@@ -56,7 +56,7 @@ export default function Sidebar() {
     const navItems = [
         { icon: Home, label: 'Home', path: '/' },
         { icon: MessageSquare, label: 'Chat', path: '/chat' },
-        { icon: Music2, label: 'Music', path: '/music' },
+
         { icon: CheckCircle, label: 'Habits', path: '/habits' },
     ];
 

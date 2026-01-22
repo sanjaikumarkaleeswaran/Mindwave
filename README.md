@@ -1,6 +1,6 @@
 # Personal AI Life OS
 
-A self-hosted, private "digital brain" that organizes your life. This application combines an intelligent AI chatbot, a robust habit tracker, and a personalized music player into a single, cohesive operating system for your daily routine.
+A self-hosted, private "digital brain" that organizes your life. This application combines an intelligent AI chatbot and a robust habit tracker into a single, cohesive operating system for your daily routine.
 
 ## 🌟 Features
 
@@ -8,18 +8,12 @@ A self-hosted, private "digital brain" that organizes your life. This applicatio
 *   **Powered by Groq/Llama 3**: Fast, intelligent responses using the Groq SDK.
 *   **Integrated Control**: The AI isn't just a chatbot; it connects to your data.
     *   **Habit Management**: Tell the AI "I drank water" or "Add a running habit", and it updates your tracker automatically.
-    *   **Music Control**: Ask for music recommendations based on your mood.
     *   **Smart Analysis**: Ask for an analysis of your habit streaks ("How am I doing this week?"), and the AI will generate a personalized report.
 
 ### 📅 Advanced Habit Tracker
 *   **Streak Tracking**: monitor your daily progress and current streaks.
 *   **Visual Consistency**: Weekly calendar views to visually see your consistency.
 *   **AI Insights**: Get qualitative feedback on your performance and actionable advice for improvement.
-
-### 🎵 Personal Music Player
-*   **Mood Tagging**: organize your library by mood (Focus, Chill, Workout).
-*   **Custom Library**: Manage your own collection of tracks.
-*   **Seamless Playback**: Persistent player that continues while you navigate the app.
 
 ## 🛠 Tech Stack
 
@@ -90,12 +84,12 @@ d:/webforme
 ├── client/                 # React Frontend
 │   ├── src/
 │   │   ├── components/     # Reusable UI components
-│   │   ├── context/        # Auth & Player Contexts
+│   │   ├── context/        # Auth Context
 │   │   ├── pages/          # Main application pages
 │   │   └── lib/            # Utilities (Axios, etc.)
 │   └── ...
 ├── server/                 # Express Backend
-│   ├── models/             # Mongoose Schemas (User, Habit, Music, Chat)
+│   ├── models/             # Mongoose Schemas (User, Habit, Chat)
 │   ├── routes/             # API Endpoints
 │   ├── middleware/         # Auth verification
 │   └── index.js            # Server entry point
@@ -104,5 +98,4 @@ d:/webforme
 
 ## 🔮 Future Roadmap
 - [ ] Voice interface for hands-free interaction.
-- [ ] Spotify/YouTube integration for broader music access.
 - [ ] Mobile-responsive PWA (Progressive Web App).

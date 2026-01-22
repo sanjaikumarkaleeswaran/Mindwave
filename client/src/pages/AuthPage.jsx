@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Music, ArrowRight, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -35,7 +35,7 @@ export default function AuthPage() {
             <div className="w-full max-w-md bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 shadow-xl backdrop-blur-sm">
                 <div className="flex justify-center mb-8">
                     <div className="p-3 bg-indigo-500/10 rounded-xl">
-                        <Music className="w-8 h-8 text-indigo-500" />
+                        <Sparkles className="w-8 h-8 text-indigo-500" />
                     </div>
                 </div>
 
