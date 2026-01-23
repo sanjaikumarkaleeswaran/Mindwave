@@ -66,11 +66,11 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
                 <div className="text-xs text-zinc-500">Best: {habit.bestStreak}</div>
             </td>
             {tableDates.map((date, i) => {
-                const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0));
+                const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0));
                 return (
                     <td key={i} className="p-4 text-center">
                         <button
-                            onClick={() => handleToggleDate(habit._id, date)}
+                            onClick={() => handleToggleDate(habit._id, new Date(date))}
                             className={`w-8 h-8 rounded-lg transition-all ${isDone ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-zinc-800 hover:bg-zinc-700'}`}
                         >
                             {isDone && <Check className="w-4 h-4 text-white mx-auto" />}
@@ -256,7 +256,7 @@ export default function HabitsPage() {
         if (!habits.length) return 0;
         const validHabits = habits.length;
         const completedCount = habits.filter(h =>
-            h.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0))
+            h.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0))
         ).length;
         return Math.round((completedCount / validHabits) * 100);
     };
@@ -478,7 +478,7 @@ export default function HabitsPage() {
                                         <th className="p-4 font-medium text-zinc-400 w-32">Daily Progress</th>
                                         {habits.map(h => (
                                             <th key={h._id} className="p-4 font-medium text-zinc-400 text-center min-w-[4rem] text-xs uppercase tracking-wider">
-                                                <div className="writing-mode-vertical rotate-180 transform h-24 flex items-center justify-center">{h.name.substring(0, 10)}</div>
+                                                <div className="[writing-mode:vertical-rl] transform h-24 flex items-center justify-center">{h.name.substring(0, 10)}</div>
                                             </th>
                                         ))}
                                         <th className="p-4 font-medium text-zinc-400 text-right">Status</th>
@@ -541,11 +541,11 @@ export default function HabitsPage() {
                                 </div>
                                 <div className="grid grid-cols-7 gap-1 mb-3">
                                     {getLast7Days().map((date, i) => {
-                                        const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0));
+                                        const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0));
                                         return (
                                             <button
                                                 key={i}
-                                                onClick={() => handleToggleDate(habit._id, date)}
+                                                onClick={() => handleToggleDate(habit._id, new Date(date))}
                                                 className={`aspect-square rounded transition-all ${isDone ? 'bg-indigo-600' : 'bg-zinc-800 hover:bg-zinc-700'}`}
                                             >
                                                 {isDone && <Check className="w-3 h-3 text-white mx-auto" />}
@@ -597,7 +597,7 @@ export default function HabitsPage() {
                                         if (!date) return <div key={i} className="aspect-square"></div>;
 
                                         const completedCount = habits.filter(h =>
-                                            h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0))
+                                            h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0))
                                         ).length;
 
                                         const intensity = habits.length > 0 ? completedCount / habits.length : 0;

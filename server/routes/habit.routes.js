@@ -66,25 +66,6 @@ router.put('/reorder', auth, async (req, res) => {
     }
 });
 
-// @route   PUT api/habits/:id
-// @desc    Update a habit
-// @access  Private
-router.put('/:id', auth, async (req, res) => {
-    try {
-        const { name } = req.body;
-        let habit = await Habit.findById(req.params.id);
-        if (!habit) return res.status(404).json({ msg: 'Not found' });
-        if (habit.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
-
-        habit.name = name || habit.name;
-        await habit.save();
-        res.json(habit);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
 // @route   PUT api/habits/:id/toggle
 // @desc    Toggle habit completion for a specific date
 // @access  Private
@@ -107,12 +88,10 @@ router.put('/:id/toggle', auth, async (req, res) => {
             habit.completedDates.push(targetDate);
         }
 
-        // Recalculate Streak (Expensive but accurate)
-        // Sort dates
+        // Recalculate Streak
         habit.completedDates.sort((a, b) => new Date(a) - new Date(b));
 
         let currentStreak = 0;
-        let maxStreak = 0;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -120,7 +99,6 @@ router.put('/:id/toggle', auth, async (req, res) => {
         let d = new Date(today);
         let found = true;
 
-        // Loop to check consecutive days backwards
         while (found) {
             const dateCheck = d.getTime();
             const hasDate = habit.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === dateCheck);
@@ -141,8 +119,6 @@ router.put('/:id/toggle', auth, async (req, res) => {
 
         habit.streak = currentStreak;
 
-        // Calculate Streak again but properly this time if the above simple loop is insufficient for "Best Streak"
-        // For simplicity in this iteration, we keep the previous best logic or just update max if current > best
         if (habit.streak > habit.bestStreak) {
             habit.bestStreak = habit.streak;
         }
@@ -150,6 +126,25 @@ router.put('/:id/toggle', auth, async (req, res) => {
         await habit.save();
         res.json(habit);
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   PUT api/habits/:id
+// @desc    Update a habit
+// @access  Private
+router.put('/:id', auth, async (req, res) => {
+    try {
+        const { name } = req.body;
+        let habit = await Habit.findById(req.params.id);
+        if (!habit) return res.status(404).json({ msg: 'Not found' });
+        if (habit.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+        habit.name = name || habit.name;
+        await habit.save();
+        res.json(habit);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
