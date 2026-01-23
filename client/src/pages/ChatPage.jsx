@@ -200,7 +200,7 @@ export default function ChatPage() {
                 </div>
             ) : (
                 <>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" ref={scrollRef}>
+                    <div className="flex-1 overflow-y-auto p-6 pt-14 md:pt-6 space-y-6 scroll-smooth" ref={scrollRef}>
                         <div className="max-w-5xl mx-auto space-y-6">
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`w-full flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>

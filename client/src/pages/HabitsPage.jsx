@@ -288,9 +288,9 @@ export default function HabitsPage() {
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10 relative">
             {/* Header */}
-            <div className="flex flex-col md:flex-row items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Habit Tracker</h1>
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-4">
+                <div className="w-full md:w-auto">
+                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Habit Tracker</h1>
                     <div className="flex items-center gap-2 text-sm text-zinc-500 mt-2">
                         <span className="uppercase tracking-wider font-medium">{currentDate.toLocaleDateString('en-US', { weekday: 'long' })}</span>
                         <span className="w-1 h-1 bg-zinc-600 rounded-full"></span>
@@ -300,11 +300,11 @@ export default function HabitsPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                     <button
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
-                        className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
+                        className="flex-1 md:flex-none px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50 whitespace-nowrap"
                     >
                         <Sparkles className="w-4 h-4" />
                         {isAnalyzing ? 'Analyzing...' : 'AI Insights'}
@@ -312,28 +312,29 @@ export default function HabitsPage() {
 
                     <button
                         onClick={() => setShowCalendar(true)}
-                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                        className="flex-1 md:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                         <Calendar className="w-4 h-4" />
-                        Calendar View
+                        <span className="hidden sm:inline">Calendar View</span>
+                        <span className="sm:hidden">Calendar</span>
                     </button>
 
-                    <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1">
+                    <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto overflow-x-auto">
                         <button
                             onClick={() => setViewMode('table')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
+                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
                         >
                             Table
                         </button>
                         <button
                             onClick={() => setViewMode('grid')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'grid' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
+                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'grid' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
                         >
                             Grid
                         </button>
                         <button
                             onClick={() => setViewMode('history')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'history' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'} flex items-center gap-2`}
+                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'history' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'} flex items-center justify-center gap-2`}
                         >
                             <History className="w-3.5 h-3.5" />
                             History
@@ -343,44 +344,46 @@ export default function HabitsPage() {
             </div>
 
             {/* Calendar Modal */}
-            {showCalendar && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setShowCalendar(false)}>
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-white">Calendar View</h2>
-                            <button onClick={() => setShowCalendar(false)} className="text-zinc-400 hover:text-white">
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-7 gap-2">
-                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                <div key={day} className="text-center text-xs font-medium text-zinc-500 py-2">{day}</div>
-                            ))}
-                            {Array.from({ length: 35 }).map((_, i) => {
-                                const date = new Date();
-                                date.setDate(date.getDate() - date.getDay() + i - 28);
-                                const isToday = isSameDay(date, new Date());
-                                return (
-                                    <div key={i} className={`aspect-square p-2 rounded-lg ${isToday ? 'bg-indigo-900/50 border border-indigo-500' : 'bg-zinc-800/50'}`}>
-                                        <div className={`text-right text-sm mb-2 ${isSameDay(date, new Date()) ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>{date.getDate()}</div>
-                                        <div className="space-y-1">
-                                            {habits.map(h => {
-                                                const isDone = h.completedDates.some(cd => isSameDay(cd, date));
-                                                if (!isDone) return null;
-                                                return (
-                                                    <div key={h._id} className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 truncate">
-                                                        {h.name}
-                                                    </div>
-                                                )
-                                            })}
+            {
+                showCalendar && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setShowCalendar(false)}>
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-white">Calendar View</h2>
+                                <button onClick={() => setShowCalendar(false)} className="text-zinc-400 hover:text-white">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-7 gap-2">
+                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                    <div key={day} className="text-center text-xs font-medium text-zinc-500 py-2">{day}</div>
+                                ))}
+                                {Array.from({ length: 35 }).map((_, i) => {
+                                    const date = new Date();
+                                    date.setDate(date.getDate() - date.getDay() + i - 28);
+                                    const isToday = isSameDay(date, new Date());
+                                    return (
+                                        <div key={i} className={`aspect-square p-2 rounded-lg ${isToday ? 'bg-indigo-900/50 border border-indigo-500' : 'bg-zinc-800/50'}`}>
+                                            <div className={`text-right text-sm mb-2 ${isSameDay(date, new Date()) ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>{date.getDate()}</div>
+                                            <div className="space-y-1">
+                                                {habits.map(h => {
+                                                    const isDone = h.completedDates.some(cd => isSameDay(cd, date));
+                                                    if (!isDone) return null;
+                                                    return (
+                                                        <div key={h._id} className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 truncate">
+                                                            {h.name}
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Stats */}
             <div className="flex gap-6 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
@@ -642,32 +645,34 @@ export default function HabitsPage() {
             </div>
 
             {/* AI Analysis Modal */}
-            {analysisResult && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setAnalysisResult(null)}>
-                    <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-indigo-500/30 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl shadow-indigo-500/10" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 border-b border-indigo-500/20 flex justify-between items-center sticky top-0 bg-zinc-900/95 backdrop-blur z-10">
-                            <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-indigo-400" />
-                                AI Insights
-                            </h2>
-                            <button onClick={() => setAnalysisResult(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                                <X className="w-5 h-5 text-zinc-400 hover:text-white" />
-                            </button>
-                        </div>
-                        <div className="p-8 prose prose-invert prose-p:text-zinc-300 prose-headings:text-indigo-200 prose-li:text-zinc-300 max-w-none">
-                            <ReactMarkdown>{analysisResult}</ReactMarkdown>
-                        </div>
-                        <div className="p-6 border-t border-indigo-500/20 bg-zinc-900/50 text-center">
-                            <button
-                                onClick={() => setAnalysisResult(null)}
-                                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-indigo-500/20"
-                            >
-                                Got it, let's crush it! 🚀
-                            </button>
+            {
+                analysisResult && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setAnalysisResult(null)}>
+                        <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-indigo-500/30 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl shadow-indigo-500/10" onClick={e => e.stopPropagation()}>
+                            <div className="p-6 border-b border-indigo-500/20 flex justify-between items-center sticky top-0 bg-zinc-900/95 backdrop-blur z-10">
+                                <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-indigo-400" />
+                                    AI Insights
+                                </h2>
+                                <button onClick={() => setAnalysisResult(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                                    <X className="w-5 h-5 text-zinc-400 hover:text-white" />
+                                </button>
+                            </div>
+                            <div className="p-8 prose prose-invert prose-p:text-zinc-300 prose-headings:text-indigo-200 prose-li:text-zinc-300 max-w-none">
+                                <ReactMarkdown>{analysisResult}</ReactMarkdown>
+                            </div>
+                            <div className="p-6 border-t border-indigo-500/20 bg-zinc-900/50 text-center">
+                                <button
+                                    onClick={() => setAnalysisResult(null)}
+                                    className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-indigo-500/20"
+                                >
+                                    Got it, let's crush it! 🚀
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
