@@ -74,62 +74,86 @@ router.put('/:id/toggle', auth, async (req, res) => {
         const habit = await Habit.findOne({ _id: req.params.id, userId: req.user.id });
         if (!habit) return res.status(404).json({ msg: 'Not found' });
 
-        const targetDate = req.body.date ? new Date(req.body.date) : new Date();
-        targetDate.setHours(0, 0, 0, 0);
+        // Input expected: { date: "YYYY-MM-DD" }
+        // We use UTC Noon to avoid timezone boundary issues
+        let targetDateStr = req.body.date;
 
-        // Check if exists
-        const index = habit.completedDates.findIndex(d => new Date(d).setHours(0, 0, 0, 0) === targetDate.getTime());
-
-        if (index !== -1) {
-            // Remove (Toggle Off)
-            habit.completedDates.splice(index, 1);
-        } else {
-            // Add (Toggle On)
-            habit.completedDates.push(targetDate);
+        // Fallback for getting string if older frontend sends full ISO
+        if (targetDateStr && targetDateStr.includes('T')) {
+            targetDateStr = targetDateStr.split('T')[0];
+        }
+        if (!targetDateStr) {
+            const now = new Date();
+            targetDateStr = now.toISOString().split('T')[0];
         }
 
-        // Recalculate Streak
-        // Helper to get YYYY-MM-DD string in local time
-        const toDateKey = (date) => {
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
+        const targetDate = new Date(`${targetDateStr}T12:00:00.000Z`);
 
-        const completedSet = new Set(habit.completedDates.map(d => toDateKey(d)));
-        const todayKey = toDateKey(new Date());
+        // Helper: Convert any date date object to "YYYY-MM-DD" key based on UTC
+        const toKey = (d) => d.toISOString().split('T')[0];
+
+        // 1. Normalize EXISTING dates in DB to handle messy legacy data
+        // We map all existing dates to their YYYY-MM-DD keys (UTC) and recreate them as Noon UTC objects
+        // This effectively "snaps" all previous checks to a safe midday timestamp
+        let dateSet = new Set(habit.completedDates.map(d => toKey(new Date(d))));
+
+        // 2. Toggle logic
+        const toggleKey = toKey(targetDate);
+        if (dateSet.has(toggleKey)) {
+            dateSet.delete(toggleKey);
+        } else {
+            dateSet.add(toggleKey);
+        }
+
+        // 3. Rebuild completedDates array from the Set
+        habit.completedDates = Array.from(dateSet).map(dateStr => new Date(`${dateStr}T12:00:00.000Z`));
+
+        // 4. Streak Calculation
+        // Sort
+        const sortedDates = Array.from(dateSet).sort();
 
         let currentStreak = 0;
-        let d = new Date();
-        // Reset time to avoid drift issues during subtraction
-        d.setHours(0, 0, 0, 0);
+        // Calculate "Today" relative to UTC
+        // Note: For a user in +5:30, "Today" might change at 18:30 UTC. 
+        // We assume "Today" is based on the LAST SUBMITTED DATE or Server Time.
+        // To be safe, we check backwards from the "Latest Completed Date" or "Today".
 
-        let checkKey = toDateKey(d);
-        let found = true;
+        // Robust Streak Logic:
+        // We iterate backwards from "Today (UTC)". 
+        // If Today is missing, we check Yesterday. If Yesterday present, Streak continues from there.
+        // If Today present, Streak starts there.
 
-        while (found) {
-            if (completedSet.has(checkKey)) {
+        const pad = n => n < 10 ? '0' + n : n;
+        const getUTCDateStr = (d) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+
+        const todayUTC = getUTCDateStr(new Date());
+
+        let cursorDate = new Date();
+        let cursorKey = getUTCDateStr(cursorDate);
+        let streakFound = true;
+
+        // Initial check: Is "Today" done?
+        if (!dateSet.has(cursorKey)) {
+            // If not, maybe "Yesterday" was done?
+            cursorDate.setUTCDate(cursorDate.getUTCDate() - 1);
+            cursorKey = getUTCDateStr(cursorDate);
+
+            if (!dateSet.has(cursorKey)) {
+                // Neither Today nor Yesterday is done. Streak is 0.
+                streakFound = false;
+            }
+        }
+
+        if (streakFound) {
+            currentStreak = 0;
+            while (dateSet.has(cursorKey)) {
                 currentStreak++;
-                // Go back one day
-                d.setDate(d.getDate() - 1);
-                checkKey = toDateKey(d);
-            } else {
-                // If today is missing, streak is still valid if yesterday was done.
-                // But we only skip if we are strictly ON today.
-                if (checkKey === todayKey) {
-                    d.setDate(d.getDate() - 1);
-                    checkKey = toDateKey(d);
-                    // continue to check yesterday
-                } else {
-                    found = false;
-                }
+                cursorDate.setUTCDate(cursorDate.getUTCDate() - 1);
+                cursorKey = getUTCDateStr(cursorDate);
             }
         }
 
         habit.streak = currentStreak;
-
         if (habit.streak > habit.bestStreak) {
             habit.bestStreak = habit.streak;
         }

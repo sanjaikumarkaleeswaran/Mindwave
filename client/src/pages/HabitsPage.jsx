@@ -183,7 +183,12 @@ export default function HabitsPage() {
 
     const handleToggleDate = async (id, date) => {
         try {
-            await api.put(`/habits/${id}/toggle`, { date: date.toISOString() });
+            // Send standard YYYY-MM-DD string (Local Time)
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+            const dateStr = localDate.toISOString().split('T')[0];
+
+            await api.put(`/habits/${id}/toggle`, { date: dateStr });
             fetchHabits();
             const habit = habits.find(h => h._id === id);
             const isDone = habit.completedDates.some(d => isSameDay(d, date));
