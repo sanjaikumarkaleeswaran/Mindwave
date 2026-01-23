@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/ChatPage';
 
 import HabitsPage from './pages/HabitsPage';
-import ImageGenPage from './pages/ImageGenPage';
+
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="chat" element={<ChatPage />} />
             <Route path="chat/:id" element={<ChatPage />} />
-            <Route path="image-gen" element={<ImageGenPage />} />
+
 
             <Route path="habits" element={<HabitsPage />} />
           </Route>

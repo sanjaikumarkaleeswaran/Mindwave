@@ -34,7 +34,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 
 app.use('/api/habits', require('./routes/habit.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
-app.use('/api/image', require('./routes/image.routes'));
+
 console.log('All routes loaded.');
 
 app.get('/', (req, res) => res.send('API Running'));
