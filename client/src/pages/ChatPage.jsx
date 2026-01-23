@@ -203,13 +203,13 @@ export default function ChatPage() {
                     <div className="flex-1 overflow-y-auto p-6 pt-14 md:pt-6 space-y-6 scroll-smooth" ref={scrollRef}>
                         <div className="max-w-5xl mx-auto space-y-6">
                             {messages.map((msg, idx) => (
-                                <div key={idx} className={`w-full flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-zinc-700' : 'bg-gradient-to-tr from-indigo-600 to-purple-600'}`}>
-                                        {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+                                <div key={idx} className={`w-full flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+                                        {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-indigo-400" />}
                                     </div>
-                                    <div className={`max-w-[80%] rounded-2xl px-5 py-3 shadow-sm ${msg.role === 'user'
-                                        ? 'bg-zinc-800 text-zinc-100 rounded-tr-sm'
-                                        : 'bg-indigo-600 text-white rounded-tl-sm'
+                                    <div className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-5 py-3 shadow-sm ${msg.role === 'user'
+                                        ? 'bg-indigo-600 text-white rounded-tr-sm'
+                                        : 'bg-zinc-800 text-zinc-100 rounded-tl-sm'
                                         }`}>
                                         <div className="markdown-body text-sm md:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
                                             <ReactMarkdown

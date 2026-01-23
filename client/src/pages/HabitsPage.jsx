@@ -300,7 +300,7 @@ export default function HabitsPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                     <button
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
