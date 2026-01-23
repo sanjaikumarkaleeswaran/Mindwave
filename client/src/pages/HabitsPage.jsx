@@ -50,12 +50,12 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
 
     return (
         <tr ref={setNodeRef} style={style} className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors group">
-            <td className="p-4 w-10">
+            <td className="p-4 w-10 hidden md:table-cell">
                 <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
                     <GripVertical className="w-4 h-4 text-zinc-600 hover:text-zinc-400" />
                 </div>
             </td>
-            <td className="p-4 pl-2 w-1/3">
+            <td className="p-4 pl-2 w-1/3 min-w-[140px] sticky left-0 z-10 bg-zinc-900 md:bg-transparent border-r border-zinc-800 md:border-none shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">
                 {isEditing ? (
                     <input
                         type="text"
@@ -68,7 +68,7 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
                     />
                 ) : (
                     <div onClick={() => setIsEditing(true)} className="cursor-pointer">
-                        <div className="font-medium text-white">{habit.name}</div>
+                        <div className="font-medium text-white truncate max-w-[120px] md:max-w-none">{habit.name}</div>
                         <Pencil className="w-3 h-3 inline-block ml-2 opacity-0 group-hover:opacity-50" />
                     </div>
                 )}
@@ -77,29 +77,29 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
             {tableDates.map((date, i) => {
                 const isDone = habit.completedDates.some(d => isSameDay(d, date));
                 return (
-                    <td key={i} className="p-4 text-center">
+                    <td key={i} className="p-2 md:p-4 text-center">
                         <button
                             onClick={() => handleToggleDate(habit._id, new Date(date))}
-                            className={`w-8 h-8 rounded-lg transition-all ${isDone ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-zinc-800 hover:bg-zinc-700'}`}
+                            className={`w-6 h-6 md:w-8 md:h-8 rounded-lg transition-all ${isDone ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-zinc-800 hover:bg-zinc-700'}`}
                         >
-                            {isDone && <Check className="w-4 h-4 text-white mx-auto" />}
+                            {isDone && <Check className="w-3 h-3 md:w-4 md:h-4 text-white mx-auto" />}
                         </button>
                     </td>
                 );
             })}
-            <td className="p-4 text-center">
-                <div className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-orange-500" />
+            <td className="p-2 md:p-4 text-center">
+                <div className="flex items-center gap-2 justify-center">
+                    <Flame className="w-4 h-4 text-orange-500 shrink-0" />
                     <span className="font-bold text-orange-500">{habit.streak}</span>
                 </div>
             </td>
-            <td className="p-4">
+            <td className="p-4 hidden md:table-cell">
                 <div className="w-full bg-zinc-800 rounded-full h-2">
                     <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all" style={{ width: `${getMonthlyProgress(habit)}%` }}></div>
                 </div>
                 <div className="text-xs text-zinc-500 mt-1">{getMonthlyProgress(habit)}%</div>
             </td>
-            <td className="p-4 text-right">
+            <td className="p-2 md:p-4 text-right">
                 <button onClick={() => handleDelete(habit._id)} className="text-red-500 hover:text-red-400 transition-colors">
                     <Trash2 className="w-4 h-4" />
                 </button>
@@ -448,12 +448,12 @@ export default function HabitsPage() {
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                            <th className="p-4 w-10"></th>
-                                            <th className="p-4 pl-2 font-medium text-zinc-400 w-1/3">Habit</th>
+                                            <th className="p-4 w-10 hidden md:table-cell"></th>
+                                            <th className="p-4 pl-2 font-medium text-zinc-400 w-1/3 min-w-[140px] sticky left-0 z-10 bg-zinc-900/95 backdrop-blur-sm md:bg-transparent md:static border-r border-zinc-800 md:border-none shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">Habit</th>
                                             {tableDates.map((date, i) => {
                                                 const isToday = isSameDay(date, new Date());
                                                 return (
-                                                    <th key={i} className={`p-4 font-medium text-center min-w-[3rem] ${isToday ? 'text-indigo-400' : 'text-zinc-400'}`}>
+                                                    <th key={i} className={`p-2 md:p-4 font-medium text-center min-w-[3rem] ${isToday ? 'text-indigo-400' : 'text-zinc-400'}`}>
                                                         <div className="flex flex-col items-center">
                                                             <span className="text-[10px] uppercase tracking-wider">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]}</span>
                                                             <span className="text-xs">{date.getDate()}</span>
@@ -461,9 +461,9 @@ export default function HabitsPage() {
                                                     </th>
                                                 );
                                             })}
-                                            <th className="p-4 font-medium text-zinc-400 text-center">Streak</th>
-                                            <th className="p-4 font-medium text-zinc-400">Progress</th>
-                                            <th className="p-4"></th>
+                                            <th className="p-2 md:p-4 font-medium text-zinc-400 text-center">Streak</th>
+                                            <th className="p-4 font-medium text-zinc-400 hidden md:table-cell">Progress</th>
+                                            <th className="p-2 md:p-4"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
