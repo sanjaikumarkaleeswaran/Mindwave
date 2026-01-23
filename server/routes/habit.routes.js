@@ -89,28 +89,39 @@ router.put('/:id/toggle', auth, async (req, res) => {
         }
 
         // Recalculate Streak
-        habit.completedDates.sort((a, b) => new Date(a) - new Date(b));
+        // Helper to get YYYY-MM-DD string in local time
+        const toDateKey = (date) => {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const completedSet = new Set(habit.completedDates.map(d => toDateKey(d)));
+        const todayKey = toDateKey(new Date());
 
         let currentStreak = 0;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        let d = new Date();
+        // Reset time to avoid drift issues during subtraction
+        d.setHours(0, 0, 0, 0);
 
-        // We iterate backwards from today to find current streak
-        let d = new Date(today);
+        let checkKey = toDateKey(d);
         let found = true;
 
         while (found) {
-            const dateCheck = d.getTime();
-            const hasDate = habit.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === dateCheck);
-
-            if (hasDate) {
+            if (completedSet.has(checkKey)) {
                 currentStreak++;
+                // Go back one day
                 d.setDate(d.getDate() - 1);
+                checkKey = toDateKey(d);
             } else {
-                // Allow missing TODAY if we are checking streak (streak is valid if yesterday was done)
-                if (dateCheck === today.getTime()) {
+                // If today is missing, streak is still valid if yesterday was done.
+                // But we only skip if we are strictly ON today.
+                if (checkKey === todayKey) {
                     d.setDate(d.getDate() - 1);
-                    // Don't increment streak, but continue to check yesterday
+                    checkKey = toDateKey(d);
+                    // continue to check yesterday
                 } else {
                     found = false;
                 }
