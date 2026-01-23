@@ -286,7 +286,7 @@ export default function HabitsPage() {
     const tableDates = getLast7Days();
 
     return (
-        <div className="p-8 max-w-7xl mx-auto space-y-10 relative">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10 relative">
             {/* Header */}
             <div className="flex flex-col md:flex-row items-end justify-between gap-4">
                 <div>

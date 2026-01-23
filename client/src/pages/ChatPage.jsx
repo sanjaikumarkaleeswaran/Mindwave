@@ -120,7 +120,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden relative m-6 shadow-2xl">
+        <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden relative m-2 md:m-6 shadow-2xl">
 
             {/* Model Selector - Centered Top */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
