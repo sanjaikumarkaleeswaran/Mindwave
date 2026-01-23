@@ -20,6 +20,15 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+// Helper for safe date comparison
+const isSameDay = (d1, d2) => {
+    const date1 = new Date(d1);
+    const date2 = new Date(d2);
+    return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
+};
+
 // Sortable Row Component
 function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMonthlyProgress, handleUpdateName }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: habit._id });
@@ -66,7 +75,7 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
                 <div className="text-xs text-zinc-500">Best: {habit.bestStreak}</div>
             </td>
             {tableDates.map((date, i) => {
-                const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0));
+                const isDone = habit.completedDates.some(d => isSameDay(d, date));
                 return (
                     <td key={i} className="p-4 text-center">
                         <button
@@ -177,8 +186,8 @@ export default function HabitsPage() {
             await api.put(`/habits/${id}/toggle`, { date: date.toISOString() });
             fetchHabits();
             const habit = habits.find(h => h._id === id);
-            const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0));
-            if (!isDone && date.toDateString() === new Date().toDateString()) {
+            const isDone = habit.completedDates.some(d => isSameDay(d, date));
+            if (!isDone && isSameDay(date, new Date())) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
         } catch (err) {
@@ -229,14 +238,14 @@ export default function HabitsPage() {
     const getMonthlyProgress = (habit) => {
         const last30 = getLast30Days();
         // Check completion count in the last 30 days
-        const completed = last30.filter(d => habit.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0))).length;
+        const completed = last30.filter(d => habit.completedDates.some(cd => isSameDay(cd, d))).length;
         // Return percentage
         return Math.round((completed / 30) * 100);
     };
 
     const getWeeklyProgress = (habit) => {
         const last7 = getLast7Days();
-        const completed = last7.filter(d => habit.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0))).length;
+        const completed = last7.filter(d => habit.completedDates.some(cd => isSameDay(cd, d))).length;
         return Math.round((completed / 7) * 100);
     };
 
@@ -245,7 +254,7 @@ export default function HabitsPage() {
         for (let i = 59; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const completedCount = habits.filter(h => h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0))).length;
+            const completedCount = habits.filter(h => h.completedDates.some(cd => isSameDay(cd, d))).length;
             const intensity = habits.length > 0 ? completedCount / habits.length : 0;
             data.push({ date: d, intensity });
         }
@@ -256,7 +265,7 @@ export default function HabitsPage() {
         if (!habits.length) return 0;
         const validHabits = habits.length;
         const completedCount = habits.filter(h =>
-            h.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0))
+            h.completedDates.some(d => isSameDay(d, date))
         ).length;
         return Math.round((completedCount / validHabits) * 100);
     };
@@ -345,13 +354,13 @@ export default function HabitsPage() {
                             {Array.from({ length: 35 }).map((_, i) => {
                                 const date = new Date();
                                 date.setDate(date.getDate() - date.getDay() + i - 28);
-                                const isToday = date.toDateString() === new Date().toDateString();
+                                const isToday = isSameDay(date, new Date());
                                 return (
                                     <div key={i} className={`aspect-square p-2 rounded-lg ${isToday ? 'bg-indigo-900/50 border border-indigo-500' : 'bg-zinc-800/50'}`}>
-                                        <div className={`text-right text-sm mb-2 ${date.toDateString() === new Date().toDateString() ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>{date.getDate()}</div>
+                                        <div className={`text-right text-sm mb-2 ${isSameDay(date, new Date()) ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>{date.getDate()}</div>
                                         <div className="space-y-1">
                                             {habits.map(h => {
-                                                const isDone = h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0));
+                                                const isDone = h.completedDates.some(cd => isSameDay(cd, date));
                                                 if (!isDone) return null;
                                                 return (
                                                     <div key={h._id} className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 truncate">
@@ -398,7 +407,7 @@ export default function HabitsPage() {
                         if (d.intensity > 0.6) bgClass = "bg-indigo-500/80";
                         if (d.intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]";
 
-                        const isToday = d.date.toDateString() === new Date().toDateString();
+                        const isToday = isSameDay(d.date, new Date());
                         return (
                             <div
                                 key={i}
@@ -434,7 +443,7 @@ export default function HabitsPage() {
                                             <th className="p-4 w-10"></th>
                                             <th className="p-4 pl-2 font-medium text-zinc-400 w-1/3">Habit</th>
                                             {tableDates.map((date, i) => {
-                                                const isToday = date.toDateString() === new Date().toDateString();
+                                                const isToday = isSameDay(date, new Date());
                                                 return (
                                                     <th key={i} className={`p-4 font-medium text-center min-w-[3rem] ${isToday ? 'text-indigo-400' : 'text-zinc-400'}`}>
                                                         <div className="flex flex-col items-center">
@@ -503,7 +512,7 @@ export default function HabitsPage() {
                                                     <div className="text-xs text-zinc-500 mt-1">{progress}%</div>
                                                 </td>
                                                 {habits.map(h => {
-                                                    const isDone = h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0));
+                                                    const isDone = h.completedDates.some(cd => isSameDay(cd, d));
                                                     return (
                                                         <td key={h._id} className="p-4 text-center">
                                                             <button
@@ -541,7 +550,7 @@ export default function HabitsPage() {
                                 </div>
                                 <div className="grid grid-cols-7 gap-1 mb-3">
                                     {getLast7Days().map((date, i) => {
-                                        const isDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0));
+                                        const isDone = habit.completedDates.some(d => isSameDay(d, date));
                                         return (
                                             <button
                                                 key={i}
@@ -557,7 +566,7 @@ export default function HabitsPage() {
                                     onClick={() => handleToggleDate(habit._id, new Date())}
                                     className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors"
                                 >
-                                    {habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) ? 'Completed Today' : 'Mark Complete'}
+                                    {habit.completedDates.some(d => isSameDay(d, new Date())) ? 'Completed Today' : 'Mark Complete'}
                                 </button>
                             </div>
                         ))}
@@ -597,7 +606,7 @@ export default function HabitsPage() {
                                         if (!date) return <div key={i} className="aspect-square"></div>;
 
                                         const completedCount = habits.filter(h =>
-                                            h.completedDates.some(cd => new Date(cd).setHours(0, 0, 0, 0) === new Date(date).setHours(0, 0, 0, 0))
+                                            h.completedDates.some(cd => isSameDay(cd, date))
                                         ).length;
 
                                         const intensity = habits.length > 0 ? completedCount / habits.length : 0;
@@ -608,7 +617,7 @@ export default function HabitsPage() {
                                         if (intensity > 0.6) bgClass = "bg-indigo-500/80";
                                         if (intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]";
 
-                                        const isToday = date.toDateString() === new Date().toDateString();
+                                        const isToday = isSameDay(date, new Date());
 
                                         return (
                                             <div
