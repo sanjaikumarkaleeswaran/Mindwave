@@ -487,18 +487,18 @@ export default function HabitsPage() {
                     </DndContext>
                 ) : viewMode === 'history' ? (
                     <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl overflow-hidden backdrop-blur-sm">
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto relative">
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                        <th className="p-4 font-medium text-zinc-400 w-48">Date</th>
-                                        <th className="p-4 font-medium text-zinc-400 w-32">Daily Progress</th>
+                                        <th className="p-4 font-medium text-zinc-400 w-48 sticky left-0 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Date</th>
+                                        <th className="p-4 font-medium text-zinc-400 w-32 sticky left-48 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Daily Progress</th>
                                         {habits.map(h => (
                                             <th key={h._id} className="p-4 font-medium text-zinc-400 text-center min-w-[4rem] text-xs uppercase tracking-wider">
                                                 <div className="[writing-mode:vertical-rl] transform h-24 flex items-center justify-center">{h.name.substring(0, 10)}</div>
                                             </th>
                                         ))}
-                                        <th className="p-4 font-medium text-zinc-400 text-right">Status</th>
+                                        <th className="p-4 font-medium text-zinc-400 text-right min-w-[100px]">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-zinc-800/50">
@@ -508,12 +508,12 @@ export default function HabitsPage() {
                                         const progress = getDailyProgress(d);
                                         const status = getDailyStatus(progress);
                                         return (
-                                            <tr key={i} className="hover:bg-zinc-800/30 transition-colors">
-                                                <td className="p-4">
+                                            <tr key={i} className="hover:bg-zinc-800/30 transition-colors group">
+                                                <td className="p-4 sticky left-0 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
                                                     <div className="font-medium text-white">{d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                                                     <div className="text-xs text-zinc-500">{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
                                                 </td>
-                                                <td className="p-4">
+                                                <td className="p-4 sticky left-48 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
                                                     <div className="w-full bg-zinc-800 rounded-full h-2">
                                                         <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style={{ width: `${progress}%` }}></div>
                                                     </div>
@@ -525,7 +525,7 @@ export default function HabitsPage() {
                                                         <td key={h._id} className="p-4 text-center">
                                                             <button
                                                                 onClick={() => handleToggleDate(h._id, d)}
-                                                                className={`w-6 h-6 rounded transition-all ${isDone ? 'bg-indigo-600' : 'bg-zinc-800 hover:bg-zinc-700'}`}
+                                                                className={`w-6 h-6 rounded transition-all ${isDone ? 'bg-indigo-600 shadow-[0_0_8px_rgba(79,70,229,0.4)]' : 'bg-zinc-800 hover:bg-zinc-700'}`}
                                                             >
                                                                 {isDone && <Check className="w-3 h-3 text-white mx-auto" />}
                                                             </button>
