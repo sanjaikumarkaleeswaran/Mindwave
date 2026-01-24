@@ -8,6 +8,9 @@ import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/ChatPage';
 
 import HabitsPage from './pages/HabitsPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
 
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
 
           <Route path="/" element={
             <RequireAuth>

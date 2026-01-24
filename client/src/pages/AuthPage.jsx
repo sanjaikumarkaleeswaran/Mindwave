@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function AuthPage() {
@@ -8,6 +8,8 @@ export default function AuthPage() {
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [verificationSent, setVerificationSent] = useState(false);
 
     const { login, register } = useAuth();
     const navigate = useNavigate();
@@ -19,16 +21,45 @@ export default function AuthPage() {
         try {
             if (isLogin) {
                 await login(formData.email, formData.password);
+                navigate('/');
             } else {
                 await register(formData.name, formData.email, formData.password);
+                setVerificationSent(true);
             }
-            navigate('/');
         } catch (err) {
             setError(err.response?.data?.msg || 'An error occurred');
         } finally {
             setLoading(false);
         }
     };
+
+    if (verificationSent) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
+                <div className="w-full max-w-md bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 shadow-xl backdrop-blur-sm text-center">
+                    <div className="flex justify-center mb-6">
+                        <div className="p-3 bg-green-500/10 rounded-full">
+                            <Sparkles className="w-8 h-8 text-green-500" />
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-4 text-white">Check Your Email</h2>
+                    <p className="text-zinc-400 mb-8">
+                        We've sent a verification link to <strong>{formData.email}</strong>.<br />
+                        Please verify your email to continue.
+                    </p>
+                    <button
+                        onClick={() => {
+                            setVerificationSent(false);
+                            setIsLogin(true);
+                        }}
+                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all"
+                    >
+                        Back to Sign In
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
@@ -87,6 +118,14 @@ export default function AuthPage() {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         />
                     </div>
+
+                    {isLogin && (
+                        <div className="flex justify-end">
+                            <Link to="/forgot-password" className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">
+                                Forgot password?
+                            </Link>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
