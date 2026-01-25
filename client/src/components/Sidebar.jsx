@@ -1,7 +1,8 @@
-import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2 } from 'lucide-react';
+import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2, Zap } from 'lucide-react';
+
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import clsx from 'clsx';
 
@@ -10,54 +11,59 @@ export default function Sidebar({ isOpen, onClose }) {
     const location = useLocation();
     const navigate = useNavigate();
     const isChat = location.pathname.startsWith('/chat');
+    const queryClient = useQueryClient();
 
-    // Chat History State
-    const [conversations, setConversations] = useState([]);
-
-    const fetchConversations = async () => {
-        try {
+    // Chat History Query
+    const { data: conversations = [] } = useQuery({
+        queryKey: ['conversations'],
+        queryFn: async () => {
             const res = await api.get('/chat/conversations');
-            setConversations(res.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+            return res.data;
+        },
+        enabled: isChat // Only fetch when chat section is visible/active
+    });
 
-    useEffect(() => {
-        if (isChat) {
-            fetchConversations();
-        }
-    }, [isChat, location.pathname]); // Re-fetch on navigation to ensure updates
-
-    const createNewChat = async () => {
-        try {
-            const res = await api.post('/chat/conversations');
+    const createMutation = useMutation({
+        mutationFn: () => api.post('/chat/conversations'),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['conversations']);
             navigate(`/chat/${res.data._id}`);
-            fetchConversations();
-            if (window.innerWidth < 768) onClose(); // Close on mobile
-        } catch (err) {
-            console.error(err);
+            if (window.innerWidth < 768) onClose();
         }
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id) => api.delete(`/chat/conversations/${id}`),
+        onMutate: async (id) => {
+            await queryClient.cancelQueries(['conversations']);
+            const previous = queryClient.getQueryData(['conversations']);
+            queryClient.setQueryData(['conversations'], old => old.filter(c => c._id !== id));
+            return { previous };
+        },
+        onError: (err, id, context) => queryClient.setQueryData(['conversations'], context.previous),
+        onSettled: () => queryClient.invalidateQueries(['conversations'])
+    });
+
+    const createNewChat = () => {
+        createMutation.mutate();
     };
 
-    const deleteConversation = async (e, id) => {
-        e.preventDefault(); // Prevent navigation
+    const deleteConversation = (e, id) => {
+        e.preventDefault();
         if (!window.confirm("Delete this chat?")) return;
-        try {
-            await api.delete(`/chat/conversations/${id}`);
-            fetchConversations();
-            if (location.pathname.includes(id)) {
-                navigate('/chat');
-            }
-        } catch (err) {
-            console.error(err);
+
+        deleteMutation.mutate(id);
+
+        if (location.pathname.includes(id)) {
+            navigate('/chat');
         }
     };
 
     const navItems = [
         { icon: Home, label: 'Home', path: '/' },
-        { icon: MessageSquare, label: 'Chat', path: '/chat' },
         { icon: CheckCircle, label: 'Habits', path: '/habits' },
+        { icon: Zap, label: 'Focus', path: '/focus' },
+        { icon: MessageSquare, label: 'Chat', path: '/chat' },
     ];
 
     return (

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
 import { Send, Bot, User, Trash2, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
@@ -8,11 +10,9 @@ import remarkGfm from 'remark-gfm';
 export default function ChatPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [messages, setMessages] = useState([]);
+    const queryClient = useQueryClient();
     const [input, setInput] = useState('');
-    const [loading, setLoading] = useState(false);
     const scrollRef = useRef(null);
-
     // Model Selection State
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
     const [showModelMenu, setShowModelMenu] = useState(false);
@@ -24,27 +24,45 @@ export default function ChatPage() {
         { id: "gemma-2-9b-it", name: "Gemma 2 9B (Lightweight)" }
     ];
 
-    // Load Chat on Mount or ID Change
-    useEffect(() => {
-        if (id) {
-            loadMessages(id);
-        } else {
-            setMessages([]); // Clear if on main /chat page
-        }
-    }, [id]);
+    const { data: messages = [], isLoading: isHistoryLoading } = useQuery({
+        queryKey: ['chat', id],
+        queryFn: async () => {
+            if (!id) return [];
+            const res = await api.get(`/chat/${id}`);
+            return res.data;
+        },
+        enabled: !!id,
+    });
 
-    const loadMessages = async (chatId) => {
-        setLoading(true);
-        try {
-            const res = await api.get(`/chat/${chatId}`);
-            setMessages(res.data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const sendMutation = useMutation({
+        mutationFn: async ({ content, conversationId, model }) => {
+            return api.post('/chat/send', { message: content, conversationId, model });
+        },
+        onMutate: async ({ content, conversationId }) => {
+            await queryClient.cancelQueries(['chat', conversationId]);
+            const previousMessages = queryClient.getQueryData(['chat', conversationId]) || [];
 
+            // Optimistic update
+            const newMsg = { role: 'user', content, timestamp: new Date() };
+            queryClient.setQueryData(['chat', conversationId], [...previousMessages, newMsg]);
+
+            return { previousMessages };
+        },
+        onSuccess: (res, vars) => {
+            const aiContent = res.data.response;
+            queryClient.setQueryData(['chat', vars.conversationId], old => [
+                ...old,
+                { role: 'assistant', content: aiContent, timestamp: new Date() }
+            ]);
+            // Invalidate conversations list in sidebar
+            queryClient.invalidateQueries(['conversations']);
+        },
+        onError: (err, vars, context) => {
+            queryClient.setQueryData(['chat', vars.conversationId], context.previousMessages);
+        }
+    });
+
+    // Auto-scroll logic
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -55,10 +73,8 @@ export default function ChatPage() {
         if (!id) return;
         if (!window.confirm("Clear all chat history?")) return;
         try {
-            // For single convo clear, actually we might want to just delete messages but keep convo?
-            // Or reuse the conversation delete logic. 
-            // Currently backend DELETE /conversation/:id deletes both. 
             await api.delete(`/chat/conversations/${id}`);
+            queryClient.invalidateQueries(['conversations']);
             navigate('/chat');
         } catch (err) {
             console.error(err);
@@ -66,44 +82,33 @@ export default function ChatPage() {
     };
 
     const handleSend = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (!input.trim()) return;
 
-        // If no ID (on /chat), create new convo first
         let targetId = id;
+
+        // If no ID (on /chat), create new convo first
         if (!targetId) {
             try {
                 const res = await api.post('/chat/conversations');
                 targetId = res.data._id;
+                // Pre-seed the cache for the new conversation so optimistic update works immediately
+                queryClient.setQueryData(['chat', targetId], []);
                 navigate(`/chat/${targetId}`);
-                // Navigation will trigger useEffect to loadMessages, but let's continue optimistic update
             } catch (err) {
                 console.error(err);
                 return;
             }
         }
 
-        const newMsg = { role: 'user', content: input, timestamp: new Date() };
-        setMessages(prev => [...prev, newMsg]);
-        setInput('');
-        setLoading(true);
+        const msgContent = input;
+        setInput(''); // Clear input immediately
 
-        try {
-            const res = await api.post('/chat/send', {
-                message: input,
-                conversationId: targetId,
-                model: selectedModel
-            });
-
-            const aiContent = res.data.response;
-
-            setMessages(prev => [...prev, { role: 'assistant', content: aiContent, timestamp: new Date() }]);
-            // Sidebar listens to route changes so it should eventually update title if needed
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        sendMutation.mutate({
+            content: msgContent,
+            conversationId: targetId,
+            model: selectedModel
+        });
     };
 
     const suggestions = [
@@ -121,7 +126,9 @@ export default function ChatPage() {
 
     return (
         <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden relative m-2 md:m-6 shadow-2xl">
-
+            <Helmet>
+                <title>Chat | Life OS</title>
+            </Helmet>
             {/* Model Selector - Centered Top */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
                 <div className="relative">
@@ -191,7 +198,7 @@ export default function ChatPage() {
                         />
                         <button
                             type="submit"
-                            disabled={loading || !input.trim()}
+                            disabled={sendMutation.isPending || !input.trim()}
                             className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
                         >
                             <Send className="w-5 h-5" />
@@ -240,7 +247,7 @@ export default function ChatPage() {
                                     </div>
                                 </div>
                             ))}
-                            {loading && (
+                            {sendMutation.isPending && (
                                 <div className="flex gap-4">
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0">
                                         <Bot className="w-5 h-5" />
@@ -267,7 +274,7 @@ export default function ChatPage() {
                             />
                             <button
                                 type="submit"
-                                disabled={loading || !input.trim()}
+                                disabled={sendMutation.isPending || !input.trim()}
                                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
                             >
                                 <Send className="w-5 h-5" />

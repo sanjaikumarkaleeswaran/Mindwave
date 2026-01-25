@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
 import api from '../lib/axios';
 import { Plus, Check, Flame, Trash2, TrendingUp, Calendar, GripVertical, Pencil, History, Sparkles, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -110,14 +112,21 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
 
 // Main Component
 export default function HabitsPage() {
-    const [habits, setHabits] = useState([]);
+    const queryClient = useQueryClient();
     const [newHabit, setNewHabit] = useState('');
-    const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('table');
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
+
+    const { data: habits = [], isLoading: loading } = useQuery({
+        queryKey: ['habits'],
+        queryFn: async () => {
+            const res = await api.get('/habits');
+            return res.data.sort((a, b) => a.order - b.order);
+        }
+    });
 
     const handleAnalyze = async () => {
         setIsAnalyzing(true);
@@ -137,86 +146,114 @@ export default function HabitsPage() {
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     );
 
-    const fetchHabits = async () => {
-        try {
-            const res = await api.get('/habits');
-            setHabits(res.data.sort((a, b) => a.order - b.order));
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Mutations
+    const reorderMutation = useMutation({
+        mutationFn: (newHabits) => api.put('/habits/reorder', newHabits.map((h, i) => ({ id: h._id, order: i }))),
+        onMutate: async (newHabits) => {
+            await queryClient.cancelQueries(['habits']);
+            const previous = queryClient.getQueryData(['habits']);
+            queryClient.setQueryData(['habits'], newHabits);
+            return { previous };
+        },
+        onError: (err, newHabits, context) => queryClient.setQueryData(['habits'], context.previous),
+        onSettled: () => queryClient.invalidateQueries(['habits'])
+    });
 
-    useEffect(() => {
-        fetchHabits();
-    }, []);
-
-    const handleDragEnd = async (event) => {
-        const { active, over } = event;
-        if (!over || active.id === over.id) return;
-
-        const oldIndex = habits.findIndex(h => h._id === active.id);
-        const newIndex = habits.findIndex(h => h._id === over.id);
-        const newHabits = arrayMove(habits, oldIndex, newIndex);
-        setHabits(newHabits);
-
-        try {
-            await api.put('/habits/reorder', newHabits.map((h, i) => ({ id: h._id, order: i })));
-        } catch (err) {
-            console.error(err);
-            fetchHabits();
-        }
-    };
-
-    const handleAdd = async (e) => {
-        e.preventDefault();
-        if (!newHabit.trim()) return;
-        try {
-            await api.post('/habits', { name: newHabit });
+    const addMutation = useMutation({
+        mutationFn: (name) => api.post('/habits', { name }),
+        onSuccess: () => {
             setNewHabit('');
-            fetchHabits();
-        } catch (err) {
-            console.error(err);
+            queryClient.invalidateQueries(['habits']);
         }
-    };
+    });
 
-    const handleToggleDate = async (id, date) => {
-        try {
+    const toggleMutation = useMutation({
+        mutationFn: async ({ id, date }) => {
             // Send standard YYYY-MM-DD string (Local Time)
             const offset = date.getTimezoneOffset();
             const localDate = new Date(date.getTime() - (offset * 60 * 1000));
             const dateStr = localDate.toISOString().split('T')[0];
+            return api.put(`/habits/${id}/toggle`, { date: dateStr });
+        },
+        onMutate: async ({ id, date }) => {
+            await queryClient.cancelQueries(['habits']);
+            const previousHabits = queryClient.getQueryData(['habits']);
 
-            await api.put(`/habits/${id}/toggle`, { date: dateStr });
-            fetchHabits();
-            const habit = habits.find(h => h._id === id);
-            const isDone = habit.completedDates.some(d => isSameDay(d, date));
-            if (!isDone && isSameDay(date, new Date())) {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            }
-        } catch (err) {
-            console.error(err);
-        }
+            queryClient.setQueryData(['habits'], old => old.map(h => {
+                if (h._id === id) {
+                    const isDone = h.completedDates.some(d => isSameDay(d, date));
+                    // Check logic for confetti (optimistic)
+                    if (!isDone && isSameDay(date, new Date())) {
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    }
+
+                    // Toggle date locally for instant UI
+                    let newDates = [...h.completedDates];
+                    if (isDone) {
+                        newDates = newDates.filter(d => !isSameDay(d, date));
+                    } else {
+                        newDates.push(date.toISOString());
+                    }
+
+                    // Simple streak update (approximate)
+                    let newStreak = h.streak;
+                    if (!isDone && isSameDay(date, new Date())) newStreak += 1; // Increment if doing today
+
+                    return { ...h, completedDates: newDates, streak: newStreak };
+                }
+                return h;
+            }));
+
+            return { previousHabits };
+        },
+        onError: (err, vars, context) => queryClient.setQueryData(['habits'], context.previousHabits),
+        onSettled: () => queryClient.invalidateQueries(['habits'])
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id) => api.delete(`/habits/${id}`),
+        onMutate: async (id) => {
+            await queryClient.cancelQueries(['habits']);
+            const previous = queryClient.getQueryData(['habits']);
+            queryClient.setQueryData(['habits'], old => old.filter(h => h._id !== id));
+            return { previous };
+        },
+        onError: (err, id, context) => queryClient.setQueryData(['habits'], context.previous),
+        onSettled: () => queryClient.invalidateQueries(['habits'])
+    });
+
+    const updateNameMutation = useMutation({
+        mutationFn: ({ id, name }) => api.put(`/habits/${id}`, { name }),
+        onSettled: () => queryClient.invalidateQueries(['habits'])
+    });
+
+    // Handlers
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+        const oldIndex = habits.findIndex(h => h._id === active.id);
+        const newIndex = habits.findIndex(h => h._id === over.id);
+        const newHabits = arrayMove(habits, oldIndex, newIndex);
+        reorderMutation.mutate(newHabits);
     };
 
-    const handleDelete = async (id) => {
+    const handleAdd = (e) => {
+        e.preventDefault();
+        if (!newHabit.trim()) return;
+        addMutation.mutate(newHabit);
+    };
+
+    const handleToggleDate = (id, date) => {
+        toggleMutation.mutate({ id, date });
+    };
+
+    const handleDelete = (id) => {
         if (!confirm('Delete this habit?')) return;
-        try {
-            await api.delete(`/habits/${id}`);
-            fetchHabits();
-        } catch (err) {
-            console.error(err);
-        }
+        deleteMutation.mutate(id);
     };
 
-    const handleUpdateName = async (id, newName) => {
-        try {
-            await api.put(`/habits/${id}`, { name: newName });
-            fetchHabits();
-        } catch (err) {
-            console.error(err);
-        }
+    const handleUpdateName = (id, newName) => {
+        updateNameMutation.mutate({ id, name: newName });
     };
 
     const getLast7Days = () => {
@@ -287,6 +324,9 @@ export default function HabitsPage() {
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10 relative">
+            <Helmet>
+                <title>Habit Tracker | Life OS</title>
+            </Helmet>
             {/* Header */}
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-4">
                 <div className="w-full md:w-auto">

@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/ChatPage';
+import FocusPage from './pages/FocusPage';
 
 import HabitsPage from './pages/HabitsPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -32,8 +33,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="chat" element={<ChatPage />} />
             <Route path="chat/:id" element={<ChatPage />} />
-
-
+            <Route path="focus" element={<FocusPage />} />
             <Route path="habits" element={<HabitsPage />} />
           </Route>
         </Routes>
