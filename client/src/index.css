@@ -4,11 +4,12 @@
 
 @layer base {
   :root {
-    /* Spotify Dark Theme */
-    --background: #121212;
-    --foreground: #FFFFFF;
-    --primary: #1DB954;
-    /* Spotify Green */
+    --background: #09090b;
+    /* Zinc 950 */
+    --foreground: #f4f4f5;
+    /* Zinc 100 */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(9, 9, 11, 0.6);
   }
 }
 
@@ -17,6 +18,21 @@ body {
   color: var(--foreground);
   @apply antialiased box-border;
   min-height: 100vh;
+  /* Subtle mesh gradient background */
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.08), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(147, 51, 234, 0.08), transparent 25%);
+}
+
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    @apply bg-zinc-900/60 backdrop-blur-xl border border-white/5 shadow-xl;
+  }
+
+  .glass-hover {
+    @apply hover:bg-zinc-800/60 hover:border-white/10 transition-all duration-300;
+  }
 }
 
 /* Hide Scrollbar but allow scroll */
@@ -36,15 +52,45 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }

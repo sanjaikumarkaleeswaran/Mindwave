@@ -37,13 +37,18 @@ export const AuthProvider = ({ children }) => {
         // Don't auto-login, wait for verification
     };
 
+    const updateProfile = async (data) => {
+        const res = await api.put('/auth/profile', data);
+        setUser(res.data);
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
             {children}
         </AuthContext.Provider>
     );

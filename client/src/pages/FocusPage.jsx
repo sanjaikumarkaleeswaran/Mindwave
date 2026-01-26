@@ -3,16 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { Play, Pause, RotateCcw, Music, CheckCircle, ChevronUp, ChevronDown, X, Edit, Save, Trash2 } from 'lucide-react';
 import api from '../lib/axios';
+import { useMusic } from '../context/MusicContext';
 
 // Default 25 minutes
 const DEFAULT_TIME = 25 * 60;
 
 const MUSIC_TRACKS = [
-    { id: "jfKfPfyJRdk", name: "Lofi Girl", description: "Beats to Relax/Study to" },
-    { id: "4xDzrJKXOOY", name: "Synthwave", description: "Chillwave / Retrowave" },
-    { id: "t_jHrUE5IOk", name: "Deep Focus", description: "Ambient Electronic" },
-    { id: "1ZPvfIZoJzw", name: "Rain Sounds", description: "Heavy Rain & Thunder" },
-    { id: "lTRiuFIWV54", name: "Classical", description: "Mozart for Brain Power" }
+    { id: "jfKfPfyJRdk", name: "Lofi Girl", description: "Beats to Relax/Study to", thumbnail: "https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
+    { id: "4xDzrJKXOOY", name: "Synthwave", description: "Chillwave / Retrowave", thumbnail: "https://img.youtube.com/vi/4xDzrJKXOOY/hqdefault.jpg" },
+    { id: "t_jHrUE5IOk", name: "Deep Focus", description: "Ambient Electronic", thumbnail: "https://img.youtube.com/vi/t_jHrUE5IOk/hqdefault.jpg" },
+    { id: "1ZPvfIZoJzw", name: "Rain Sounds", description: "Heavy Rain & Thunder", thumbnail: "https://img.youtube.com/vi/1ZPvfIZoJzw/hqdefault.jpg" },
+    { id: "lTRiuFIWV54", name: "Classical", description: "Mozart for Brain Power", thumbnail: "https://img.youtube.com/vi/lTRiuFIWV54/hqdefault.jpg" }
 ];
 
 function EditTimerModal({ onSave, onCancel, initialSeconds }) {
@@ -111,13 +112,20 @@ function EditTimerModal({ onSave, onCancel, initialSeconds }) {
 }
 
 export default function FocusPage() {
-    const [initialTime, setInitialTime] = useState(DEFAULT_TIME); // Store the goal time
+    const { playTrack, togglePlay, isPlaying, closePlayer, currentTrack: globalTrack } = useMusic();
+    const [initialTime, setInitialTime] = useState(DEFAULT_TIME);
     const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME);
     const [isActive, setIsActive] = useState(false);
     const [selectedHabitId, setSelectedHabitId] = useState('');
-    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-    const [selectedTrackId, setSelectedTrackId] = useState(MUSIC_TRACKS[0].id);
     const [showEditModal, setShowEditModal] = useState(false);
+
+    // Local state to track which "Station" is selected in the UI
+    // If the global player is playing one of our tracks, sync it.
+    const [selectedStationId, setSelectedStationId] = useState(MUSIC_TRACKS[0].id);
+    const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
+
+    // Determines if "our" music is playing relative to the Global Player
+    const isFocusMusicPlaying = isPlaying && globalTrack && MUSIC_TRACKS.some(t => t.id === globalTrack.id);
 
     // Fetch habits for selection
     const { data: habits = [] } = useQuery({
@@ -137,13 +145,16 @@ export default function FocusPage() {
             }, 1000);
         } else if (timeLeft === 0) {
             setIsActive(false);
-            setIsMusicPlaying(false); // Stop music when done
+            if (isFocusMusicPlaying) {
+                // Optional: Pause music when timer ends
+                // togglePlay(); 
+            }
             if (Notification.permission === 'granted') {
                 new Notification("Focus Session Complete!");
             }
         }
         return () => clearInterval(interval);
-    }, [isActive, timeLeft]);
+    }, [isActive, timeLeft, isFocusMusicPlaying]);
 
     const toggleTimer = () => setIsActive(!isActive);
 
@@ -156,6 +167,26 @@ export default function FocusPage() {
         setInitialTime(newSeconds);
         setTimeLeft(newSeconds);
         setShowEditModal(false);
+    };
+
+    const handleStationSelect = (track) => {
+        setSelectedStationId(track.id);
+        playTrack({
+            id: track.id,
+            title: track.name,
+            artist: "Focus Radio",
+            thumbnail: track.thumbnail
+        });
+    };
+
+    const toggleMusic = () => {
+        if (isFocusMusicPlaying) {
+            togglePlay(); // Pause
+        } else {
+            // Play currently selected station
+            const track = MUSIC_TRACKS.find(t => t.id === selectedStationId);
+            handleStationSelect(track);
+        }
     };
 
     const formatTime = (seconds) => {
@@ -173,8 +204,6 @@ export default function FocusPage() {
     const progress = initialTime > 0 ? ((initialTime - timeLeft) / initialTime) * 100 : 0;
     const strokeDasharray = 2 * Math.PI * 120;
     const strokeDashoffset = strokeDasharray - (progress / 100) * strokeDasharray;
-
-    const currentTrack = MUSIC_TRACKS.find(t => t.id === selectedTrackId);
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -274,47 +303,57 @@ export default function FocusPage() {
                     </button>
                 </div>
 
-                {/* Music Controls */}
+                {/* Music Controls (Integrated with Global Player) */}
                 <div className="w-full space-y-4">
-                    <div className={`flex items-center gap-4 px-6 py-3 rounded-xl border transition-all ${isMusicPlaying
+                    <div className={`flex items-center gap-4 px-6 py-3 rounded-xl border transition-all ${isFocusMusicPlaying
                         ? 'bg-indigo-900/20 border-indigo-500/50'
                         : 'bg-zinc-900/30 border-zinc-800'
                         }`}>
                         <div className="p-2 rounded-full bg-zinc-800">
-                            <Music className={`w-5 h-5 ${isMusicPlaying ? 'text-indigo-400 animate-pulse' : 'text-zinc-500'}`} />
+                            <Music className={`w-5 h-5 ${isFocusMusicPlaying ? 'text-indigo-400 animate-pulse' : 'text-zinc-500'}`} />
                         </div>
                         <div className="flex-1">
                             <div className="text-sm font-medium text-white">Focus Background</div>
-                            <div className="text-xs text-zinc-500">{isMusicPlaying ? currentTrack.name : 'Off'}</div>
+                            <div className="text-xs text-zinc-500">
+                                {isFocusMusicPlaying ? (globalTrack?.title || "Playing") : 'Off'}
+                            </div>
                         </div>
                         <button
-                            onClick={() => setIsMusicPlaying(!isMusicPlaying)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isMusicPlaying ? 'bg-indigo-500' : 'bg-zinc-700'
+                            onClick={() => setIsStationMenuOpen(!isStationMenuOpen)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors mr-2 ${isStationMenuOpen ? 'bg-indigo-500/50' : 'bg-zinc-700/50'}`}
+                            title="Show Stations"
+                        >
+                            <ChevronDown className={`w-4 h-4 text-white transform transition-transform ${isStationMenuOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <button
+                            onClick={toggleMusic}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isFocusMusicPlaying ? 'bg-indigo-500' : 'bg-zinc-700'
                                 }`}
                         >
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isMusicPlaying ? 'translate-x-6' : 'translate-x-1'
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isFocusMusicPlaying ? 'translate-x-6' : 'translate-x-1'
                                 }`} />
                         </button>
                     </div>
 
-                    {isMusicPlaying && (
+                    {isStationMenuOpen && (
                         <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-2">
                             <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-2">Select Station</div>
                             <div className="grid grid-cols-1 gap-2">
                                 {MUSIC_TRACKS.map(track => (
                                     <button
                                         key={track.id}
-                                        onClick={() => setSelectedTrackId(track.id)}
-                                        className={`flex items-center justify-between p-3 rounded-lg text-left transition-all ${selectedTrackId === track.id
-                                                ? 'bg-indigo-500/10 border border-indigo-500/30 text-indigo-300'
-                                                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white'
+                                        onClick={() => handleStationSelect(track)}
+                                        className={`flex items-center justify-between p-3 rounded-lg text-left transition-all ${selectedStationId === track.id
+                                            ? 'bg-indigo-500/10 border border-indigo-500/30 text-indigo-300'
+                                            : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white'
                                             }`}
                                     >
                                         <div>
                                             <div className="font-medium text-sm">{track.name}</div>
                                             <div className="text-[10px] opacity-70">{track.description}</div>
                                         </div>
-                                        {selectedTrackId === track.id && (
+                                        {selectedStationId === track.id && isFocusMusicPlaying && (
                                             <div className="flex space-x-1">
                                                 <span className="w-1 h-3 bg-indigo-500 animate-pulse"></span>
                                                 <span className="w-1 h-3 bg-indigo-500 animate-pulse delay-75"></span>
@@ -327,19 +366,6 @@ export default function FocusPage() {
                         </div>
                     )}
                 </div>
-
-                {/* Hidden Youtube Embed for Audio */}
-                {isMusicPlaying && (
-                    <div className="hidden">
-                        <iframe
-                            width="560"
-                            height="315"
-                            src={`https://www.youtube.com/embed/${selectedTrackId}?autoplay=1&controls=0&loop=1&playlist=${selectedTrackId}`}
-                            title="Focus Music"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        ></iframe>
-                    </div>
-                )}
             </div>
         </div>
     );
