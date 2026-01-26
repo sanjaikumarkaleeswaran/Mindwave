@@ -188,13 +188,20 @@ export default function ChatPage() {
                     </div>
 
                     <form onSubmit={handleSend} className="w-full max-w-lg relative">
-                        <input
+                        <textarea
                             autoFocus
-                            type="text"
+                            rows={1}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend(e);
+                                }
+                            }}
                             placeholder="Message Life OS..."
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-5 py-4 pr-12 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
+                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner resize-none min-h-[56px] custom-scrollbar"
+                            style={{ maxHeight: '200px' }}
                         />
                         <button
                             type="submit"
@@ -264,18 +271,25 @@ export default function ChatPage() {
 
                     <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800">
                         <div className="relative max-w-5xl mx-auto">
-                            <input
+                            <textarea
                                 autoFocus
-                                type="text"
+                                rows={1}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSend(e);
+                                    }
+                                }}
                                 placeholder="Message Life OS..."
-                                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-4 pr-14 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 pr-14 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                style={{ maxHeight: '200px' }}
                             />
                             <button
                                 type="submit"
                                 disabled={sendMutation.isPending || !input.trim()}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                                className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
                             >
                                 <Send className="w-5 h-5" />
                             </button>

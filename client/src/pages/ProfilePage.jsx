@@ -32,16 +32,18 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8">
+        <div className="p-6 md:p-12 max-w-6xl mx-auto space-y-10">
             <Helmet>
                 <title>Profile | Life OS</title>
             </Helmet>
 
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                Account Settings
-            </h1>
+            <header className="flex items-center justify-between pb-6 border-b border-white/5">
+                <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                    Account Settings
+                </h1>
+            </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Profile Card */}
                 <div className="md:col-span-1">
                     <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 shadow-xl">

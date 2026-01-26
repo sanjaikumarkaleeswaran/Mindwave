@@ -182,9 +182,9 @@ export default function Sidebar({ isOpen, onClose }) {
 
                     <button
                         onClick={logout}
-                        className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium group"
+                        className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors text-sm font-medium group"
                     >
-                        <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <LogOut className="w-5 h-5 group-hover:text-red-400 transition-colors" />
                         Sign Out
                     </button>
                 </div>

@@ -148,65 +148,62 @@ router.post('/send', auth, async (req, res) => {
 
         // 5. Tool Parsing & Execution (Backend Side)
         try {
-            // Attempt to parse JSON actions
-            const jsonMatch = aiResponseContent.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                const actionData = JSON.parse(jsonMatch[0]);
+            // Updated Regex to find ALL JSON objects in the string
+            // This regex tries to match separate JSON objects
+            const jsonMatches = aiResponseContent.match(/\{"action":\s*"[^"]+".*?\}/g);
 
-                if (actionData.action === 'CREATE_HABIT') {
-                    const newHabit = new Habit({
-                        userId: req.user.id,
-                        name: actionData.name,
-                        frequency: actionData.frequency || 'daily',
-                        streak: 0,
-                        completedDates: []
-                    });
-                    await newHabit.save();
-                    aiResponseContent = `I've added the habit "${actionData.name}" to your tracker!`;
-                    toolExecuted = true;
-                }
-                else if (actionData.action === 'DELETE_HABIT') {
-                    if (actionData.habitId) {
-                        const deleted = await Habit.findOneAndDelete({ _id: actionData.habitId, userId: req.user.id });
-                        if (deleted) {
-                            aiResponseContent = `I've removed "${deleted.name}" from your habits.`;
-                        } else {
-                            aiResponseContent = `I couldn't find that habit to delete.`;
+            if (jsonMatches && jsonMatches.length > 0) {
+                let successCount = 0;
+
+                for (const jsonStr of jsonMatches) {
+                    try {
+                        const actionData = JSON.parse(jsonStr);
+
+                        if (actionData.action === 'CREATE_HABIT') {
+                            const newHabit = new Habit({
+                                userId: req.user.id,
+                                name: actionData.name,
+                                frequency: actionData.frequency || 'daily',
+                                streak: 0,
+                                completedDates: []
+                            });
+                            await newHabit.save();
+                            successCount++;
                         }
-                    } else {
-                        // Fallback if AI didn't pick an ID (ambiguous)
-                        aiResponseContent = "I couldn't identify strictly which habit to delete. Please specify the exact name.";
-                    }
-                    toolExecuted = true;
-                }
-                else if (actionData.action === 'MARK_HABIT_COMPLETE') {
-                    if (actionData.habitId) {
-                        const habit = await Habit.findOne({ _id: actionData.habitId, userId: req.user.id });
-                        if (habit) {
-                            // Check if already done today
-                            const today = new Date().setHours(0, 0, 0, 0);
-                            const alreadyDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === today);
-
-                            if (alreadyDone) {
-                                aiResponseContent = `You've already completed "${habit.name}" today! Keep it up.`;
-                            } else {
-                                habit.completedDates.push(new Date());
-                                habit.streak += 1;
-                                await habit.save();
-                                aiResponseContent = `Great job! I've marked "${habit.name}" as complete. (Streak: ${habit.streak})`;
+                        else if (actionData.action === 'DELETE_HABIT') {
+                            if (actionData.habitId) {
+                                await Habit.findOneAndDelete({ _id: actionData.habitId, userId: req.user.id });
+                                successCount++;
                             }
-                        } else {
-                            aiResponseContent = "I couldn't find that habit.";
                         }
-                    } else {
-                        aiResponseContent = "Which habit did you complete? I wasn't sure.";
+                        else if (actionData.action === 'MARK_HABIT_COMPLETE') {
+                            if (actionData.habitId) {
+                                const habit = await Habit.findOne({ _id: actionData.habitId, userId: req.user.id });
+                                if (habit) {
+                                    const today = new Date().setHours(0, 0, 0, 0);
+                                    const alreadyDone = habit.completedDates.some(d => new Date(d).setHours(0, 0, 0, 0) === today);
+
+                                    if (!alreadyDone) {
+                                        habit.completedDates.push(new Date());
+                                        habit.streak += 1;
+                                        await habit.save();
+                                        successCount++;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (innerErr) {
+                        // ignore formatting errors for individual partial matches
                     }
+                }
+
+                if (successCount > 0) {
+                    aiResponseContent = `I've successfully processed ${successCount} action(s) for you!`;
                     toolExecuted = true;
                 }
             }
         } catch (e) {
             console.error("Tool Execution Failed", e);
-            // Fallback: just send the raw text if it wasn't valid JSON or something failed
         }
 
         // 6. Save AI Response
