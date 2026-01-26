@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import api from '../lib/axios';
@@ -140,6 +140,11 @@ export default function HabitsPage() {
             setIsAnalyzing(false);
         }
     };
+
+    // DEBUG: Ensure currentDate is active
+    useEffect(() => {
+        console.log("Habits Page Mounted. Current Date:", currentDate);
+    }, [currentDate]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
