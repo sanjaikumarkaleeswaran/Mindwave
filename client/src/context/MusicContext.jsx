@@ -7,6 +7,7 @@ export function MusicProvider({ children }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [volume, setVolume] = useState(0.5);
+    const [showPlayerUI, setShowPlayerUI] = useState(true);
 
     // Basic Queue Implementation
     const [queue, setQueue] = useState([]);
@@ -38,7 +39,9 @@ export function MusicProvider({ children }) {
             setIsMinimized,
             setVolume,
             closePlayer,
-            setIsPlaying // exposed for internal player use
+            setIsPlaying, // exposed for internal player use
+            showPlayerUI,
+            setShowPlayerUI
         }}>
             {children}
         </MusicContext.Provider>

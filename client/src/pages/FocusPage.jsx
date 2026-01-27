@@ -112,7 +112,7 @@ function EditTimerModal({ onSave, onCancel, initialSeconds }) {
 }
 
 export default function FocusPage() {
-    const { playTrack, togglePlay, isPlaying, closePlayer, currentTrack: globalTrack } = useMusic();
+    const { playTrack, togglePlay, isPlaying, closePlayer, currentTrack: globalTrack, setShowPlayerUI, volume, setVolume } = useMusic();
     const [initialTime, setInitialTime] = useState(DEFAULT_TIME);
     const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME);
     const [isActive, setIsActive] = useState(false);
@@ -135,6 +135,13 @@ export default function FocusPage() {
             return res.data;
         }
     });
+
+
+    // Hide global player UI when on Focus Page
+    useEffect(() => {
+        setShowPlayerUI(false);
+        return () => setShowPlayerUI(true);
+    }, [setShowPlayerUI]);
 
     // Timer logic
     useEffect(() => {
@@ -294,6 +301,7 @@ export default function FocusPage() {
                         {isActive ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
                     </button>
 
+
                     <button
                         onClick={resetTimer}
                         className="p-4 rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all"
@@ -302,6 +310,21 @@ export default function FocusPage() {
                         <RotateCcw className="w-6 h-6" />
                     </button>
                 </div>
+
+                {isFocusMusicPlaying && (
+                    <div className="w-full max-w-[200px] flex items-center gap-2">
+                        <div className="text-xs text-zinc-500 font-medium">VOL</div>
+                        <input
+                            type="range"
+                            min={0}
+                            max={1}
+                            step="0.05"
+                            value={volume}
+                            onChange={(e) => setVolume(parseFloat(e.target.value))}
+                            className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:rounded-full hover:[&::-webkit-slider-thumb]:bg-indigo-400"
+                        />
+                    </div>
+                )}
 
                 {/* Music Controls (Integrated with Global Player) */}
                 <div className="w-full space-y-4">
@@ -367,6 +390,6 @@ export default function FocusPage() {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
