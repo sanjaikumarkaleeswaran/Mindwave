@@ -25,13 +25,22 @@ body {
 }
 
 /* Glassmorphism Utilities */
+/* Glassmorphism Utilities */
 @layer utilities {
   .glass {
-    @apply bg-zinc-900/60 backdrop-blur-xl border border-white/5 shadow-xl;
+    @apply bg-zinc-900/40 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
 
-  .glass-hover {
-    @apply hover:bg-zinc-800/60 hover:border-white/10 transition-all duration-300;
+  .glass-card {
+    @apply bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-3xl shadow-lg hover:bg-zinc-900/60 hover:border-indigo-500/30 transition-all duration-300;
+  }
+
+  .glass-panel {
+    @apply bg-zinc-950/80 backdrop-blur-2xl border-r border-white/5;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400;
   }
 }
 

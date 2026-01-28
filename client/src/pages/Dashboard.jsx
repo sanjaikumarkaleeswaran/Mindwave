@@ -81,7 +81,8 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {/* 1. Quick Chat / AI Card */}
-                <Link to="/chat" className="group relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 hover:bg-zinc-900/60 hover:border-indigo-500/50 transition-all duration-300 overflow-hidden">
+                {/* 1. Quick Chat / AI Card */}
+                <Link to="/chat" className="group relative glass-card p-6 overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Sparkles className="w-24 h-24 text-indigo-500" />
                     </div>
@@ -114,7 +115,8 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="group relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 hover:bg-zinc-900/60 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
+                {/* 2. Focus Mode Card */}
+                <Link to="/focus" className="group relative glass-card p-6 overflow-hidden">
                     <div className="absolute -bottom-8 -right-8 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Zap className="w-40 h-40 text-purple-500" />
                     </div>
@@ -139,7 +141,8 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="group relative bg-zinc-900/40 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 hover:bg-zinc-900/60 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
+                {/* 3. Habits Status Card */}
+                <Link to="/habits" className="group relative glass-card p-6 overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Activity className="w-24 h-24 text-green-500" />
                     </div>

@@ -5,6 +5,11 @@ const ChatHistory = require('../models/ChatHistory');
 const Conversation = require('../models/Conversation');
 const Habit = require('../models/Habit');
 const Groq = require('groq-sdk');
+const multer = require('multer');
+const fs = require('fs');
+const pdf = require('pdf-parse');
+
+const upload = multer({ dest: 'uploads/' });
 
 // @route   GET api/chat/conversations
 // @desc    Get all conversations
@@ -68,34 +73,59 @@ router.get('/:conversationId', auth, async (req, res) => {
 
 // @route   POST api/chat/send
 // @desc    Send message to AI
-router.post('/send', auth, async (req, res) => {
+// @route   POST api/chat/send
+// @desc    Send message to AI with optional file
+router.post('/send', auth, upload.single('file'), async (req, res) => {
     // Expect conversationId. If not provided, we could error or auto-create (but frontend should handle creation)
-    const { message, conversationId } = req.body;
+    const { message, conversationId, model } = req.body;
+    const file = req.file;
 
     if (!conversationId) {
+        if (file) fs.unlinkSync(file.path); // cleanup
         return res.status(400).json({ msg: 'Conversation ID required' });
     }
 
     if (!process.env.GROQ_API_KEY) {
+        if (file) fs.unlinkSync(file.path);
         console.error("GROQ_API_KEY is missing in .env");
         return res.status(500).json({ msg: "Server Configuration Error: Missing AI API Key" });
     }
 
     try {
-        // 1. Save User Message
+        let fileContent = "";
+
+        // 1. Process File if exists
+        if (file) {
+            if (file.mimetype === 'application/pdf') {
+                const dataBuffer = fs.readFileSync(file.path);
+                const data = await pdf(dataBuffer);
+                fileContent = `[USER UPLOADED FILE CONTENT]:\n${data.text.substring(0, 20000)}\n[END OF FILE]\n\n`; // Limit text size
+            } else if (file.mimetype.startsWith('text/') || file.mimetype === 'application/json' || file.mimetype === 'application/javascript') {
+                fileContent = `[USER UPLOADED FILE CONTENT]:\n${fs.readFileSync(file.path, 'utf-8').substring(0, 20000)}\n[END OF FILE]\n\n`;
+            }
+            // Cleanup temp file
+            fs.unlinkSync(file.path);
+        }
+
+        // 2. Save User Message
+        // We include file content in the DB message so context persists
+        // Ideally we'd store a reference, but for simple text RAG this works
+        // We'll show just the "message" user typed in UI, but send "message + file" to AI
+        const displayContent = message + (file ? `\n\n[Attached: ${file.originalname}]` : "");
+        const llmContent = fileContent + message;
+
         const userMsg = new ChatHistory({
             userId: req.user.id,
             conversationId,
             role: 'user',
-            content: message
+            content: displayContent // Save what user sees/typed
         });
         await userMsg.save();
 
         // 1b. Update Conversation Title if it's the first message? 
-        // Simple logic: if message is short, use it as title. optional.
         const msgCount = await ChatHistory.countDocuments({ conversationId });
         if (msgCount <= 1) {
-            const title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+            const title = message.substring(0, 30) + (message.length > 30 ? '...' : '') || (file ? `File: ${file.originalname}` : 'New Chat');
             await Conversation.findByIdAndUpdate(conversationId, { title });
         }
 
@@ -130,7 +160,7 @@ router.post('/send', auth, async (req, res) => {
         const apiMessages = [
             { role: "system", content: systemPrompt },
             ...recentHistory.reverse().map(m => ({ role: m.role, content: m.content })),
-            { role: "user", content: message }
+            { role: "user", content: llmContent }
         ];
 
         // Use model from request or default

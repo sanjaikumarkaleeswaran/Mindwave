@@ -78,7 +78,7 @@ export default function Sidebar({ isOpen, onClose }) {
             )}
 
             <aside className={clsx(
-                "w-64 bg-zinc-950/90 backdrop-blur-xl border-r border-white/5 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out",
+                "w-64 glass-panel flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out",
                 isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
             )}>
                 {/* Brand */}
