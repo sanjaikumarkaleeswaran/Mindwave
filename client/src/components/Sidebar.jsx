@@ -4,11 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import clsx from 'clsx';
-import { useMusic } from '../context/MusicContext';
+
 
 export default function Sidebar({ isOpen, onClose }) {
     const { logout, user } = useAuth();
-    const { isPlaying, currentTrack } = useMusic();
     const location = useLocation();
     const navigate = useNavigate();
     const isChat = location.pathname.startsWith('/chat');
@@ -189,8 +188,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     </button>
                 </div>
 
-                {/* Spacer for Music Player if Active */}
-                {currentTrack && <div className="h-20 shrink-0"></div>}
+
             </aside>
         </>
     );
