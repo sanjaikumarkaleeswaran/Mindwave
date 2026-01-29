@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 
 import { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Layout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,7 +31,18 @@ export default function Layout() {
                 </header>
 
                 <main className="flex-1">
-                    <Outlet />
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={location.pathname}
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="h-full"
+                        >
+                            <Outlet />
+                        </motion.div>
+                    </AnimatePresence>
                 </main>
             </div>
 
