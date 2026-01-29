@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Helmet } from 'react-helmet-async';
-import { User, Mail, Shield, Save, Camera, LogOut } from 'lucide-react';
-import api from '../lib/axios';
+import { User, Mail, Shield, Save, Camera, LogOut, Loader2 } from 'lucide-react';
 
 export default function ProfilePage() {
-    const { user, login, logout, updateProfile } = useAuth();
-    // Initialize form with safe defaults to avoid controlled/uncontrolled errors
+    const { user, logout, updateProfile, uploadAvatar } = useAuth();
+    const fileInputRef = useRef(null);
+
+    // Initialize form with safe defaults
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
         avatar: user?.avatar || ''
     });
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     const handleUpdateProfile = async (e) => {
@@ -21,13 +23,36 @@ export default function ProfilePage() {
         setMessage({ type: '', text: '' });
 
         try {
-            await updateProfile(formData);
+            await updateProfile({ name: formData.name });
             setMessage({ type: 'success', text: 'Profile updated successfully' });
         } catch (err) {
             console.error(err);
             setMessage({ type: 'error', text: err.response?.data?.msg || 'Failed to update profile' });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setMessage({ type: '', text: '' });
+
+        try {
+            const newAvatarUrl = await uploadAvatar(file);
+            setFormData(prev => ({ ...prev, avatar: newAvatarUrl }));
+            setMessage({ type: 'success', text: 'Avatar uploaded successfully' });
+        } catch (err) {
+            console.error(err);
+            setMessage({ type: 'error', text: 'Failed to upload avatar' });
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -47,8 +72,13 @@ export default function ProfilePage() {
                 {/* Profile Card */}
                 <div className="md:col-span-1">
                     <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center space-y-4 shadow-xl">
-                        <div className="relative group">
-                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-800 group-hover:border-indigo-500 transition-colors">
+                        <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-800 group-hover:border-indigo-500 transition-colors relative">
+                                {uploading ? (
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                    </div>
+                                ) : null}
                                 {formData.avatar ? (
                                     <img src={formData.avatar} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -57,9 +87,19 @@ export default function ProfilePage() {
                                     </div>
                                 )}
                             </div>
-                            <button className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-500 transition-colors shadow-lg">
+                            <button
+                                type="button"
+                                className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-500 transition-colors shadow-lg z-20"
+                            >
                                 <Camera className="w-4 h-4" />
                             </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
                         </div>
 
                         <div>
@@ -125,21 +165,6 @@ export default function ProfilePage() {
                                             value={formData.email}
                                             disabled
                                             className="w-full bg-zinc-950/30 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-zinc-500 cursor-not-allowed"
-                                        />
-                                    </div>
-                                    <p className="text-xs text-zinc-500">Email cannot be changed securely yet.</p>
-                                </div>
-
-                                <div className="space-y-2 md:col-span-2">
-                                    <label className="text-sm font-medium text-zinc-400">Avatar URL</label>
-                                    <div className="relative">
-                                        <Camera className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                                        <input
-                                            type="text"
-                                            value={formData.avatar}
-                                            onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                                            placeholder="https://example.com/avatar.jpg"
                                         />
                                     </div>
                                 </div>

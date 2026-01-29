@@ -164,6 +164,31 @@ router.put('/profile', auth, async (req, res) => {
     }
 });
 
+// @route   POST api/auth/upload-avatar
+// @desc    Upload user avatar
+// @access  Private
+const upload = require('../middleware/upload.middleware');
+router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ msg: 'No file uploaded' });
+        }
+
+        // Construct URL (assuming server is on same domain/port for now or relative path)
+        // In production, you might want a full URL or handle this on the client
+        const avatarUrl = `http://localhost:${process.env.PORT || 5000}/${req.file.path.replace(/\\/g, "/")}`;
+
+        const user = await User.findById(req.user.id);
+        user.avatar = avatarUrl;
+        await user.save();
+
+        res.json({ avatar: avatarUrl });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send(err.message);
+    }
+});
+
 // @route   PUT api/auth/verify-email/:token
 // @desc    Verify Email
 // @access  Public

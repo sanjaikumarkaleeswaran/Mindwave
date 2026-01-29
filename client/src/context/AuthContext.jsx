@@ -42,13 +42,27 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data);
     };
 
+    const uploadAvatar = async (file) => {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const res = await api.post('/auth/upload-avatar', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        // Update user state with new avatar from server response, preserving other fields if needed, 
+        // though the server typically ensures the user object is returned or we just patch it.
+        // Our server returns { avatar: url }, so we need to merge it or re-fetch.
+        // Let's re-fetch to be safe or patch if we trust the current state.
+        setUser(prev => ({ ...prev, avatar: res.data.avatar }));
+        return res.data.avatar;
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, uploadAvatar }}>
             {children}
         </AuthContext.Provider>
     );
