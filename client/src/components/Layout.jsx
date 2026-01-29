@@ -18,7 +18,7 @@ export default function Layout() {
         <div className="flex bg-black min-h-screen text-white">
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-            <div className="flex-1 flex flex-col min-h-screen md:ml-64 transition-all duration-300">
+            <div className="flex-1 flex flex-col min-h-screen md:ml-64 transition-all duration-300 relative">
                 {/* Mobile Header */}
                 <header className="md:hidden flex items-center p-4 bg-zinc-950 border-b border-zinc-900 sticky top-0 z-30">
                     <button
@@ -30,7 +30,7 @@ export default function Layout() {
                     <span className="ml-3 font-semibold text-lg bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">Life OS</span>
                 </header>
 
-                <main className="flex-1">
+                <main className="flex-1 pb-24">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={location.pathname}

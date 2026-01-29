@@ -22,7 +22,6 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -42,7 +41,6 @@ function App() {
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Routes>
-
       </AuthProvider>
     </BrowserRouter>
   );
