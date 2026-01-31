@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import CustomCursor from './components/CustomCursor';
 
 
 import RequireAuth from './components/RequireAuth';
@@ -21,6 +22,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 function App() {
   return (
     <BrowserRouter>
+      <CustomCursor />
       <AuthProvider>
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
