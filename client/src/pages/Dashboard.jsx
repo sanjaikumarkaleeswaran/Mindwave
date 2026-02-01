@@ -56,6 +56,29 @@ export default function Dashboard() {
     ).length;
     const progress = habits.length > 0 ? (completedToday / habits.length) * 100 : 0;
 
+    // Calculate Last 7 Days Data for Chart
+    const chartData = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i)); // Order: -6, -5, ... 0 (Today)
+        return d;
+    }).map(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+        if (habits.length === 0) return { day: dayLabel, fullDate: dateStr, value: 0 };
+
+        // Check completion for this specific date (robust check against ISO strings in DB)
+        const completedCount = habits.filter(h =>
+            h.completedDates.some(cd => new Date(cd).toISOString().split('T')[0] === dateStr)
+        ).length;
+
+        return {
+            day: dayLabel,
+            fullDate: dateStr,
+            value: Math.round((completedCount / habits.length) * 100)
+        };
+    });
+
     return (
         <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
             <Helmet>
@@ -184,8 +207,47 @@ export default function Dashboard() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
-                {/* Potentially a large chart or "Week at a glance" here later */}
+            {/* Weekly Activity Chart */}
+            <div className="glass-card p-6 md:p-8">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                            <Activity className="w-5 h-5 text-indigo-400" />
+                            Weekly Activity
+                        </h3>
+                        <p className="text-zinc-500 text-sm mt-1">Consistency over the last 7 days</p>
+                    </div>
+                </div>
+
+                <div className="h-64 flex items-end justify-between gap-2 md:gap-4">
+                    {chartData.map((data, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-3">
+                            <div className="w-full relative group h-full flex items-end">
+                                {/* Background Bar */}
+                                <div className="absolute inset-0 bg-zinc-800/30 rounded-t-lg"></div>
+
+                                {/* Fill Bar */}
+                                <div
+                                    className="w-full relative overflow-hidden transition-all duration-1000 ease-out rounded-t-lg group-hover:brightness-110"
+                                    style={{ height: `${Math.max(data.value, 4)}%` }} // Min height for visibility
+                                >
+                                    <div className={`absolute inset-0 bg-gradient-to-t ${data.value >= 80 ? 'from-green-600 to-emerald-500' :
+                                            data.value >= 50 ? 'from-indigo-600 to-purple-500' :
+                                                'from-zinc-700 to-zinc-600'
+                                        } opacity-90`}></div>
+                                </div>
+
+                                {/* Tooltip */}
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-zinc-900 border border-zinc-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none shadow-xl font-mono">
+                                    {data.value}%
+                                </div>
+                            </div>
+                            <span className={`text-xs font-medium uppercase ${data.fullDate === todayStr ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>
+                                {data.day}
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
