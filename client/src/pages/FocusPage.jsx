@@ -2,11 +2,20 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { Play, Pause, RotateCcw, CheckCircle, ChevronUp, ChevronDown, X, Edit, Save, Trash2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, CheckCircle, ChevronUp, ChevronDown, X, Edit, Save, Trash2, Volume2, VolumeX, Music } from 'lucide-react';
 import api from '../lib/axios';
+import ReactPlayer from 'react-player';
 
 // Default 25 minutes
 const DEFAULT_TIME = 25 * 60;
+
+const FOCUS_SOUNDS = [
+    { id: 'none', name: 'Silent', url: null },
+    { id: 'lofi', name: 'Lofi Girl', url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' },
+    { id: 'rain', name: 'Ambient Rain', url: 'https://www.youtube.com/watch?v=mPZkdNFkNps' },
+    { id: 'piano', name: 'Peaceful Piano', url: 'https://www.youtube.com/watch?v=lCOF9LN_Zxs' },
+    { id: 'synth', name: 'Synthwave', url: 'https://www.youtube.com/watch?v=4xDzrJKXOOY' }
+];
 
 function EditTimerModal({ onSave, onCancel, initialSeconds }) {
     // Convert total seconds to H/M/S
@@ -110,6 +119,12 @@ export default function FocusPage() {
     const [selectedHabitId, setSelectedHabitId] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
 
+    // Audio State
+    const [selectedSound, setSelectedSound] = useState('lofi');
+    const [isMuted, setIsMuted] = useState(false);
+    const [volume, setVolume] = useState(0.5);
+    const [isPlayingSound, setIsPlayingSound] = useState(false);
+
     // Fetch habits for selection
     const { data: habits = [] } = useQuery({
         queryKey: ['habits'],
@@ -134,6 +149,15 @@ export default function FocusPage() {
         }
         return () => clearInterval(interval);
     }, [isActive, timeLeft]);
+
+    // Sync Audio with Timer
+    useEffect(() => {
+        if (isActive && selectedSound !== 'none') {
+            setIsPlayingSound(true);
+        } else {
+            setIsPlayingSound(false);
+        }
+    }, [isActive, selectedSound]);
 
     const toggleTimer = () => setIsActive(!isActive);
 
@@ -164,11 +188,28 @@ export default function FocusPage() {
     const strokeDasharray = 2 * Math.PI * 120;
     const strokeDashoffset = strokeDasharray - (progress / 100) * strokeDasharray;
 
+    const currentSoundUrl = FOCUS_SOUNDS.find(s => s.id === selectedSound)?.url;
+
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
             <Helmet>
                 <title>Focus Mode | Life OS</title>
             </Helmet>
+
+            {/* Hidden Player */}
+            {currentSoundUrl && (
+                <div className="hidden">
+                    <ReactPlayer
+                        url={currentSoundUrl}
+                        playing={isPlayingSound}
+                        volume={volume}
+                        muted={isMuted}
+                        loop={true}
+                        width="0"
+                        height="0"
+                    />
+                </div>
+            )}
 
             {/* Modal */}
             {showEditModal && (
@@ -206,6 +247,44 @@ export default function FocusPage() {
                             <option key={h._id} value={h._id}>{h.name}</option>
                         ))}
                     </select>
+                </div>
+
+                {/* Sound Selector Compact */}
+                <div className="w-full flex items-center gap-3 bg-zinc-900/30 border border-zinc-800 rounded-xl p-3">
+                    <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
+                        <Music className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                        <select
+                            value={selectedSound}
+                            onChange={(e) => setSelectedSound(e.target.value)}
+                            className="w-full bg-transparent text-sm text-zinc-300 focus:outline-none border-none cursor-pointer"
+                        >
+                            {FOCUS_SOUNDS.map(s => (
+                                <option key={s.id} value={s.id} className="bg-zinc-900">{s.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="flex items-center gap-2 border-l border-white/5 pl-3">
+                        <button
+                            onClick={() => setIsMuted(!isMuted)}
+                            className="text-zinc-400 hover:text-white transition-colors"
+                        >
+                            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                        </button>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={isMuted ? 0 : volume}
+                            onChange={(e) => {
+                                setVolume(parseFloat(e.target.value));
+                                setIsMuted(false);
+                            }}
+                            className="w-20 accent-indigo-500 h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                    </div>
                 </div>
 
                 {/* Timer Display */}
