@@ -37,3 +37,22 @@ client/.eslintcache
 
 # OS
 Thumbs.db
+
+# Flutter Mobile App
+mindwave_mobile/.dart_tool/
+mindwave_mobile/.flutter-plugins
+mindwave_mobile/.flutter-plugins-dependencies
+mindwave_mobile/.packages
+mindwave_mobile/.pub-cache/
+mindwave_mobile/.pub/
+mindwave_mobile/build/
+mindwave_mobile/android/.gradle/
+mindwave_mobile/android/app/debug/
+mindwave_mobile/android/app/profile/
+mindwave_mobile/android/app/release/
+mindwave_mobile/ios/Pods/
+mindwave_mobile/ios/Flutter/App.framework/
+mindwave_mobile/ios/Flutter/Flutter.framework/
+mindwave_mobile/ios/Flutter/Generated.xcconfig
+mindwave_mobile/ios/Flutter/ephemeral/
+mindwave_mobile/.fvm/
