@@ -9,7 +9,7 @@ import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/ChatPage';
 import FocusPage from './pages/FocusPage';
-
+import JournalPage from './pages/JournalPage';
 import HabitsPage from './pages/HabitsPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -39,6 +39,7 @@ function App() {
             <Route path="chat" element={<ChatPage />} />
             <Route path="chat/:id" element={<ChatPage />} />
             <Route path="focus" element={<FocusPage />} />
+            <Route path="journal" element={<JournalPage />} />
             <Route path="habits" element={<HabitsPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>

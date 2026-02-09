@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2, Zap, User } from 'lucide-react';
+import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2, Zap, User, BookOpen } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -65,6 +65,7 @@ export default function Sidebar({ isOpen, onClose }) {
         { icon: Home, label: 'Home', path: '/' },
         { icon: CheckCircle, label: 'Habits', path: '/habits' },
         { icon: Zap, label: 'Focus', path: '/focus' },
+        { icon: BookOpen, label: 'Journal', path: '/journal' },
         { icon: MessageSquare, label: 'Chat', path: '/chat' },
     ];
 

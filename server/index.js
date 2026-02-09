@@ -35,6 +35,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 
 app.use('/api/habits', require('./routes/habit.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
+app.use('/api/journal', require('./routes/journal.routes'));
 
 console.log('All routes loaded.');
 
