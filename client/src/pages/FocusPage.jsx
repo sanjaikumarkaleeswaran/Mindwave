@@ -1,20 +1,35 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { Play, Pause, RotateCcw, CheckCircle, ChevronUp, ChevronDown, X, Edit, Save, Trash2, Volume2, VolumeX, Music } from 'lucide-react';
 import api from '../lib/axios';
-import ReactPlayer from 'react-player';
 
 // Default 25 minutes
 const DEFAULT_TIME = 25 * 60;
 
 const FOCUS_SOUNDS = [
     { id: 'none', name: 'Silent', url: null },
-    { id: 'lofi', name: 'Lofi Girl', url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' },
-    { id: 'rain', name: 'Ambient Rain', url: 'https://www.youtube.com/watch?v=mPZkdNFkNps' },
-    { id: 'piano', name: 'Peaceful Piano', url: 'https://www.youtube.com/watch?v=lCOF9LN_Zxs' },
-    { id: 'synth', name: 'Synthwave', url: 'https://www.youtube.com/watch?v=4xDzrJKXOOY' }
+    {
+        id: 'meditation1',
+        name: 'Peaceful Piano',
+        url: '/audio/piano.mp3'
+    },
+    {
+        id: 'meditation2',
+        name: 'Deep Relaxation',
+        url: '/audio/rain.mp3'
+    },
+    {
+        id: 'meditation3',
+        name: 'Calm Nature',
+        url: '/audio/nature.mp3'
+    },
+    {
+        id: 'meditation4',
+        name: 'Zen Focus',
+        url: '/audio/zen.mp3'
+    }
 ];
 
 function EditTimerModal({ onSave, onCancel, initialSeconds }) {
@@ -120,10 +135,12 @@ export default function FocusPage() {
     const [showEditModal, setShowEditModal] = useState(false);
 
     // Audio State
-    const [selectedSound, setSelectedSound] = useState('lofi');
+    const [selectedSound, setSelectedSound] = useState('meditation1');
     const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [isPlayingSound, setIsPlayingSound] = useState(false);
+    const [isAudioLoading, setIsAudioLoading] = useState(false);
+    const audioRef = useRef(null);
 
     // Fetch habits for selection
     const { data: habits = [] } = useQuery({
@@ -150,19 +167,51 @@ export default function FocusPage() {
         return () => clearInterval(interval);
     }, [isActive, timeLeft]);
 
-    // Sync Audio with Timer
+    // Update audio volume when slider changes
     useEffect(() => {
-        if (isActive && selectedSound !== 'none') {
-            setIsPlayingSound(true);
-        } else {
-            setIsPlayingSound(false);
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+            audioRef.current.muted = isMuted;
         }
-    }, [isActive, selectedSound]);
+    }, [volume, isMuted]);
 
-    const toggleTimer = () => setIsActive(!isActive);
+    const toggleTimer = () => {
+        setIsActive(!isActive);
+    };
+
+    const toggleMusic = async () => {
+        if (selectedSound === 'none') {
+            alert('Please select a music option first');
+            return;
+        }
+
+        if (isAudioLoading || !audioRef.current) {
+            return; // Prevent rapid clicks
+        }
+
+        try {
+            setIsAudioLoading(true);
+
+            if (isPlayingSound) {
+                // Pause music
+                audioRef.current.pause();
+                setIsPlayingSound(false);
+            } else {
+                // Play music
+                await audioRef.current.play();
+                setIsPlayingSound(true);
+            }
+        } catch (err) {
+            console.error('Audio control error:', err);
+            setIsPlayingSound(false);
+        } finally {
+            setIsAudioLoading(false);
+        }
+    };
 
     const resetTimer = () => {
         setIsActive(false);
+        setIsPlayingSound(false);
         setTimeLeft(initialTime);
     };
 
@@ -178,8 +227,10 @@ export default function FocusPage() {
         const s = seconds % 60;
 
         if (h > 0) {
+            // Show hours if present: H:MM:SS
             return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
+        // Otherwise just MM:SS
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
@@ -196,19 +247,42 @@ export default function FocusPage() {
                 <title>Focus Mode | Life OS</title>
             </Helmet>
 
-            {/* Hidden Player */}
+            {/* Audio Player */}
             {currentSoundUrl && (
-                <div className="hidden">
-                    <ReactPlayer
-                        url={currentSoundUrl}
-                        playing={isPlayingSound}
-                        volume={volume}
-                        muted={isMuted}
-                        loop={true}
-                        width="0"
-                        height="0"
-                    />
-                </div>
+                <audio
+                    key={selectedSound}
+                    ref={audioRef}
+                    src={currentSoundUrl}
+                    loop
+                    preload="auto"
+                    onLoadedData={() => {
+                        console.log('Audio loaded:', selectedSound);
+                        // Reset loading state
+                        setIsAudioLoading(false);
+                        if (audioRef.current) {
+                            audioRef.current.volume = volume;
+                            audioRef.current.muted = isMuted;
+                            // Auto-play if was previous playing or just switched
+                            if (isPlayingSound) {
+                                audioRef.current.play().catch(e => console.error("Auto-play blocked:", e));
+                            }
+                        }
+                    }}
+                    onPlay={() => {
+                        console.log('Audio playing:', selectedSound);
+                        setIsPlayingSound(true);
+                    }}
+                    onPause={() => {
+                        console.log('Audio paused:', selectedSound);
+                        setIsPlayingSound(false);
+                    }}
+                    onError={(e) => {
+                        console.error('Audio load error:', selectedSound, e);
+                        setIsPlayingSound(false);
+                        setIsAudioLoading(false);
+                        alert("Could not load this audio track. Please try another one.");
+                    }}
+                />
             )}
 
             {/* Modal */}
@@ -257,7 +331,10 @@ export default function FocusPage() {
                     <div className="flex-1">
                         <select
                             value={selectedSound}
-                            onChange={(e) => setSelectedSound(e.target.value)}
+                            onChange={(e) => {
+                                setIsPlayingSound(false); // Stop music when changing sound
+                                setSelectedSound(e.target.value);
+                            }}
                             className="w-full bg-transparent text-sm text-zinc-300 focus:outline-none border-none cursor-pointer"
                         >
                             {FOCUS_SOUNDS.map(s => (
@@ -321,18 +398,35 @@ export default function FocusPage() {
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
+                    {/* Timer Control */}
                     <button
                         onClick={toggleTimer}
                         className={`p-6 rounded-full transition-all transform hover:scale-105 shadow-xl ${isActive
                             ? 'bg-zinc-800 text-red-400 hover:bg-zinc-700'
                             : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/30'
                             }`}
+                        title={isActive ? 'Pause Timer' : 'Start Timer'}
                     >
                         {isActive ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
                     </button>
 
+                    {/* Music Control */}
+                    <button
+                        onClick={toggleMusic}
+                        disabled={selectedSound === 'none' || isAudioLoading}
+                        className={`p-5 rounded-full transition-all transform hover:scale-105 shadow-lg ${selectedSound === 'none' || isAudioLoading
+                            ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                            : isPlayingSound
+                                ? 'bg-purple-600 text-white hover:bg-purple-500 shadow-purple-500/30'
+                                : 'bg-zinc-800 text-purple-400 hover:bg-zinc-700'
+                            }`}
+                        title={isAudioLoading ? 'Loading...' : isPlayingSound ? 'Pause Music' : 'Play Music'}
+                    >
+                        <Music className={`w-6 h-6 ${isAudioLoading ? 'animate-pulse' : ''}`} />
+                    </button>
 
+                    {/* Reset Timer */}
                     <button
                         onClick={resetTimer}
                         className="p-4 rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all"
