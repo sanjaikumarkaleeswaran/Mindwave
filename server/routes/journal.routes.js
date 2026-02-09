@@ -66,6 +66,12 @@ router.post('/', auth, async (req, res) => {
     try {
         const { title, content, mood, tags, date } = req.body;
 
+        // Debug: Check if req.user exists
+        if (!req.user || !req.user.id) {
+            console.error('AUTH ERROR: req.user is', req.user);
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+
         if (!content || content.trim().length === 0) {
             return res.status(400).json({ error: 'Journal content is required' });
         }
