@@ -157,6 +157,7 @@ router.post('/:id/analyze', auth, async (req, res) => {
 2. Key insights and patterns (3-5 bullet points)
 3. Overall sentiment (positive, neutral, negative, or mixed)
 4. Main topics or themes (3-5 keywords)
+5. One actionable challenge or question to build mental muscle (1-2 sentences)
 
 Journal Entry:
 Title: ${journal.title || 'Untitled'}
@@ -170,7 +171,8 @@ Provide your analysis in JSON format:
   "summary": "brief summary here",
   "insights": ["insight 1", "insight 2", "insight 3"],
   "sentiment": "positive/neutral/negative/mixed",
-  "keyTopics": ["topic1", "topic2", "topic3"]
+  "keyTopics": ["topic1", "topic2", "topic3"],
+  "actionableChallenge": "One specific challenge here"
 }`;
 
         const completion = await groq.chat.completions.create({
@@ -208,7 +210,8 @@ Provide your analysis in JSON format:
                 summary: 'Analysis completed. Please review your entry for personal insights.',
                 insights: ['Reflect on the events described', 'Consider patterns in your daily activities', 'Notice your emotional responses'],
                 sentiment: 'neutral',
-                keyTopics: ['daily life', 'personal reflection']
+                keyTopics: ['daily life', 'personal reflection'],
+                actionableChallenge: 'Take a moment to reflect on one positive thing from today.'
             };
         }
 
@@ -218,6 +221,7 @@ Provide your analysis in JSON format:
             insights: analysis.insights,
             sentiment: analysis.sentiment,
             keyTopics: analysis.keyTopics,
+            actionableChallenge: analysis.actionableChallenge,
             analyzedAt: new Date()
         };
 

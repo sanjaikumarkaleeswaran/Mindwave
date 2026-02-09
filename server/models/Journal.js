@@ -36,6 +36,7 @@ const journalSchema = new mongoose.Schema({
         insights: [String],
         sentiment: String,
         keyTopics: [String],
+        actionableChallenge: String, // One specific challenge or action item
         analyzedAt: Date
     }
 }, {

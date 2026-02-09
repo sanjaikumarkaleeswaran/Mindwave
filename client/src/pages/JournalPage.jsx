@@ -15,7 +15,8 @@ import {
     TrendingUp,
     Brain,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    Target
 } from 'lucide-react';
 import api from '../lib/axios';
 
@@ -257,8 +258,8 @@ const JournalPage = () => {
                                                     type="button"
                                                     onClick={() => setFormData({ ...formData, mood: mood.value })}
                                                     className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all ${formData.mood === mood.value
-                                                            ? `bg-gradient-to-r ${mood.color} text-white shadow-lg`
-                                                            : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 border border-purple-500/10'
+                                                        ? `bg-gradient-to-r ${mood.color} text-white shadow-lg`
+                                                        : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 border border-purple-500/10'
                                                         }`}
                                                 >
                                                     {mood.label}
@@ -543,6 +544,25 @@ const JournalPage = () => {
                                                                     </li>
                                                                 ))}
                                                             </ul>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Actionable Challenge */}
+                                                    {journal.aiAnalysis.actionableChallenge && (
+                                                        <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl p-4 border border-orange-500/20 mt-3">
+                                                            <div className="flex items-start gap-3">
+                                                                <div className="p-2 bg-orange-500/20 rounded-lg">
+                                                                    <Target className="w-5 h-5 text-orange-400" />
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="text-sm font-semibold text-orange-300 mb-1">
+                                                                        Growth Challenge
+                                                                    </h4>
+                                                                    <p className="text-sm text-gray-300 italic">
+                                                                        "{journal.aiAnalysis.actionableChallenge}"
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     )}
 
