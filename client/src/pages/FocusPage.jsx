@@ -29,6 +29,31 @@ const FOCUS_SOUNDS = [
         id: 'meditation4',
         name: 'Zen Focus',
         url: '/audio/zen.mp3'
+    },
+    {
+        id: 'meditation5',
+        name: 'Adrift (Cosmic)',
+        url: '/audio/adrift.mp3'
+    },
+    {
+        id: 'meditation6',
+        name: 'New Beginnings',
+        url: '/audio/new_beginnings.mp3'
+    },
+    {
+        id: 'meditation7',
+        name: 'Little Wishes',
+        url: '/audio/little_wishes.mp3'
+    },
+    {
+        id: 'meditation8',
+        name: 'Golden Hour',
+        url: '/audio/golden_hour.mp3'
+    },
+    {
+        id: 'meditation9',
+        name: 'Evening Improvisation',
+        url: '/audio/evening.mp3'
     }
 ];
 
@@ -435,7 +460,12 @@ export default function FocusPage() {
                         <RotateCcw className="w-6 h-6" />
                     </button>
                 </div>
+                {/* Credits */}
+                <div className="pt-8 text-xs text-zinc-600 text-center">
+                    <p>Music by Scott Buckley, Tokyo Music Walker & others</p>
+                    <p className="mt-1">Provided by <a href="https://www.chosic.com/free-music/all/" target="_blank" rel="noreferrer" className="hover:text-zinc-500 underline">Chosic.com</a></p>
+                </div>
             </div>
-        </div >
+        </div>
     );
 }

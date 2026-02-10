@@ -16,6 +16,11 @@ Replaced YouTube URLs with free MP3 files from Pixabay:
 - **Rain Sounds** - Ambient rain for concentration
 - **Nature Sounds** - Forest ambience
 - **Peaceful Piano** - Calm piano music
+- **Adrift (Cosmic)** - Ambient space music (Scott Buckley)
+- **New Beginnings** - Uplifting lofi (Tokyo Music Walker)
+- **Little Wishes** - Chill lofi (Tokyo Music Walker)
+- **Golden Hour** - Relaxing ambient
+- **Evening Improvisation** - Calming music
 
 All audio files are:
 ✅ Royalty-free
