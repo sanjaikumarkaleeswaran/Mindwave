@@ -114,7 +114,7 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
 export default function HabitsPage() {
     const queryClient = useQueryClient();
     const [newHabit, setNewHabit] = useState('');
-    const [viewMode, setViewMode] = useState('table');
+    const [viewMode, setViewMode] = useState(window.innerWidth < 768 ? 'grid' : 'table');
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);

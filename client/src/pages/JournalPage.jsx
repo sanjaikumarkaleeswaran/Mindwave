@@ -171,24 +171,24 @@ const JournalPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-4 md:p-6">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8"
+                    className="mb-6 md:mb-8"
                 >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl">
+                            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shrink-0">
                                 <BookOpen className="w-8 h-8 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-4xl font-bold text-white mb-1">
+                                <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">
                                     Daily Journal
                                 </h1>
-                                <p className="text-gray-400">
+                                <p className="text-sm md:text-base text-gray-400">
                                     Document your thoughts, track your journey
                                 </p>
                             </div>
@@ -198,7 +198,7 @@ const JournalPage = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setIsCreating(!isCreating)}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+                            className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
                         >
                             {isCreating ? (
                                 <>
@@ -224,7 +224,7 @@ const JournalPage = () => {
                             exit={{ opacity: 0, height: 0 }}
                             className="mb-8"
                         >
-                            <form onSubmit={handleSubmit} className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 shadow-xl">
+                            <form onSubmit={handleSubmit} className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-purple-500/20 shadow-xl">
                                 <div className="space-y-4">
                                     {/* Title */}
                                     <div>
@@ -245,7 +245,7 @@ const JournalPage = () => {
                                         <label className="block text-sm font-medium text-gray-300 mb-2">
                                             How are you feeling?
                                         </label>
-                                        <div className="flex gap-2">
+                                        <div className="grid grid-cols-2 sm:flex sm:gap-2 gap-2">
                                             {[
                                                 { value: 'great', label: '😄 Great', color: 'from-green-500 to-emerald-500' },
                                                 { value: 'good', label: '🙂 Good', color: 'from-blue-500 to-cyan-500' },
@@ -257,10 +257,10 @@ const JournalPage = () => {
                                                     key={mood.value}
                                                     type="button"
                                                     onClick={() => setFormData({ ...formData, mood: mood.value })}
-                                                    className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all ${formData.mood === mood.value
+                                                    className={`px-4 py-2 rounded-xl font-medium transition-all ${formData.mood === mood.value
                                                         ? `bg-gradient-to-r ${mood.color} text-white shadow-lg`
                                                         : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 border border-purple-500/10'
-                                                        }`}
+                                                        } last:col-span-2 sm:last:col-span-1`}
                                                 >
                                                     {mood.label}
                                                 </button>

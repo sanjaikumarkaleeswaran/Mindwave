@@ -125,23 +125,23 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 rounded-2xl border border-zinc-800 overflow-hidden relative m-2 md:m-6 shadow-2xl">
+        <div className="h-[calc(100vh-4rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl">
             <Helmet>
                 <title>Chat | Life OS</title>
             </Helmet>
             {/* Model Selector - Centered Top */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-xs flex justify-center">
                 <div className="relative">
                     <button
                         onClick={() => setShowModelMenu(!showModelMenu)}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/80 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 hover:text-white transition-all border border-zinc-700/50 backdrop-blur-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/80 hover:bg-zinc-700 rounded-lg text-xs md:text-sm text-zinc-300 hover:text-white transition-all border border-zinc-700/50 backdrop-blur-sm shadow-lg"
                     >
-                        <span>{models.find(m => m.id === selectedModel)?.name}</span>
+                        <span className="truncate max-w-[150px]">{models.find(m => m.id === selectedModel)?.name}</span>
                         <ChevronDown className="w-3.5 h-3.5" />
                     </button>
 
                     {showModelMenu && (
-                        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl overflow-hidden py-1 animate-in fade-in slide-in-from-top-2">
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 z-50">
                             {models.map(model => (
                                 <button
                                     key={model.id}
