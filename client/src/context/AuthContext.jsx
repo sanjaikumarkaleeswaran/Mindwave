@@ -61,8 +61,19 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const deleteAccount = async () => {
+        try {
+            await api.delete('/auth/profile');
+            logout(); // Clear local state after successful deletion
+            return true;
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, uploadAvatar }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, uploadAvatar, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

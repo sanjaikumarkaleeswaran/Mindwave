@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Helmet } from 'react-helmet-async';
-import { User, Mail, Shield, Save, Camera, LogOut, Loader2 } from 'lucide-react';
+import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X } from 'lucide-react';
 
 export default function ProfilePage() {
-    const { user, logout, updateProfile, uploadAvatar } = useAuth();
+    const { user, logout, updateProfile, uploadAvatar, deleteAccount } = useAuth();
     const fileInputRef = useRef(null);
 
     // Initialize form with safe defaults
@@ -15,6 +15,8 @@ export default function ProfilePage() {
     });
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
 
     const handleUpdateProfile = async (e) => {
@@ -184,6 +186,80 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+
+            {/* Danger Zone */}
+            <div className="md:col-span-1 lg:col-span-3">
+                <div className="mt-8 bg-black/40 border border-red-500/20 rounded-2xl p-6">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-xl font-bold text-red-500 mb-2 flex items-center gap-2">
+                                <AlertTriangle className="w-5 h-5" />
+                                Danger Zone
+                            </h3>
+                            <p className="text-zinc-400 text-sm max-w-xl">
+                                Deleting your account is permanent. All your data including journals, habits, and chat history will be permanently erased. This action cannot be undone.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowDeleteModal(true)}
+                            className="px-5 py-2.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all text-sm font-medium border border-red-500/20"
+                        >
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-zinc-900 border border-zinc-700/50 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+                        <h3 className="text-xl font-bold text-white mb-2">Delete Account?</h3>
+                        <p className="text-zinc-400 mb-6">
+                            This action is <span className="text-red-400 font-bold">irreversible</span>.
+                            To confirm, please type <span className="font-mono text-white bg-zinc-800 px-1.5 py-0.5 rounded">DELETE</span> below.
+                        </p>
+
+                        <input
+                            type="text"
+                            value={deleteConfirmation}
+                            placeholder="Type DELETE to confirm"
+                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all mb-6"
+                            onChange={(e) => setDeleteConfirmation(e.target.value)}
+                        />
+
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => {
+                                    setShowDeleteModal(false);
+                                    setDeleteConfirmation('');
+                                }}
+                                className="px-4 py-2 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 rounded-lg transition-colors text-sm font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={deleteConfirmation !== 'DELETE'}
+                                onClick={async () => {
+                                    try {
+                                        await deleteAccount();
+                                    } catch (err) {
+                                        alert("Failed to delete account. Please try again.");
+                                        console.error(err);
+                                    }
+                                }}
+                                className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${deleteConfirmation === 'DELETE'
+                                    ? 'bg-red-600/90 text-white hover:bg-red-500'
+                                    : 'bg-red-600/50 text-white/50 cursor-not-allowed'
+                                    }`}
+                            >
+                                <AlertTriangle className="w-4 h-4" />
+                                Yes, Delete Everything
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

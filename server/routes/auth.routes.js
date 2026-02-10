@@ -6,6 +6,10 @@ const User = require('../models/User');
 const auth = require('../middleware/auth.middleware');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const Journal = require('../models/Journal');
+const Habit = require('../models/Habit');
+const Conversation = require('../models/Conversation');
+const ChatHistory = require('../models/ChatHistory');
 
 const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
@@ -158,6 +162,31 @@ router.put('/profile', auth, async (req, res) => {
 
         await user.save();
         res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE api/auth/profile
+// @desc    Delete user and all associated data
+// @access  Private
+router.delete('/profile', auth, async (req, res) => {
+    try {
+        // 1. Delete all journals
+        await Journal.deleteMany({ userId: req.user.id });
+
+        // 2. Delete all habits
+        await Habit.deleteMany({ userId: req.user.id });
+
+        // 3. Delete all chat history & conversations
+        await ChatHistory.deleteMany({ userId: req.user.id });
+        await Conversation.deleteMany({ userId: req.user.id });
+
+        // 4. Delete the user
+        await User.findOneAndDelete({ _id: req.user.id });
+
+        res.json({ msg: 'User deleted' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
