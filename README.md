@@ -115,5 +115,24 @@ d:/webforme
 
 ## 🔮 Future Roadmap
 - [ ] Voice interface for hands-free interaction.
-- [ ] Mobile-responsive PWA (Progressive Web App).
+- [x] Mobile-responsive PWA (Progressive Web App).
 - [ ] Export data feature (JSON/CSV).
+
+## 📱 Mobile Installation (PWA)
+
+MindWave is a Progressive Web App (PWA), meaning you can install it on your mobile device for a native app experience.
+
+1.  **Ensuring Network Access**:
+    *   Make sure your mobile device and computer are on the same WiFi network.
+    *   Find your computer's local IP address (e.g., `10.x.x.x`).
+    *   Update the `client/.env` file with `VITE_API_URL=http://YOUR_LOCAL_IP:5000/api`.
+    *   Restart the client server.
+
+2.  **Installing on Android (Chrome)**:
+    *   Open Chrome and navigate to `http://YOUR_LOCAL_IP:5173`.
+    *   Tap the menu (three dots) and select **"Install App"** or **"Add to Home Screen"**.
+
+3.  **Installing on iOS (Safari)**:
+    *   Open Safari and navigate to `http://YOUR_LOCAL_IP:5173`.
+    *   Tap the **Share** button.
+    *   Scroll down and select **"Add to Home Screen"**.
