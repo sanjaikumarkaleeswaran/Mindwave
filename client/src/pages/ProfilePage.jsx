@@ -25,7 +25,10 @@ export default function ProfilePage() {
         setMessage({ type: '', text: '' });
 
         try {
-            await updateProfile({ name: formData.name });
+            await updateProfile({
+                name: formData.name,
+                avatar: formData.avatar
+            });
             setMessage({ type: 'success', text: 'Profile updated successfully' });
         } catch (err) {
             console.error(err);
@@ -169,6 +172,23 @@ export default function ProfilePage() {
                                             className="w-full bg-zinc-950/30 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-zinc-500 cursor-not-allowed"
                                         />
                                     </div>
+                                </div>
+
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-sm font-medium text-zinc-400">Avatar URL</label>
+                                    <div className="relative">
+                                        <Camera className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                        <input
+                                            type="url"
+                                            value={formData.avatar}
+                                            onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
+                                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                                            placeholder="https://example.com/me.jpg"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-zinc-500 pl-1">
+                                        Or click the profile picture on the left to upload an image.
+                                    </p>
                                 </div>
                             </div>
 

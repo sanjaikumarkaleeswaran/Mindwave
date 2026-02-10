@@ -37,6 +37,12 @@ const FOCUS_SOUNDS = [
     }
 ];
 
+// LICENSING NOTE:
+// These tracks are provided by Scott Buckley and Chosic.com under Creative Commons (CC-BY 4.0).
+// YOU DO NOT NEED TO PAY. They are royalty-free.
+// However, you MUST keep the attribution credits visible in the UI (as shown at the bottom of this page).
+// Source: https://www.scottbuckley.com.au/library/
+
 function EditTimerModal({ onSave, onCancel, initialSeconds }) {
     // Convert total seconds to H/M/S
     const h = Math.floor(initialSeconds / 3600);
