@@ -5,6 +5,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App.jsx';
 
+import { registerSW } from 'virtual:pwa-register';
+
+const updateSW = registerSW({
+  onNeedRefresh() { },
+  onOfflineReady() { },
+});
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
