@@ -11,26 +11,6 @@ const DEFAULT_TIME = 25 * 60;
 const FOCUS_SOUNDS = [
     { id: 'none', name: 'Silent', url: null },
     {
-        id: 'meditation1',
-        name: 'Peaceful Piano',
-        url: '/audio/piano.mp3'
-    },
-    {
-        id: 'meditation2',
-        name: 'Deep Relaxation',
-        url: '/audio/rain.mp3'
-    },
-    {
-        id: 'meditation3',
-        name: 'Calm Nature',
-        url: '/audio/nature.mp3'
-    },
-    {
-        id: 'meditation4',
-        name: 'Zen Focus',
-        url: '/audio/zen.mp3'
-    },
-    {
         id: 'meditation5',
         name: 'Adrift (Cosmic)',
         url: '/audio/adrift.mp3'
@@ -160,7 +140,7 @@ export default function FocusPage() {
     const [showEditModal, setShowEditModal] = useState(false);
 
     // Audio State
-    const [selectedSound, setSelectedSound] = useState('meditation1');
+    const [selectedSound, setSelectedSound] = useState('meditation5');
     const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [isPlayingSound, setIsPlayingSound] = useState(false);
