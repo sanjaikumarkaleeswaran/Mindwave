@@ -3,6 +3,15 @@ const router = express.Router();
 const Journal = require('../models/Journal');
 const Groq = require('groq-sdk');
 const auth = require('../middleware/auth.middleware');
+const validate = require('../middleware/validate.middleware');
+const {
+    createJournalSchema,
+    updateJournalSchema,
+    getJournalSchema,
+    getJournalRangeSchema,
+    analyzeJournalSchema,
+    batchAnalyzeSchema
+} = require('../schemas/journal.schemas');
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
@@ -23,7 +32,8 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Get a specific journal entry
-router.get('/:id', auth, async (req, res) => {
+// Get a specific journal entry
+router.get('/:id', auth, validate(getJournalSchema), async (req, res) => {
     try {
         const journal = await Journal.findOne({
             _id: req.params.id,
@@ -42,7 +52,8 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // Get journal entries by date range
-router.get('/range/:startDate/:endDate', auth, async (req, res) => {
+// Get journal entries by date range
+router.get('/range/:startDate/:endDate', auth, validate(getJournalRangeSchema), async (req, res) => {
     try {
         const { startDate, endDate } = req.params;
 
@@ -62,7 +73,8 @@ router.get('/range/:startDate/:endDate', auth, async (req, res) => {
 });
 
 // Create a new journal entry
-router.post('/', auth, async (req, res) => {
+// Create a new journal entry
+router.post('/', auth, validate(createJournalSchema), async (req, res) => {
     try {
         const { title, content, mood, tags, date } = req.body;
 
@@ -94,7 +106,8 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update a journal entry
-router.put('/:id', auth, async (req, res) => {
+// Update a journal entry
+router.put('/:id', auth, validate(updateJournalSchema), async (req, res) => {
     try {
         const { title, content, mood, tags } = req.body;
 
@@ -121,7 +134,8 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // Delete a journal entry
-router.delete('/:id', auth, async (req, res) => {
+// Delete a journal entry
+router.delete('/:id', auth, validate(getJournalSchema), async (req, res) => {
     try {
         const journal = await Journal.findOneAndDelete({
             _id: req.params.id,
@@ -140,7 +154,8 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // AI Analysis of a journal entry
-router.post('/:id/analyze', auth, async (req, res) => {
+// AI Analysis of a journal entry
+router.post('/:id/analyze', auth, validate(analyzeJournalSchema), async (req, res) => {
     try {
         const journal = await Journal.findOne({
             _id: req.params.id,
@@ -234,7 +249,8 @@ Provide your analysis in JSON format:
 });
 
 // Get AI insights for multiple entries (weekly/monthly summary)
-router.post('/analyze/batch', auth, async (req, res) => {
+// Get AI insights for multiple entries (weekly/monthly summary)
+router.post('/analyze/batch', auth, validate(batchAnalyzeSchema), async (req, res) => {
     try {
         const { startDate, endDate } = req.body;
 

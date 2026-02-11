@@ -10,6 +10,16 @@ const Journal = require('../models/Journal');
 const Habit = require('../models/Habit');
 const Conversation = require('../models/Conversation');
 const ChatHistory = require('../models/ChatHistory');
+const validate = require('../middleware/validate.middleware');
+const {
+    registerSchema,
+    loginSchema,
+    updateProfileSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema,
+    verifyEmailSchema
+} = require('../schemas/auth.schemas');
+const { authLimiter } = require('../config/rateLimit');
 
 const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
@@ -33,7 +43,8 @@ const sendEmail = async (options) => {
 // @route   POST api/auth/register
 // @desc    Register user
 // @access  Public
-router.post('/register', async (req, res) => {
+// @access  Public
+router.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
@@ -64,7 +75,8 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
-        const verifyUrl = `http://localhost:5173/verify-email/${verificationToken}`;
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
 
         const message = `
             Please click the following link to verify your account: \n\n ${verifyUrl}
@@ -94,7 +106,8 @@ router.post('/register', async (req, res) => {
 // @route   POST api/auth/login
 // @desc    Authenticate user & get token
 // @access  Public
-router.post('/login', async (req, res) => {
+// @access  Public
+router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -151,7 +164,8 @@ router.get('/user', auth, async (req, res) => {
 // @route   PUT api/auth/profile
 // @desc    Update user profile
 // @access  Private
-router.put('/profile', auth, async (req, res) => {
+// @access  Private
+router.put('/profile', auth, validate(updateProfileSchema), async (req, res) => {
     const { name, avatar } = req.body;
     try {
         const user = await User.findById(req.user.id);
@@ -221,7 +235,8 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
 // @route   PUT api/auth/verify-email/:token
 // @desc    Verify Email
 // @access  Public
-router.put('/verify-email/:token', async (req, res) => {
+// @access  Public
+router.put('/verify-email/:token', validate(verifyEmailSchema), async (req, res) => {
     try {
         const verificationToken = crypto
             .createHash('sha256')
@@ -253,7 +268,8 @@ router.put('/verify-email/:token', async (req, res) => {
 // @route   POST api/auth/forgot-password
 // @desc    Forgot Password
 // @access  Public
-router.post('/forgot-password', async (req, res) => {
+// @access  Public
+router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), async (req, res) => {
     const { email } = req.body;
 
     try {
@@ -312,7 +328,8 @@ router.post('/forgot-password', async (req, res) => {
 // @route   PUT api/auth/reset-password/:resetToken
 // @desc    Reset Password
 // @access  Public
-router.put('/reset-password/:resetToken', async (req, res) => {
+// @access  Public
+router.put('/reset-password/:resetToken', validate(resetPasswordSchema), async (req, res) => {
     try {
         // Get hashed token
         const resetPasswordToken = crypto

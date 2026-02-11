@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { Sparkles, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 export default function VerifyEmailPage() {
     const { token } = useParams();
+    const navigate = useNavigate();
     const [status, setStatus] = useState('verifying'); // verifying, success, error
     const [message, setMessage] = useState('');
 
@@ -13,6 +14,9 @@ export default function VerifyEmailPage() {
             try {
                 await api.put(`/auth/verify-email/${token}`);
                 setStatus('success');
+                setTimeout(() => {
+                    navigate('/auth');
+                }, 3000);
             } catch (err) {
                 setStatus('error');
                 setMessage(err.response?.data?.msg || 'Verification failed');
@@ -20,7 +24,7 @@ export default function VerifyEmailPage() {
         };
 
         if (token) verifyEmail();
-    }, [token]);
+    }, [token, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
@@ -51,7 +55,7 @@ export default function VerifyEmailPage() {
 
                 <p className="text-zinc-400 mb-8">
                     {status === 'verifying' && 'Please wait while we verify your email address.'}
-                    {status === 'success' && 'Your email has been successfully verified. You can now sign in.'}
+                    {status === 'success' && 'Your email has been successfully verified. Redirecting to login...'}
                     {status === 'error' && (message || 'The verification link is invalid or expired.')}
                 </p>
 

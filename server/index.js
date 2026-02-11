@@ -7,8 +7,18 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const app = express();
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10kb' })); // Body limit
+app.use(cors()); // Enable CORS
+app.use(require('helmet')({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading resources (images) from different origins/ports
+}));
+app.use(require('express-mongo-sanitize')()); // Sanitize data
+app.use(require('xss-clean')()); // Prevent XSS attacks
+app.use(require('hpp')()); // Prevent HTTP Parameter Pollution
+
+const { limiter } = require('./config/rateLimit');
+app.use('/api', limiter); // Rate limiting
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // DB Connection // // 

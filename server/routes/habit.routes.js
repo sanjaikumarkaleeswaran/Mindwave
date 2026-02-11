@@ -2,6 +2,14 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const Habit = require('../models/Habit');
+const validate = require('../middleware/validate.middleware');
+const {
+    createHabitSchema,
+    updateHabitSchema,
+    toggleHabitSchema,
+    reorderHabitsSchema,
+    deleteHabitSchema
+} = require('../schemas/habit.schemas');
 
 // @route   GET api/habits
 // @desc    Get all habits
@@ -19,7 +27,8 @@ router.get('/', auth, async (req, res) => {
 // @route   POST api/habits
 // @desc    Create a habit
 // @access  Private
-router.post('/', auth, async (req, res) => {
+// @access  Private
+router.post('/', auth, validate(createHabitSchema), async (req, res) => {
     try {
         const { name, frequency } = req.body;
         // Get max order to append vertically
@@ -44,7 +53,8 @@ router.post('/', auth, async (req, res) => {
 // @desc    Update habit order
 // @access  Private
 // MOVED BEFORE /:id TO PREVENT CONFLICT
-router.put('/reorder', auth, async (req, res) => {
+// MOVED BEFORE /:id TO PREVENT CONFLICT
+router.put('/reorder', auth, validate(reorderHabitsSchema), async (req, res) => {
     try {
         const { habits } = req.body; // Array of { _id, order }
 
@@ -69,7 +79,8 @@ router.put('/reorder', auth, async (req, res) => {
 // @route   PUT api/habits/:id/toggle
 // @desc    Toggle habit completion for a specific date
 // @access  Private
-router.put('/:id/toggle', auth, async (req, res) => {
+// @access  Private
+router.put('/:id/toggle', auth, validate(toggleHabitSchema), async (req, res) => {
     try {
         const habit = await Habit.findOne({ _id: req.params.id, userId: req.user.id });
         if (!habit) return res.status(404).json({ msg: 'Not found' });
@@ -170,7 +181,8 @@ router.put('/:id/toggle', auth, async (req, res) => {
 // @route   PUT api/habits/:id
 // @desc    Update a habit
 // @access  Private
-router.put('/:id', auth, async (req, res) => {
+// @access  Private
+router.put('/:id', auth, validate(updateHabitSchema), async (req, res) => {
     try {
         const { name } = req.body;
         let habit = await Habit.findById(req.params.id);
@@ -189,7 +201,8 @@ router.put('/:id', auth, async (req, res) => {
 // @route   DELETE api/habits/:id
 // @desc    Delete a habit
 // @access  Private
-router.delete('/:id', auth, async (req, res) => {
+// @access  Private
+router.delete('/:id', auth, validate(deleteHabitSchema), async (req, res) => {
     try {
         const habit = await Habit.findById(req.params.id);
         if (!habit) return res.status(404).json({ msg: 'Habit not found' });

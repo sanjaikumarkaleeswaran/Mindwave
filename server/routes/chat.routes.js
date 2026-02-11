@@ -8,6 +8,12 @@ const Groq = require('groq-sdk');
 const multer = require('multer');
 const fs = require('fs');
 const pdf = require('pdf-parse');
+const validate = require('../middleware/validate.middleware');
+const {
+    sendChatSchema,
+    conversationIdSchema,
+    deleteConversationSchema
+} = require('../schemas/chat.schemas');
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -41,7 +47,8 @@ router.post('/conversations', auth, async (req, res) => {
 
 // @route   DELETE api/chat/conversations/:id
 // @desc    Delete conversation
-router.delete('/conversations/:id', auth, async (req, res) => {
+// @desc    Delete conversation
+router.delete('/conversations/:id', auth, validate(deleteConversationSchema), async (req, res) => {
     try {
         const conv = await Conversation.findById(req.params.id);
         if (!conv) return res.status(404).json({ msg: 'Not found' });
@@ -58,7 +65,8 @@ router.delete('/conversations/:id', auth, async (req, res) => {
 
 // @route   GET api/chat/:conversationId
 // @desc    Get messages for a specific conversation
-router.get('/:conversationId', auth, async (req, res) => {
+// @desc    Get messages for a specific conversation
+router.get('/:conversationId', auth, validate(conversationIdSchema), async (req, res) => {
     try {
         const messages = await ChatHistory.find({
             conversationId: req.params.conversationId,
@@ -75,7 +83,11 @@ router.get('/:conversationId', auth, async (req, res) => {
 // @desc    Send message to AI
 // @route   POST api/chat/send
 // @desc    Send message to AI with optional file
-router.post('/send', auth, upload.single('file'), async (req, res) => {
+// @route   POST api/chat/send
+// @desc    Send message to AI with optional file
+// Note: Multer middleware must come before validation if validation depends on body fields that might be in multipart form
+// However, since we validate body fields, let's keep it simple. Multer populates req.body.
+router.post('/send', auth, upload.single('file'), validate(sendChatSchema), async (req, res) => {
     // Expect conversationId. If not provided, we could error or auto-create (but frontend should handle creation)
     const { message, conversationId, model } = req.body;
     const file = req.file;
