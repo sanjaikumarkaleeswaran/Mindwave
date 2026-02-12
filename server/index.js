@@ -12,8 +12,8 @@ app.use(cors()); // Enable CORS
 app.use(require('helmet')({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading resources (images) from different origins/ports
 }));
-app.use(require('express-mongo-sanitize')()); // Sanitize data
-app.use(require('xss-clean')()); // Prevent XSS attacks
+app.use(require('./middleware/mongoSanitize')()); // Sanitize data (Express 5 compatible)
+app.use(require('./middleware/xssSanitize')()); // Prevent XSS attacks (Express 5 compatible)
 app.use(require('hpp')()); // Prevent HTTP Parameter Pollution
 
 const { limiter } = require('./config/rateLimit');

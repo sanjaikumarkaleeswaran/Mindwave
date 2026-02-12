@@ -107,25 +107,27 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 // @desc    Authenticate user & get token
 // @access  Public
 // @access  Public
+// @route   POST api/auth/login
+// @desc    Authenticate user & get token
+// @access  Public
 router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`);
 
     try {
         let user = await User.findOne({ email });
 
         if (!user) {
+            console.log(`User not found: ${email}`);
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
+            console.log(`Invalid password for: ${email}`);
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
-
-        // if (!user.isVerified) {
-        //     return res.status(400).json({ msg: 'Please verify your email address' });
-        // }
 
         const payload = {
             user: {
@@ -133,17 +135,23 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
             }
         };
 
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: '5d' },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-            }
-        );
+        try {
+            // Use synchronous signing to ensure errors are caught
+            const token = jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: '5d' }
+            );
+            console.log(`Login successful for: ${email}`);
+            res.json({ token });
+        } catch (jwtError) {
+            console.error('JWT Signing Error:', jwtError);
+            res.status(500).send('Server error during token generation');
+        }
+
     } catch (err) {
-        console.error(err.message);
+        console.error('Login Route Error:', err.message);
+        console.error(err.stack); // Log full stack trace
         res.status(500).send('Server error');
     }
 });
