@@ -21,24 +21,7 @@ const {
 } = require('../schemas/auth.schemas');
 const { authLimiter } = require('../config/rateLimit');
 
-const sendEmail = async (options) => {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail', // You can change this to your preferred provider
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
-
-    const message = {
-        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
-        to: options.email,
-        subject: options.subject,
-        text: options.message
-    };
-
-    await transporter.sendMail(message);
-};
+const sendEmail = require('../utils/sendEmail');
 
 // @route   POST api/auth/register
 // @desc    Register user

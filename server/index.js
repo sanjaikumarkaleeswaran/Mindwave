@@ -51,6 +51,17 @@ console.log('All routes loaded.');
 
 app.get('/', (req, res) => res.send('API Running'));
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error:', err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Server Error',
+        error: process.env.NODE_ENV === 'production' ? null : err.message
+    });
+});
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

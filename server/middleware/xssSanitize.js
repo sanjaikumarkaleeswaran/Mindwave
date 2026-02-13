@@ -27,7 +27,10 @@ function sanitize(data) {
     }
 
     if (Array.isArray(data)) {
-        return data.map(item => sanitize(item));
+        for (let i = 0; i < data.length; i++) {
+            data[i] = sanitize(data[i]);
+        }
+        return data;
     }
 
     if (typeof data === 'object') {

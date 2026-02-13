@@ -11,7 +11,10 @@ function sanitize(obj) {
 
     // Handle arrays
     if (Array.isArray(obj)) {
-        return obj.forEach(item => sanitize(item));
+        for (let i = 0; i < obj.length; i++) {
+            obj[i] = sanitize(obj[i]);
+        }
+        return obj;
     }
 
     // Handle objects
@@ -20,15 +23,11 @@ function sanitize(obj) {
             // Remove keys starting with $ (MongoDB operators)
             delete obj[key];
         } else if (key.includes('.')) {
-            // Optional: remove keys with dots if you want to prevent dot notation injection
-            // But usually $ is the critical one. 
-            // We'll leave dots for now as they might be valid in some contexts, 
-            // but standard sanitizer often removes them or replaces them.
-            // Let's stick to $ for now.
-            delete obj[key]; // Safer to delete if unsure
+            // Remove keys with dots
+            delete obj[key];
         } else {
-            // Recurse
-            sanitize(obj[key]);
+            // Recurse and assign back to handle primitive returns or mutated objects
+            obj[key] = sanitize(obj[key]);
         }
     }
     return obj;
