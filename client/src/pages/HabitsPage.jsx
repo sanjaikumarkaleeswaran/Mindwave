@@ -535,8 +535,8 @@ export default function HabitsPage() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                        <th className="p-4 font-medium text-zinc-400 w-48 sticky left-0 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Date</th>
-                                        <th className="p-4 font-medium text-zinc-400 w-32 sticky left-48 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Daily Progress</th>
+                                        <th className="p-4 font-medium text-zinc-400 w-32 min-w-[8rem] sticky left-0 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Date</th>
+                                        <th className="p-4 font-medium text-zinc-400 w-32 min-w-[8rem] sticky left-32 z-20 bg-zinc-900/95 backdrop-blur-sm shadow-[2px_0_5px_rgba(0,0,0,0.3)] border-r border-zinc-800">Daily Progress</th>
                                         {habits.map(h => (
                                             <th key={h._id} className="p-4 font-medium text-zinc-400 text-center min-w-[4rem] text-xs uppercase tracking-wider">
                                                 <div className="[writing-mode:vertical-rl] transform h-24 flex items-center justify-center">{h.name.substring(0, 10)}</div>
@@ -553,11 +553,11 @@ export default function HabitsPage() {
                                         const status = getDailyStatus(progress);
                                         return (
                                             <tr key={i} className="hover:bg-zinc-800/30 transition-colors group">
-                                                <td className="p-4 sticky left-0 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
+                                                <td className="p-4 sticky left-0 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] w-32 min-w-[8rem]">
                                                     <div className="font-medium text-white">{d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                                                     <div className="text-xs text-zinc-500">{d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
                                                 </td>
-                                                <td className="p-4 sticky left-48 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
+                                                <td className="p-4 sticky left-32 z-10 bg-zinc-900 group-hover:bg-zinc-800 transition-colors border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] w-32 min-w-[8rem]">
                                                     <div className="w-full bg-zinc-800 rounded-full h-2">
                                                         <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style={{ width: `${progress}%` }}></div>
                                                     </div>
