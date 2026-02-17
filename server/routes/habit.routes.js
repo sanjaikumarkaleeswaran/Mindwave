@@ -27,7 +27,7 @@ router.get('/', auth, async (req, res) => {
 // @route   POST api/habits
 // @desc    Create a habit
 // @access  Private
-// @access  Private
+
 router.post('/', auth, validate(createHabitSchema), async (req, res) => {
     try {
         const { name, frequency } = req.body;
@@ -53,7 +53,7 @@ router.post('/', auth, validate(createHabitSchema), async (req, res) => {
 // @desc    Update habit order
 // @access  Private
 // MOVED BEFORE /:id TO PREVENT CONFLICT
-// MOVED BEFORE /:id TO PREVENT CONFLICT
+
 router.put('/reorder', auth, validate(reorderHabitsSchema), async (req, res) => {
     try {
         const { habits } = req.body; // Array of { _id, order }
@@ -79,7 +79,7 @@ router.put('/reorder', auth, validate(reorderHabitsSchema), async (req, res) => 
 // @route   PUT api/habits/:id/toggle
 // @desc    Toggle habit completion for a specific date
 // @access  Private
-// @access  Private
+
 router.put('/:id/toggle', auth, validate(toggleHabitSchema), async (req, res) => {
     try {
         const habit = await Habit.findOne({ _id: req.params.id, userId: req.user.id });
@@ -181,7 +181,7 @@ router.put('/:id/toggle', auth, validate(toggleHabitSchema), async (req, res) =>
 // @route   PUT api/habits/:id
 // @desc    Update a habit
 // @access  Private
-// @access  Private
+
 router.put('/:id', auth, validate(updateHabitSchema), async (req, res) => {
     try {
         const { name } = req.body;
@@ -201,7 +201,7 @@ router.put('/:id', auth, validate(updateHabitSchema), async (req, res) => {
 // @route   DELETE api/habits/:id
 // @desc    Delete a habit
 // @access  Private
-// @access  Private
+
 router.delete('/:id', auth, validate(deleteHabitSchema), async (req, res) => {
     try {
         const habit = await Habit.findById(req.params.id);

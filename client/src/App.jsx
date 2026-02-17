@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
@@ -5,16 +6,18 @@ import { AuthProvider } from './context/AuthContext';
 
 import RequireAuth from './components/RequireAuth';
 import Layout from './components/Layout';
-import AuthPage from './pages/AuthPage';
-import Dashboard from './pages/Dashboard';
-import ChatPage from './pages/ChatPage';
-import FocusPage from './pages/FocusPage';
-import JournalPage from './pages/JournalPage';
-import HabitsPage from './pages/HabitsPage';
-import ProfilePage from './pages/ProfilePage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
+
+// Lazy Load Pages
+const AuthPage = React.lazy(() => import('./pages/AuthPage'));
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const ChatPage = React.lazy(() => import('./pages/ChatPage'));
+const FocusPage = React.lazy(() => import('./pages/FocusPage'));
+const JournalPage = React.lazy(() => import('./pages/JournalPage'));
+const HabitsPage = React.lazy(() => import('./pages/HabitsPage'));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = React.lazy(() => import('./pages/ResetPasswordPage'));
+const VerifyEmailPage = React.lazy(() => import('./pages/VerifyEmailPage'));
 
 
 
@@ -22,26 +25,69 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 function App() {
   return (
     <BrowserRouter>
-
       <AuthProvider>
         <Routes>
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-          <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+          <Route path="/auth" element={
+            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+              <AuthPage />
+            </Suspense>
+          } />
+          <Route path="/forgot-password" element={
+            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+              <ForgotPasswordPage />
+            </Suspense>
+          } />
+          <Route path="/reset-password/:token" element={
+            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+              <ResetPasswordPage />
+            </Suspense>
+          } />
+          <Route path="/verify-email/:token" element={
+            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+              <VerifyEmailPage />
+            </Suspense>
+          } />
 
           <Route path="/" element={
             <RequireAuth>
               <Layout />
             </RequireAuth>
           }>
-            <Route index element={<Dashboard />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="chat/:id" element={<ChatPage />} />
-            <Route path="focus" element={<FocusPage />} />
-            <Route path="journal" element={<JournalPage />} />
-            <Route path="habits" element={<HabitsPage />} />
-            <Route path="profile" element={<ProfilePage />} />
+            <Route index element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Dashboard...</div>}>
+                <Dashboard />
+              </Suspense>
+            } />
+            <Route path="chat" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Chat...</div>}>
+                <ChatPage />
+              </Suspense>
+            } />
+            <Route path="chat/:id" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Chat...</div>}>
+                <ChatPage />
+              </Suspense>
+            } />
+            <Route path="focus" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Focus Mode...</div>}>
+                <FocusPage />
+              </Suspense>
+            } />
+            <Route path="journal" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Journal...</div>}>
+                <JournalPage />
+              </Suspense>
+            } />
+            <Route path="habits" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Habits...</div>}>
+                <HabitsPage />
+              </Suspense>
+            } />
+            <Route path="profile" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Profile...</div>}>
+                <ProfilePage />
+              </Suspense>
+            } />
           </Route>
         </Routes>
       </AuthProvider>

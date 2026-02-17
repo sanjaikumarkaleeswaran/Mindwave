@@ -32,7 +32,6 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Get a specific journal entry
-// Get a specific journal entry
 router.get('/:id', auth, validate(getJournalSchema), async (req, res) => {
     try {
         const journal = await Journal.findOne({
@@ -51,7 +50,6 @@ router.get('/:id', auth, validate(getJournalSchema), async (req, res) => {
     }
 });
 
-// Get journal entries by date range
 // Get journal entries by date range
 router.get('/range/:startDate/:endDate', auth, validate(getJournalRangeSchema), async (req, res) => {
     try {
@@ -72,7 +70,6 @@ router.get('/range/:startDate/:endDate', auth, validate(getJournalRangeSchema), 
     }
 });
 
-// Create a new journal entry
 // Create a new journal entry
 router.post('/', auth, validate(createJournalSchema), async (req, res) => {
     try {
@@ -106,7 +103,6 @@ router.post('/', auth, validate(createJournalSchema), async (req, res) => {
 });
 
 // Update a journal entry
-// Update a journal entry
 router.put('/:id', auth, validate(updateJournalSchema), async (req, res) => {
     try {
         const { title, content, mood, tags } = req.body;
@@ -134,7 +130,6 @@ router.put('/:id', auth, validate(updateJournalSchema), async (req, res) => {
 });
 
 // Delete a journal entry
-// Delete a journal entry
 router.delete('/:id', auth, validate(getJournalSchema), async (req, res) => {
     try {
         const journal = await Journal.findOneAndDelete({
@@ -153,7 +148,6 @@ router.delete('/:id', auth, validate(getJournalSchema), async (req, res) => {
     }
 });
 
-// AI Analysis of a journal entry
 // AI Analysis of a journal entry
 router.post('/:id/analyze', auth, validate(analyzeJournalSchema), async (req, res) => {
     try {
@@ -248,7 +242,6 @@ Provide your analysis in JSON format:
     }
 });
 
-// Get AI insights for multiple entries (weekly/monthly summary)
 // Get AI insights for multiple entries (weekly/monthly summary)
 router.post('/analyze/batch', auth, validate(batchAnalyzeSchema), async (req, res) => {
     try {

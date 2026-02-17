@@ -26,7 +26,7 @@ const sendEmail = require('../utils/sendEmail');
 // @route   POST api/auth/register
 // @desc    Register user
 // @access  Public
-// @access  Public
+
 router.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -89,10 +89,8 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 // @route   POST api/auth/login
 // @desc    Authenticate user & get token
 // @access  Public
-// @access  Public
-// @route   POST api/auth/login
-// @desc    Authenticate user & get token
-// @access  Public
+
+
 router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     const { email, password } = req.body;
     console.log(`Login attempt for: ${email}`);
@@ -155,7 +153,7 @@ router.get('/user', auth, async (req, res) => {
 // @route   PUT api/auth/profile
 // @desc    Update user profile
 // @access  Private
-// @access  Private
+
 router.put('/profile', auth, validate(updateProfileSchema), async (req, res) => {
     const { name, avatar } = req.body;
     try {
@@ -208,9 +206,9 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
             return res.status(400).json({ msg: 'No file uploaded' });
         }
 
-        // Construct URL (assuming server is on same domain/port for now or relative path)
-        // In production, you might want a full URL or handle this on the client
-        const avatarUrl = `http://localhost:${process.env.PORT || 5000}/${req.file.path.replace(/\\/g, "/")}`;
+        // Construct URL
+        const baseUrl = process.env.API_URL || `http://localhost:${process.env.PORT || 5000}`;
+        const avatarUrl = `${baseUrl}/${req.file.path.replace(/\\/g, "/")}`;
 
         const user = await User.findById(req.user.id);
         user.avatar = avatarUrl;
@@ -226,7 +224,7 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
 // @route   PUT api/auth/verify-email/:token
 // @desc    Verify Email
 // @access  Public
-// @access  Public
+
 router.put('/verify-email/:token', validate(verifyEmailSchema), async (req, res) => {
     try {
         const verificationToken = crypto
@@ -259,7 +257,7 @@ router.put('/verify-email/:token', validate(verifyEmailSchema), async (req, res)
 // @route   POST api/auth/forgot-password
 // @desc    Forgot Password
 // @access  Public
-// @access  Public
+
 router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), async (req, res) => {
     const { email } = req.body;
 
@@ -319,7 +317,7 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
 // @route   PUT api/auth/reset-password/:resetToken
 // @desc    Reset Password
 // @access  Public
-// @access  Public
+
 router.put('/reset-password/:resetToken', validate(resetPasswordSchema), async (req, res) => {
     try {
         // Get hashed token

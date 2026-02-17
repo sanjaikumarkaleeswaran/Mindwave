@@ -114,7 +114,7 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
 
                 {/* 1. Quick Chat / AI Card */}
                 <Link to="/chat" className="group relative glass-card p-6 overflow-hidden flex flex-col">

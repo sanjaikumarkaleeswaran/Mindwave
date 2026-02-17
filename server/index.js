@@ -21,20 +21,24 @@ app.use('/api', limiter); // Rate limiting
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// DB Connection // // 
+// DB Connection
 const connectDB = async () => {
     try {
         const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
         console.log("Attempting to connect to MongoDB with URI found:", !!uri);
+
         if (!uri) {
             console.error("CRITICAL ERROR: MongoDB URI is undefined. Check .env file.");
             console.log("Current Environment Variables Keys:", Object.keys(process.env));
+            process.exit(1); // Exit process with failure
+            return;
         }
-        await mongoose.connect(uri); // removed deprecated options
+
+        await mongoose.connect(uri);
         console.log('MongoDB Connected...');
     } catch (err) {
         console.error('MongoDB Connection Error:', err.message);
-        // process.exit(1); // Keep running to show "Connection Error" on console if config is wrong
+        process.exit(1); // Exit process with failure
     }
 };
 connectDB();

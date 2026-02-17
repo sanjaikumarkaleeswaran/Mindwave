@@ -20,10 +20,10 @@ export default function Layout() {
 
             <div className="flex-1 flex flex-col min-h-screen md:ml-64 transition-all duration-300 relative">
                 {/* Mobile Header */}
-                <header className="md:hidden flex items-center p-4 bg-zinc-950 border-b border-zinc-900 sticky top-0 z-30">
+                <header className="md:hidden flex items-center p-4 glass sticky top-0 z-30 border-b border-white/5">
                     <button
                         onClick={() => setIsSidebarOpen(true)}
-                        className="p-2 -ml-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900"
+                        className="p-2 -ml-2 text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
                     >
                         <Menu className="w-6 h-6" />
                     </button>

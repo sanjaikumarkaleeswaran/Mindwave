@@ -47,7 +47,6 @@ router.post('/conversations', auth, async (req, res) => {
 
 // @route   DELETE api/chat/conversations/:id
 // @desc    Delete conversation
-// @desc    Delete conversation
 router.delete('/conversations/:id', auth, validate(deleteConversationSchema), async (req, res) => {
     try {
         const conv = await Conversation.findById(req.params.id);
@@ -65,7 +64,6 @@ router.delete('/conversations/:id', auth, validate(deleteConversationSchema), as
 
 // @route   GET api/chat/:conversationId
 // @desc    Get messages for a specific conversation
-// @desc    Get messages for a specific conversation
 router.get('/:conversationId', auth, validate(conversationIdSchema), async (req, res) => {
     try {
         const messages = await ChatHistory.find({
@@ -79,10 +77,6 @@ router.get('/:conversationId', auth, validate(conversationIdSchema), async (req,
     }
 });
 
-// @route   POST api/chat/send
-// @desc    Send message to AI
-// @route   POST api/chat/send
-// @desc    Send message to AI with optional file
 // @route   POST api/chat/send
 // @desc    Send message to AI with optional file
 // Note: Multer middleware must come before validation if validation depends on body fields that might be in multipart form

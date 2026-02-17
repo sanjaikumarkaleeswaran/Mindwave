@@ -87,13 +87,24 @@ export default function Sidebar({ isOpen, onClose }) {
             <motion.aside
                 initial={false}
                 animate={{
-                    x: isOpen || window.innerWidth >= 768 ? 0 : "-100%"
+                    x: isOpen ? 0 : "-100%"
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={clsx(
-                    "w-64 glass-panel flex flex-col h-screen fixed left-0 top-0 z-50 md:translate-x-0"
+                    "w-64 glass-panel flex flex-col h-screen fixed left-0 top-0 z-50",
+                    // On desktop (md), we force translate-x-0 via !important or specific class that overrides the inline style if possible,
+                    // BUT inline styles from Framer Motion usually win.
+                    // Strategy: Use a variant that accounts for media query or disable animation on desktop?
+                    // Better: Use a conditional render or style reset for desktop.
+                    // However, we want the sidebar to be always visible on desktop.
+                    // We can use a separate div for desktop sidebar and mobile sidebar, but that duplicates code.
+                    // The best way with Framer Motion + Tailwind responsive is to use the `style` prop reset or distinct logic.
+                    // Here we will use a Layout effect or simply rely on "md:translate-x-0 md:!translate-x-0" and ensure Framer doesn't overwrite it if we can.
+                    // Actually, modifying the animate prop to be null on desktop is cleaner if we can detect it.
+                    // A simple CSS override works best.
+                    "md:!translate-x-0"
                 )}
-                style={{ x: isOpen ? 0 : "-100%" }} // Fallback/Base state handling via motion
+                style={{ x: isOpen ? 0 : "-100%" }}
             >
                 {/* Brand */}
                 <div className="p-6 flex items-center gap-3">
