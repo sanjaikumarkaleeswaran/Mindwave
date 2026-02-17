@@ -63,10 +63,10 @@ export default function Sidebar({ isOpen, onClose }) {
 
     const navItems = [
         { icon: Home, label: 'Home', path: '/' },
-        { icon: CheckCircle, label: 'Habits', path: '/habits' },
-        { icon: Zap, label: 'Focus', path: '/focus' },
-        { icon: BookOpen, label: 'Journal', path: '/journal' },
         { icon: MessageSquare, label: 'Chat', path: '/chat' },
+        { icon: Zap, label: 'Focus', path: '/focus' },
+        { icon: CheckCircle, label: 'Habits', path: '/habits' },
+        { icon: BookOpen, label: 'Journal', path: '/journal' },
     ];
 
     return (
