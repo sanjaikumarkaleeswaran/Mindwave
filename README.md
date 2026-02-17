@@ -6,6 +6,13 @@ A self-hosted, private "digital brain" that organizes your life. This applicatio
 
 ## 🌟 Features
 
+### 📱 Fully Responsive & Mobile-First
+*   **Universal Design**: Works seamlessly on all devices, from small phones (375px) to large desktops.
+*   **Adaptive Layouts**:
+    *   **Dashboard**: Auto-adjusts from 1 column on mobile to 4 columns on large screens.
+    *   **Navigation**: Smooth mobile drawer with glassmorphism effects and touch-friendly controls.
+    *   **PWA Ready**: Installable as a native app on iOS and Android. Hide browser chrome and get a fullscreen experience.
+
 ### 🤖 Context-Aware AI Chat
 *   **Powered by Groq/Llama 3**: Fast, intelligent responses using the Groq SDK.
 *   **Integrated Control**: The AI isn't just a chatbot; it connects to your data.
@@ -15,6 +22,7 @@ A self-hosted, private "digital brain" that organizes your life. This applicatio
 ### 📅 Advanced Habit Tracker
 *   **Streak Tracking**: Monitor your daily progress and current streaks.
 *   **Visual Consistency**: Weekly calendar views to visually see your consistency with heatmaps.
+*   **Mobile Optimized**: Easy tap-to-complete interface for tracking habits on the go.
 *   **AI Insights**: Get qualitative feedback on your performance and actionable advice for improvement.
 
 ### ✍️ Intelligent Journaling
@@ -34,6 +42,8 @@ A self-hosted, private "digital brain" that organizes your life. This applicatio
 ## 🛠 Tech Stack
 
 *   **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons.
+*   **PWA**: Vite PWA Plugin, Manifest generation, Service Worker (offline capable).
+*   **Performance**: React Suspense & Lazy Loading for fast mobile performance.
 *   **Backend**: Node.js, Express.
 *   **Database**: MongoDB (via Mongoose).
 *   **AI Engine**: Groq SDK (Llama 3.3 70b Versatile).
@@ -100,10 +110,12 @@ A self-hosted, private "digital brain" that organizes your life. This applicatio
 d:/webforme
 ├── client/                 # React Frontend & Vite Configuration
 │   ├── src/
-│   │   ├── components/     # Reusable UI components
+│   │   ├── components/     # Reusable UI components (Sidebar, Layout)
 │   │   ├── context/        # Auth & Theme Context
 │   │   ├── pages/          # Dashboard, Journal, Focus, Profile
 │   │   └── lib/            # Utilities (Axios, Date helpers)
+│   ├── public/             # PWA Static Assets (Icons, Manifest)
+│   └── vite.config.js      # Vite & PWA Configuration
 │   └── ...
 ├── server/                 # Express Backend
 │   ├── models/             # Mongoose Schemas (User, Habit, Journal, Chat)
@@ -116,6 +128,7 @@ d:/webforme
 ## 🔮 Future Roadmap
 - [ ] Voice interface for hands-free interaction.
 - [x] Mobile-responsive PWA (Progressive Web App).
+- [x] Tablet-optimized dashboard layout.
 - [ ] Export data feature (JSON/CSV).
 
 ## 📱 Mobile Installation (PWA)
