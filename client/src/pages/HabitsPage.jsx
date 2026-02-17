@@ -333,7 +333,7 @@ export default function HabitsPage() {
                 <title>Habit Tracker | Life OS</title>
             </Helmet>
             {/* Header */}
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-4">
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-4">
                 <div className="w-full md:w-auto">
                     <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Habit Tracker</h1>
                     <div className="flex items-center gap-2 text-sm text-zinc-500 mt-2">
@@ -345,43 +345,42 @@ export default function HabitsPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                <div className="grid grid-cols-2 sm:flex flex-wrap items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
                     <button
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
-                        className="flex-1 md:flex-none px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50 whitespace-nowrap"
+                        className="col-span-1 sm:flex-none px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50 whitespace-nowrap text-sm"
                     >
-                        <Sparkles className="w-4 h-4" />
-                        {isAnalyzing ? 'Analyzing...' : 'AI Insights'}
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {isAnalyzing ? '...' : 'Insights'}
                     </button>
 
                     <button
                         onClick={() => setShowCalendar(true)}
-                        className="flex-1 md:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                        className="col-span-1 sm:flex-none px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm"
                     >
-                        <Calendar className="w-4 h-4" />
-                        <span className="hidden sm:inline">Calendar View</span>
-                        <span className="sm:hidden">Calendar</span>
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>Calendar</span>
                     </button>
 
-                    <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto overflow-x-auto">
+                    <div className="col-span-2 sm:col-span-auto flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto overflow-x-auto">
                         <button
                             onClick={() => setViewMode('table')}
-                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
+                            className={`flex-1 md:flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all text-center ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
                         >
                             Table
                         </button>
                         <button
                             onClick={() => setViewMode('grid')}
-                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'grid' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
+                            className={`flex-1 md:flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all text-center ${viewMode === 'grid' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
                         >
                             Grid
                         </button>
                         <button
                             onClick={() => setViewMode('history')}
-                            className={`flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-all text-center ${viewMode === 'history' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'} flex items-center justify-center gap-2`}
+                            className={`flex-1 md:flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all text-center ${viewMode === 'history' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'} flex items-center justify-center gap-1.5`}
                         >
-                            <History className="w-3.5 h-3.5" />
+                            <History className="w-3 h-3" />
                             History
                         </button>
                     </div>

@@ -125,7 +125,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="h-[calc(100vh-4rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl">
+        <div className="h-[100dvh] md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl">
             <Helmet>
                 <title>Chat | Life OS</title>
             </Helmet>
@@ -214,7 +214,7 @@ export default function ChatPage() {
                 </div>
             ) : (
                 <>
-                    <div className="flex-1 overflow-y-auto p-6 pt-14 md:pt-6 space-y-6 scroll-smooth" ref={scrollRef}>
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-14 md:pt-6 space-y-6 scroll-smooth overscroll-contain" ref={scrollRef}>
                         <div className="max-w-5xl mx-auto space-y-6">
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`w-full flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>

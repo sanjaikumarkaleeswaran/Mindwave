@@ -4,13 +4,13 @@ const createHabitSchema = z.object({
     body: z.object({
         name: z.string().min(1, 'Habit name is required').max(100, 'Habit name must be less than 100 characters'),
         frequency: z.enum(['daily', 'weekly']).optional(),
-    }),
+    }).strict(),
 });
 
 const updateHabitSchema = z.object({
     body: z.object({
         name: z.string().min(1).max(100).optional(),
-    }),
+    }).strict(),
     params: z.object({
         id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Habit ID'),
     }),
@@ -19,7 +19,7 @@ const updateHabitSchema = z.object({
 const toggleHabitSchema = z.object({
     body: z.object({
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'Date must be in YYYY-MM-DD format').optional(),
-    }),
+    }).strict(),
     params: z.object({
         id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Habit ID'),
     }),
@@ -33,13 +33,13 @@ const reorderHabitsSchema = z.object({
                 order: z.number().int().min(0),
             })
         ),
-    }),
+    }).strict(),
 });
 
 const deleteHabitSchema = z.object({
     params: z.object({
         id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Habit ID'),
-    }),
+    }).strict(),
 });
 
 module.exports = {

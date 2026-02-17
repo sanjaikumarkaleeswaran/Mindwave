@@ -7,7 +7,7 @@ const createJournalSchema = z.object({
         mood: z.string().max(50).optional(),
         tags: z.array(z.string().max(30)).max(10).optional(),
         date: z.string().datetime().optional().or(z.string().regex(/^\d{4}-\d{2}-\d{2}/)).optional(), // Allow ISO or date string
-    }),
+    }).strict(),
 });
 
 const updateJournalSchema = z.object({
@@ -19,7 +19,7 @@ const updateJournalSchema = z.object({
         content: z.string().min(1).max(20000).optional(),
         mood: z.string().max(50).optional(),
         tags: z.array(z.string().max(30)).max(10).optional(),
-    }),
+    }).strict(),
 });
 
 const getJournalSchema = z.object({
@@ -45,7 +45,7 @@ const batchAnalyzeSchema = z.object({
     body: z.object({
         startDate: z.string(),
         endDate: z.string(),
-    }),
+    }).strict(),
 });
 
 module.exports = {
