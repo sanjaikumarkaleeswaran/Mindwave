@@ -196,6 +196,45 @@ router.delete('/profile', auth, async (req, res) => {
     }
 });
 
+// @route   GET api/auth/export
+// @desc    Export all user data
+// @access  Private
+router.get('/export', auth, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Fetch all data in parallel
+        const [user, journals, habits, conversationDocs, chatHistoryDocs] = await Promise.all([
+            User.findById(userId).select('-password -verificationToken -resetPasswordToken').lean(),
+            Journal.find({ userId }).lean(),
+            Habit.find({ userId }).lean(),
+            Conversation.find({ userId }).lean(),
+            ChatHistory.find({ userId }).lean()
+        ]);
+
+        const exportData = {
+            user,
+            journals,
+            habits,
+            chat: {
+                conversations: conversationDocs,
+                history: chatHistoryDocs
+            },
+            exportDate: new Date().toISOString()
+        };
+
+        // If called directly via browser, force download
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename=mindwave_export_${userId}.json`);
+
+        res.json(exportData);
+
+    } catch (err) {
+        console.error("EXPORT ERROR:", err.message);
+        res.status(500).send('Server Error during export');
+    }
+});
+
 // @route   POST api/auth/upload-avatar
 // @desc    Upload user avatar
 // @access  Private

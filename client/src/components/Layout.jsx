@@ -30,7 +30,7 @@ export default function Layout() {
                     <span className="ml-3 font-semibold text-lg bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">Life OS</span>
                 </header>
 
-                <main className="flex-1 pb-24">
+                <main className={`flex-1 ${location.pathname.startsWith('/chat') ? 'pb-0' : 'pb-24'}`}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={location.pathname}

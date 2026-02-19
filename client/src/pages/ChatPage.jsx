@@ -13,6 +13,7 @@ export default function ChatPage() {
     const queryClient = useQueryClient();
     const [input, setInput] = useState('');
     const scrollRef = useRef(null);
+
     // Model Selection State
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
     const [showModelMenu, setShowModelMenu] = useState(false);
@@ -140,6 +141,8 @@ export default function ChatPage() {
                         <ChevronDown className="w-3.5 h-3.5" />
                     </button>
 
+
+
                     {showModelMenu && (
                         <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 z-50">
                             {models.map(model => (
@@ -163,114 +166,32 @@ export default function ChatPage() {
                 </div>
             </div>
 
-            {!id && messages.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                    <div className="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-500/20">
-                        <Bot className="w-10 h-10 text-white" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">How can I help you today?</h2>
-                    <p className="text-zinc-400 max-w-md mb-8">
-                        I can help you track your habits, analyze your progress, and answer your questions.
-                    </p>
-
-                    {/* Suggestions */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mb-8">
-                        {suggestions.map((s, i) => (
-                            <button
-                                key={i}
-                                onClick={() => handleSuggestionClick(s.text)}
-                                className="p-4 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-indigo-500/50 rounded-xl text-left transition-all group"
-                            >
-                                <div className="text-lg mb-1">{s.icon}</div>
-                                <div className="text-sm text-zinc-300 group-hover:text-white font-medium">{s.text}</div>
-                            </button>
-                        ))}
-                    </div>
-
-                    <form onSubmit={handleSend} className="w-full max-w-lg relative">
-                        <textarea
-                            autoFocus
-                            rows={1}
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSend(e);
-                                }
-                            }}
-                            placeholder="Message Life OS..."
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner resize-none min-h-[56px] custom-scrollbar"
-                            style={{ maxHeight: '200px' }}
-                        />
-                        <button
-                            type="submit"
-                            disabled={sendMutation.isPending || !input.trim()}
-                            className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
-                        >
-                            <Send className="w-5 h-5" />
-                        </button>
-                    </form>
-                </div>
-            ) : (
-                <>
-                    <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-14 md:pt-6 space-y-6 scroll-smooth overscroll-contain" ref={scrollRef}>
-                        <div className="max-w-5xl mx-auto space-y-6">
-                            {messages.map((msg, idx) => (
-                                <div key={idx} className={`w-full flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
-                                        {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-indigo-400" />}
-                                    </div>
-                                    <div className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-5 py-3 shadow-sm ${msg.role === 'user'
-                                        ? 'bg-indigo-600 text-white rounded-tr-sm'
-                                        : 'bg-zinc-800 text-zinc-100 rounded-tl-sm'
-                                        }`}>
-                                        <div className="markdown-body text-sm md:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-                                                    ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
-                                                    ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
-                                                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                                                    code: ({ node, inline, className, children, ...props }) => {
-                                                        return inline ? (
-                                                            <code className="bg-zinc-700/50 px-1 py-0.5 rounded text-xs font-mono" {...props}>
-                                                                {children}
-                                                            </code>
-                                                        ) : (
-                                                            <pre className="bg-zinc-900/50 p-3 rounded-lg overflow-x-auto my-2 text-xs font-mono border border-zinc-700/50">
-                                                                <code className={className} {...props}>
-                                                                    {children}
-                                                                </code>
-                                                            </pre>
-                                                        )
-                                                    }
-                                                }}
-                                            >
-                                                {msg.content}
-                                            </ReactMarkdown>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {sendMutation.isPending && (
-                                <div className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0">
-                                        <Bot className="w-5 h-5" />
-                                    </div>
-                                    <div className="bg-zinc-900 rounded-2xl px-5 py-3 rounded-tl-sm flex gap-1 items-center border border-zinc-800">
-                                        <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"></span>
-                                        <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-100"></span>
-                                        <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-200"></span>
-                                    </div>
-                                </div>
-                            )}
+            {
+                !id && messages.length === 0 ? (
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                        <div className="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-500/20">
+                            <Bot className="w-10 h-10 text-white" />
                         </div>
-                    </div>
+                        <h2 className="text-2xl font-bold text-white mb-2">How can I help you today?</h2>
+                        <p className="text-zinc-400 max-w-md mb-8">
+                            I can help you track your habits, analyze your progress, and answer your questions.
+                        </p>
 
-                    <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800">
-                        <div className="relative max-w-5xl mx-auto">
+                        {/* Suggestions */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mb-8">
+                            {suggestions.map((s, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleSuggestionClick(s.text)}
+                                    className="p-4 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-indigo-500/50 rounded-xl text-left transition-all group"
+                                >
+                                    <div className="text-lg mb-1">{s.icon}</div>
+                                    <div className="text-sm text-zinc-300 group-hover:text-white font-medium">{s.text}</div>
+                                </button>
+                            ))}
+                        </div>
+
+                        <form onSubmit={handleSend} className="w-full max-w-lg relative">
                             <textarea
                                 autoFocus
                                 rows={1}
@@ -283,20 +204,104 @@ export default function ChatPage() {
                                     }
                                 }}
                                 placeholder="Message Life OS..."
-                                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 pr-14 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pr-24 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner resize-none min-h-[56px] custom-scrollbar"
                                 style={{ maxHeight: '200px' }}
                             />
                             <button
                                 type="submit"
                                 disabled={sendMutation.isPending || !input.trim()}
-                                className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                                className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
                             >
                                 <Send className="w-5 h-5" />
                             </button>
+                        </form>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-14 md:pt-6 space-y-6 scroll-smooth overscroll-contain" ref={scrollRef}>
+                            <div className="max-w-5xl mx-auto space-y-6">
+                                {messages.map((msg, idx) => (
+                                    <div key={idx} className={`w-full flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+                                            {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-indigo-400" />}
+                                        </div>
+                                        <div className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-5 py-3 shadow-sm ${msg.role === 'user'
+                                            ? 'bg-indigo-600 text-white rounded-tr-sm'
+                                            : 'bg-zinc-800 text-zinc-100 rounded-tl-sm'
+                                            }`}>
+                                            <div className="markdown-body text-sm md:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                        ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                                                        ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                                                        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                                                        code: ({ node, inline, className, children, ...props }) => {
+                                                            return inline ? (
+                                                                <code className="bg-zinc-700/50 px-1 py-0.5 rounded text-xs font-mono" {...props}>
+                                                                    {children}
+                                                                </code>
+                                                            ) : (
+                                                                <pre className="bg-zinc-900/50 p-3 rounded-lg overflow-x-auto my-2 text-xs font-mono border border-zinc-700/50">
+                                                                    <code className={className} {...props}>
+                                                                        {children}
+                                                                    </code>
+                                                                </pre>
+                                                            )
+                                                        }
+                                                    }}
+                                                >
+                                                    {msg.content}
+                                                </ReactMarkdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {sendMutation.isPending && (
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shrink-0">
+                                            <Bot className="w-5 h-5" />
+                                        </div>
+                                        <div className="bg-zinc-900 rounded-2xl px-5 py-3 rounded-tl-sm flex gap-1 items-center border border-zinc-800">
+                                            <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce"></span>
+                                            <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-100"></span>
+                                            <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-200"></span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </form>
-                </>
-            )}
-        </div>
+
+                        <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800">
+                            <div className="relative max-w-5xl mx-auto">
+                                <textarea
+                                    autoFocus
+                                    rows={1}
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSend(e);
+                                        }
+                                    }}
+                                    placeholder="Message Life OS..."
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 pr-24 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                    style={{ maxHeight: '200px' }}
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={sendMutation.isPending || !input.trim()}
+                                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                                >
+                                    <Send className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </form>
+                    </>
+                )
+            }
+        </div >
     );
 }

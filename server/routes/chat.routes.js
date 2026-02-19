@@ -184,17 +184,42 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
 
         // 5. Tool Parsing & Execution (Backend Side)
         try {
-            // Updated Regex to find ALL JSON objects in the string
-            // This regex tries to match separate JSON objects
-            const jsonMatches = aiResponseContent.match(/\{"action":\s*"[^"]+".*?\}/g);
+            let actionList = [];
 
-            if (jsonMatches && jsonMatches.length > 0) {
+            // Attempt 1: Parse entire response as JSON
+            try {
+                // simple cleanup in case of wrapping 'json ... '
+                const cleanContent = aiResponseContent.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
+                const parsed = JSON.parse(cleanContent);
+                if (Array.isArray(parsed)) actionList = parsed;
+                else if (typeof parsed === 'object' && parsed !== null) actionList = [parsed];
+            } catch (e) {
+                // Attempt 2: Extract JSON block from markdown code blocks if present
+                const jsonBlockMatch = aiResponseContent.match(/```json([\s\S]*?)```/) || aiResponseContent.match(/```([\s\S]*?)```/);
+                if (jsonBlockMatch && jsonBlockMatch[1]) {
+                    try {
+                        const parsed = JSON.parse(jsonBlockMatch[1]);
+                        if (Array.isArray(parsed)) actionList = parsed;
+                        else if (typeof parsed === 'object') actionList = [parsed];
+                    } catch (e2) { }
+                }
+
+                // Attempt 3: Regex for individual actions (fallback)
+                if (actionList.length === 0) {
+                    const jsonMatches = aiResponseContent.match(/\{"action":\s*"[^"]+".*?\}/g);
+                    if (jsonMatches) {
+                        jsonMatches.forEach(str => {
+                            try { actionList.push(JSON.parse(str)); } catch (e) { }
+                        });
+                    }
+                }
+            }
+
+            if (actionList.length > 0) {
                 let successCount = 0;
 
-                for (const jsonStr of jsonMatches) {
+                for (const actionData of actionList) {
                     try {
-                        const actionData = JSON.parse(jsonStr);
-
                         if (actionData.action === 'CREATE_HABIT') {
                             const newHabit = new Habit({
                                 userId: req.user.id,
@@ -229,7 +254,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
                             }
                         }
                     } catch (innerErr) {
-                        // ignore formatting errors for individual partial matches
+                        console.error("Error executing action:", innerErr);
                     }
                 }
 

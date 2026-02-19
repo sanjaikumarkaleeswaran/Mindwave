@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Helmet } from 'react-helmet-async';
-import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X } from 'lucide-react';
+import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X, FileDown, CheckCircle } from 'lucide-react';
+import api from '../lib/axios';
 
 export default function ProfilePage() {
     const { user, logout, updateProfile, uploadAvatar, deleteAccount } = useAuth();
@@ -15,6 +16,7 @@ export default function ProfilePage() {
     });
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
@@ -58,6 +60,30 @@ export default function ProfilePage() {
             setMessage({ type: 'error', text: 'Failed to upload avatar' });
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleExportData = async () => {
+        setExporting(true);
+        setMessage({ type: '', text: '' });
+        try {
+            const response = await api.get('/auth/export', { responseType: 'blob' });
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `mindwave_export_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            setMessage({ type: 'success', text: 'Data exported successfully!' });
+        } catch (err) {
+            console.error(err);
+            setMessage({ type: 'error', text: 'Failed to export data.' });
+        } finally {
+            setExporting(false);
         }
     };
 
@@ -203,6 +229,41 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            {/* Data Export */}
+            <div className="md:col-span-1 lg:col-span-3">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6 shadow-xl">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <FileDown className="w-5 h-5 text-indigo-400" />
+                                Export Your Data
+                            </h3>
+                            <p className="text-zinc-400 text-sm max-w-xl">
+                                Download a copy of all your data (journals, habits, chat history) in JSON format.
+                                You can use this for backup or to migrate to another service.
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleExportData}
+                            disabled={exporting}
+                            className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-all text-sm font-medium border border-zinc-700 flex items-center gap-2 disabled:opacity-50"
+                        >
+                            {exporting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Exporting...
+                                </>
+                            ) : (
+                                <>
+                                    <FileDown className="w-4 h-4" />
+                                    Export Data
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
