@@ -293,7 +293,7 @@ const JournalPage = () => {
                                                 type="text"
                                                 value={tagInput}
                                                 onChange={(e) => setTagInput(e.target.value)}
-                                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                                                 placeholder="Add a tag..."
                                                 className="flex-1 px-4 py-2 bg-slate-900/50 border border-purple-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
                                             />

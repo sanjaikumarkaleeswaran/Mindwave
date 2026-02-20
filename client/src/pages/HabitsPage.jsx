@@ -114,11 +114,18 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
 export default function HabitsPage() {
     const queryClient = useQueryClient();
     const [newHabit, setNewHabit] = useState('');
-    const [viewMode, setViewMode] = useState(window.innerWidth < 768 ? 'grid' : 'table');
+    const [viewMode, setViewMode] = useState(() => window.innerWidth < 768 ? 'grid' : 'table');
     const [showCalendar, setShowCalendar] = useState(false);
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
+
+    // Update viewMode on window resize
+    useEffect(() => {
+        const onResize = () => setViewMode(window.innerWidth < 768 ? 'grid' : 'table');
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     const { data: habits = [], isLoading: loading } = useQuery({
         queryKey: ['habits'],
@@ -141,10 +148,6 @@ export default function HabitsPage() {
         }
     };
 
-    // DEBUG: Ensure currentDate is active
-    useEffect(() => {
-        console.log("Habits Page Mounted. Current Date:", currentDate);
-    }, [currentDate]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),

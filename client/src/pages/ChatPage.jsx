@@ -40,7 +40,7 @@ export default function ChatPage() {
             return api.post('/chat/send', { message: content, conversationId, model });
         },
         onMutate: async ({ content, conversationId }) => {
-            await queryClient.cancelQueries(['chat', conversationId]);
+            await queryClient.cancelQueries({ queryKey: ['chat', conversationId] });
             const previousMessages = queryClient.getQueryData(['chat', conversationId]) || [];
 
             // Optimistic update
@@ -56,7 +56,7 @@ export default function ChatPage() {
                 { role: 'assistant', content: aiContent, timestamp: new Date() }
             ]);
             // Invalidate conversations list in sidebar
-            queryClient.invalidateQueries(['conversations']);
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
         },
         onError: (err, vars, context) => {
             queryClient.setQueryData(['chat', vars.conversationId], context.previousMessages);

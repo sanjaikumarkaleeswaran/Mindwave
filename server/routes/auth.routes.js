@@ -110,6 +110,12 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
+        // Check if email is verified
+        if (!user.isVerified) {
+            console.log(`Unverified login attempt for: ${email}`);
+            return res.status(403).json({ msg: 'Please verify your email before logging in. Check your inbox for the verification link.' });
+        }
+
         const payload = {
             user: {
                 id: user.id
@@ -203,13 +209,27 @@ router.get('/export', auth, async (req, res) => {
     try {
         const userId = req.user.id;
 
+        // Optional date range filter
+        const { from, to } = req.query;
+        const dateFilter = {};
+        if (from) dateFilter.$gte = new Date(from);
+        if (to) {
+            const toDate = new Date(to);
+            toDate.setHours(23, 59, 59, 999); // include the whole end day
+            dateFilter.$lte = toDate;
+        }
+
+        const journalQuery = { userId, ...(Object.keys(dateFilter).length ? { date: dateFilter } : {}) };
+        const habitQuery = { userId, ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}) };
+        const chatQuery = { userId, ...(Object.keys(dateFilter).length ? { timestamp: dateFilter } : {}) };
+
         // Fetch all data in parallel
         const [user, journals, habits, conversationDocs, chatHistoryDocs] = await Promise.all([
             User.findById(userId).select('-password -verificationToken -resetPasswordToken').lean(),
-            Journal.find({ userId }).lean(),
-            Habit.find({ userId }).lean(),
+            Journal.find(journalQuery).sort({ date: -1 }).lean(),
+            Habit.find(habitQuery).lean(),
             Conversation.find({ userId }).lean(),
-            ChatHistory.find({ userId }).lean()
+            ChatHistory.find(chatQuery).sort({ timestamp: 1 }).lean()
         ]);
 
         const exportData = {
@@ -220,13 +240,12 @@ router.get('/export', auth, async (req, res) => {
                 conversations: conversationDocs,
                 history: chatHistoryDocs
             },
-            exportDate: new Date().toISOString()
+            exportDate: new Date().toISOString(),
+            ...(from || to ? { dateFilter: { from: from || 'all', to: to || 'all' } } : {})
         };
 
-        // If called directly via browser, force download
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Content-Disposition', `attachment; filename=mindwave_export_${userId}.json`);
-
         res.json(exportData);
 
     } catch (err) {
@@ -322,8 +341,8 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
         await user.save();
 
         // Create reset url
-        // Assuming client is on port 5173
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
         const message = `
             You are receiving this email because you (or someone else) has requested the reset of a password.
@@ -384,6 +403,54 @@ router.put('/reset-password/:resetToken', validate(resetPasswordSchema), async (
         await user.save();
 
         res.status(200).json({ success: true, data: 'Password updated' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST api/auth/resend-verification
+// @desc    Resend email verification link
+// @access  Public
+
+router.post('/resend-verification', authLimiter, async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json({ msg: 'Email is required' });
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            // Don't reveal if email exists
+            return res.json({ success: true, msg: 'If this email exists and is unverified, a link has been sent.' });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ msg: 'This account is already verified. Please log in.' });
+        }
+
+        // Generate a fresh token
+        const verificationToken = crypto.randomBytes(20).toString('hex');
+        user.verificationToken = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+        user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+        await user.save();
+
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
+        const message = `Please click the following link to verify your account: \n\n ${verifyUrl}`;
+
+        await sendEmail({
+            email: user.email,
+            subject: 'Resend: Account Verification',
+            message
+        });
+
+        res.json({ success: true, msg: 'Verification email resent successfully.' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

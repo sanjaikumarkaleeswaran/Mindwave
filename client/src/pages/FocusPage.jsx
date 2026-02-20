@@ -145,6 +145,18 @@ export default function FocusPage() {
     const [selectedHabitId, setSelectedHabitId] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
 
+    // Notification permission state
+    const [notifPermission, setNotifPermission] = useState(
+        typeof Notification !== 'undefined' ? Notification.permission : 'denied'
+    );
+
+    // Request notification permission
+    const requestNotifPermission = async () => {
+        if (typeof Notification === 'undefined') return;
+        const result = await Notification.requestPermission();
+        setNotifPermission(result);
+    };
+
     // Audio State
     const [selectedSound, setSelectedSound] = useState('meditation5');
     const [isMuted, setIsMuted] = useState(false);
@@ -318,6 +330,28 @@ export default function FocusPage() {
                     <h1 className="text-4xl font-bold text-white tracking-tight">Focus Mode</h1>
                     <p className="text-zinc-400">Select a habit and start your session</p>
                 </div>
+
+                {/* Notification Permission Banner */}
+                {notifPermission === 'default' && (
+                    <div className="w-full flex items-center justify-between gap-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl px-4 py-3">
+                        <div className="flex items-center gap-2 text-sm text-indigo-300">
+                            <span className="text-lg">🔔</span>
+                            <span>Enable notifications to get alerted when your focus session ends.</span>
+                        </div>
+                        <button
+                            onClick={requestNotifPermission}
+                            className="shrink-0 px-3 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+                        >
+                            Enable
+                        </button>
+                    </div>
+                )}
+                {notifPermission === 'denied' && (
+                    <div className="w-full flex items-center gap-3 bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-2.5">
+                        <span className="text-lg">🔕</span>
+                        <span className="text-xs text-zinc-500">Notifications are blocked. Enable them in your browser settings to get session-end alerts.</span>
+                    </div>
+                )}
 
                 {/* Habit Selector */}
                 <div className="w-full">

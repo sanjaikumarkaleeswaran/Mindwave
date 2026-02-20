@@ -246,55 +246,154 @@ export default function Dashboard() {
             </div>
 
             {/* Weekly Activity Chart */}
-            <div className="glass-card p-6 md:p-8 relative">
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                            <Activity className="w-5 h-5 text-indigo-400" />
-                            Weekly Activity
-                        </h3>
-                        <p className="text-zinc-500 text-sm mt-1">Consistency over the last 7 days</p>
+            <div className="relative rounded-2xl overflow-hidden border border-white/5"
+                style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(15,15,20,0.95) 60%, rgba(16,185,129,0.04) 100%)' }}>
+
+                {/* Ambient glow blobs */}
+                <div className="absolute -top-16 left-1/4 w-56 h-56 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 right-1/4 w-48 h-48 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative p-6 md:p-8">
+
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-8">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="p-1.5 bg-indigo-500/15 rounded-lg">
+                                    <Activity className="w-4 h-4 text-indigo-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-white tracking-tight">Weekly Activity</h3>
+                                {/* Live badge */}
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse inline-block" />
+                                    Live
+                                </span>
+                            </div>
+                            <p className="text-zinc-500 text-xs ml-8">Habit completion rate · last 7 days</p>
+                        </div>
+
+                        {/* Summary stat */}
+                        <div className="text-right">
+                            <div className="text-2xl font-bold text-white tabular-nums">
+                                {Math.round(chartData.reduce((s, d) => s + d.value, 0) / chartData.length)}
+                                <span className="text-sm text-zinc-500 font-normal">%</span>
+                            </div>
+                            <div className="text-[11px] text-zinc-600 mt-0.5">7-day avg</div>
+                        </div>
                     </div>
-                </div>
 
-                <div className="h-64 flex items-end justify-between gap-2 md:gap-4">
-                    {chartData.map((data, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-3">
-                            <div className="w-full relative group h-full flex items-end">
-                                {/* Background Bar */}
-                                <div className="absolute inset-0 bg-white/5 rounded-t-lg"></div>
+                    {/* Chart body */}
+                    {(() => {
+                        const BAR_H = 180;
+                        const gridLines = [100, 75, 50, 25];
 
-                                {/* Fill Bar */}
-                                <div
-                                    className="w-full relative overflow-hidden transition-all duration-1000 ease-out rounded-t-lg group-hover:brightness-110"
-                                    style={{ height: `${Math.max(data.value, 4)}%` }} // Min height for visibility
-                                >
-                                    <div className={`absolute inset-0 bg-gradient-to-t ${data.value >= 80 ? 'from-green-600 to-emerald-500' :
-                                        data.value >= 50 ? 'from-indigo-600 to-purple-500' :
-                                            'from-zinc-700 to-zinc-600'
-                                        } opacity-90`}></div>
+                        return (
+                            <div className="relative">
+                                {/* Y-axis grid lines */}
+                                <div className="absolute inset-0 pointer-events-none" style={{ bottom: 28 }}>
+                                    {gridLines.map(pct => (
+                                        <div
+                                            key={pct}
+                                            className="absolute left-0 right-0 flex items-center gap-2"
+                                            style={{ bottom: `${(pct / 100) * BAR_H}px` }}
+                                        >
+                                            <span className="text-[9px] text-zinc-700 w-6 text-right shrink-0 tabular-nums">{pct}</span>
+                                            <div className="flex-1 border-t border-white/[0.04]" />
+                                        </div>
+                                    ))}
                                 </div>
 
-                                {/* Tooltip */}
-                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-zinc-900 border border-zinc-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none shadow-xl font-mono">
-                                    {data.value}%
+                                {/* Bars */}
+                                <div className="flex items-end justify-between gap-2 md:gap-3 pl-8" style={{ height: BAR_H + 28 }}>
+                                    {chartData.map((data, i) => {
+                                        const fillPx = data.value > 0
+                                            ? Math.max(Math.round((data.value / 100) * BAR_H), 8)
+                                            : 3;
+                                        const isToday = data.fullDate === todayStr;
+                                        const isHigh = data.value >= 80;
+                                        const isMid = data.value >= 50 && data.value < 80;
+
+                                        const barGradient = isHigh
+                                            ? 'linear-gradient(to top, #059669, #34d399, #6ee7b7)'
+                                            : isMid
+                                                ? 'linear-gradient(to top, #4f46e5, #818cf8, #a5b4fc)'
+                                                : data.value > 0
+                                                    ? 'linear-gradient(to top, #3f3f46, #71717a)'
+                                                    : 'linear-gradient(to top, #27272a, #27272a)';
+
+                                        const glowColor = isHigh
+                                            ? 'rgba(52,211,153,0.45)'
+                                            : isMid
+                                                ? 'rgba(129,140,248,0.45)'
+                                                : 'transparent';
+
+                                        return (
+                                            <div key={i} className="flex-1 flex flex-col items-center justify-end gap-2 group" style={{ height: BAR_H + 28 }}>
+
+                                                {/* Hover % pill */}
+                                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0 mb-1">
+                                                    <span className="text-[11px] font-bold tabular-nums px-2 py-0.5 rounded-full border"
+                                                        style={{
+                                                            color: isHigh ? '#34d399' : isMid ? '#818cf8' : '#71717a',
+                                                            background: isHigh ? 'rgba(52,211,153,0.1)' : isMid ? 'rgba(129,140,248,0.1)' : 'rgba(63,63,70,0.3)',
+                                                            borderColor: isHigh ? 'rgba(52,211,153,0.3)' : isMid ? 'rgba(129,140,248,0.3)' : 'rgba(63,63,70,0.5)',
+                                                        }}>
+                                                        {data.value > 0 ? `${data.value}%` : '—'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Column wrapper */}
+                                                <div className="w-full relative flex flex-col justify-end" style={{ height: BAR_H }}>
+
+                                                    {/* Track */}
+                                                    <div className="absolute inset-0 rounded-xl bg-white/[0.03] border border-white/[0.05]" />
+
+                                                    {/* Filled bar */}
+                                                    <div
+                                                        className="relative w-full rounded-xl overflow-hidden transition-all duration-700 ease-out"
+                                                        style={{
+                                                            height: fillPx,
+                                                            background: barGradient,
+                                                            boxShadow: data.value > 0 ? `0 -4px 20px 2px ${glowColor}, 0 0 8px 0 ${glowColor}` : 'none',
+                                                        }}
+                                                    >
+                                                        {/* Shimmer overlay */}
+                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%)' }} />
+                                                    </div>
+
+                                                    {/* Today ring */}
+                                                    {isToday && (
+                                                        <div className="absolute inset-0 rounded-xl pointer-events-none"
+                                                            style={{ boxShadow: 'inset 0 0 0 1.5px rgba(129,140,248,0.5)' }} />
+                                                    )}
+                                                </div>
+
+                                                {/* Day label */}
+                                                <span className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isToday ? 'text-indigo-400' : 'text-zinc-600 group-hover:text-zinc-400'}`}
+                                                    style={{ height: 16 }}>
+                                                    {data.day}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
-                            <span className={`text-xs font-medium uppercase ${data.fullDate === todayStr ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>
-                                {data.day}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+                        );
+                    })()}
 
-                {/* Empty State Overlay */}
-                {isChartEmpty && (
-                    <div className="absolute inset-0 top-20 flex items-center justify-center pointer-events-none">
-                        <p className="text-zinc-500 text-sm bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5">
-                            Complete habits to see your progress here
-                        </p>
-                    </div>
-                )}
+                    {/* Empty State */}
+                    {isChartEmpty && (
+                        <div className="absolute inset-0 top-24 flex items-center justify-center pointer-events-none">
+                            <div className="text-center">
+                                <div className="text-3xl mb-2">📊</div>
+                                <p className="text-zinc-500 text-sm px-4 py-2 rounded-full border border-white/5 bg-black/30 backdrop-blur-sm">
+                                    Complete habits to see your activity
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
