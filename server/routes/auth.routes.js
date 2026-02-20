@@ -21,7 +21,7 @@ const {
 } = require('../schemas/auth.schemas');
 const { authLimiter } = require('../config/rateLimit');
 
-const sendEmail = require('../utils/sendEmail');
+const { sendEmail, buildHtmlEmail } = require('../utils/sendEmail');
 
 // @route   POST api/auth/register
 // @desc    Register user
@@ -61,15 +61,22 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
         const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
 
-        const message = `
-            Please click the following link to verify your account: \n\n ${verifyUrl}
-        `;
+        const plainMessage = `Please verify your MindWave account by visiting: ${verifyUrl}`;
+        const htmlMessage = buildHtmlEmail(
+            'Verify Your Account',
+            `<p>Hi <strong>${user.name}</strong>,</p>
+             <p>Welcome to <strong>MindWave</strong>! Please verify your email address to activate your account.</p>
+             <p>This link expires in <strong>24 hours</strong>.</p>`,
+            'Verify My Account',
+            verifyUrl
+        );
 
         try {
             await sendEmail({
                 email: user.email,
-                subject: 'Account Verification',
-                message
+                subject: 'Verify Your MindWave Account',
+                message: plainMessage,
+                html: htmlMessage
             });
 
             res.json({ success: true, msg: 'Verification email sent' });
@@ -344,16 +351,23 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
         const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
-        const message = `
-            You are receiving this email because you (or someone else) has requested the reset of a password.
-            Please make a PUT request to: \n\n ${resetUrl}
-        `;
+        const plainMessage = `You requested a password reset. Visit this link to reset your password: ${resetUrl}\n\nThis link expires in 10 minutes.`;
+        const htmlMessage = buildHtmlEmail(
+            'Reset Your Password',
+            `<p>Hi <strong>${user.name}</strong>,</p>
+             <p>We received a request to reset the password for your MindWave account.</p>
+             <p>Click the button below to choose a new password. This link will expire in <strong>10 minutes</strong>.</p>
+             <p style="margin-top:24px;font-size:13px;color:#71717a;">If you didn't request a password reset, you can safely ignore this email — your password won't change.</p>`,
+            'Reset My Password',
+            resetUrl
+        );
 
         try {
             await sendEmail({
                 email: user.email,
-                subject: 'Password Reset Token',
-                message
+                subject: 'Reset Your MindWave Password',
+                message: plainMessage,
+                html: htmlMessage
             });
 
             res.status(200).json({ success: true, data: 'Email sent' });
@@ -442,12 +456,22 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
 
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
         const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
-        const message = `Please click the following link to verify your account: \n\n ${verifyUrl}`;
+
+        const plainMessage = `Verify your MindWave account here: ${verifyUrl}`;
+        const htmlMessage = buildHtmlEmail(
+            'Verify Your Account',
+            `<p>Hi <strong>${user.name}</strong>,</p>
+             <p>Here's a fresh verification link for your <strong>MindWave</strong> account.</p>
+             <p>This link expires in <strong>24 hours</strong>.</p>`,
+            'Verify My Account',
+            verifyUrl
+        );
 
         await sendEmail({
             email: user.email,
-            subject: 'Resend: Account Verification',
-            message
+            subject: 'Verify Your MindWave Account',
+            message: plainMessage,
+            html: htmlMessage
         });
 
         res.json({ success: true, msg: 'Verification email resent successfully.' });

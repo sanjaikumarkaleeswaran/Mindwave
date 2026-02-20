@@ -75,16 +75,17 @@ export default function ChatPage() {
         if (!window.confirm("Clear all chat history?")) return;
         try {
             await api.delete(`/chat/conversations/${id}`);
-            queryClient.invalidateQueries(['conversations']);
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
             navigate('/chat');
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleSend = async (e) => {
+    const handleSend = async (e, overrideText) => {
         if (e) e.preventDefault();
-        if (!input.trim()) return;
+        const msgContent = overrideText ?? input;
+        if (!msgContent.trim()) return;
 
         let targetId = id;
 
@@ -102,7 +103,6 @@ export default function ChatPage() {
             }
         }
 
-        const msgContent = input;
         setInput(''); // Clear input immediately
 
         sendMutation.mutate({
@@ -121,8 +121,8 @@ export default function ChatPage() {
 
     const handleSuggestionClick = (text) => {
         setInput(text);
-        // Optional: Auto submit?
-        // handleSend({ preventDefault: () => {} });
+        // Auto-submit the suggestion immediately
+        handleSend({ preventDefault: () => { } }, text);
     };
 
     return (
