@@ -20,8 +20,8 @@ export default function ChatPage() {
 
     const models = [
         { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B (Smartest)" },
+        { id: "deepseek-r1-distill-llama-70b", name: "DeepSeek R1 70B (Reasoning)" },
         { id: "llama3-70b-8192", name: "Llama 3 70B (Fast)" },
-        { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B (Balanced)" },
         { id: "gemma-2-9b-it", name: "Gemma 2 9B (Lightweight)" }
     ];
 
@@ -237,19 +237,16 @@ export default function ChatPage() {
                                                         ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
                                                         ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
                                                         li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                                                        code: ({ node, inline, className, children, ...props }) => {
-                                                            return inline ? (
-                                                                <code className="bg-zinc-700/50 px-1 py-0.5 rounded text-xs font-mono" {...props}>
-                                                                    {children}
-                                                                </code>
-                                                            ) : (
-                                                                <pre className="bg-zinc-900/50 p-3 rounded-lg overflow-x-auto my-2 text-xs font-mono border border-zinc-700/50">
-                                                                    <code className={className} {...props}>
-                                                                        {children}
-                                                                    </code>
-                                                                </pre>
-                                                            )
-                                                        }
+                                                        code: ({ node, className, children, ...props }) => (
+                                                            <code className={`${className ?? ''} bg-zinc-700/50 px-1 py-0.5 rounded text-xs font-mono`} {...props}>
+                                                                {children}
+                                                            </code>
+                                                        ),
+                                                        pre: ({ node, children, ...props }) => (
+                                                            <pre className="bg-zinc-900/50 p-3 rounded-lg overflow-x-auto my-2 text-xs font-mono border border-zinc-700/50" {...props}>
+                                                                {children}
+                                                            </pre>
+                                                        )
                                                     }}
                                                 >
                                                     {msg.content}
