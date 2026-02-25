@@ -5,6 +5,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
+app.set('trust proxy', 1); // Trust the reverse proxy (Render) to get real client IPs for rate-limiting
 
 // Middleware
 app.use(express.json({ limit: '10kb' })); // Body limit

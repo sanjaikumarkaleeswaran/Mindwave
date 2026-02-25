@@ -10,8 +10,8 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
  * @param {string} btnUrl    - (optional) CTA button URL
  */
 const buildHtmlEmail = (title, bodyHtml, btnText = null, btnUrl = null) => {
-    const buttonHtml = btnText && btnUrl
-        ? `<div style="text-align:center;margin:32px 0;">
+  const buttonHtml = btnText && btnUrl
+    ? `<div style="text-align:center;margin:32px 0;">
                <a href="${btnUrl}"
                   style="display:inline-block;padding:14px 32px;background:#6366f1;color:#fff;
                          text-decoration:none;border-radius:10px;font-weight:600;font-size:15px;
@@ -19,9 +19,9 @@ const buildHtmlEmail = (title, bodyHtml, btnText = null, btnUrl = null) => {
                   ${btnText}
                </a>
            </div>`
-        : '';
+    : '';
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -71,39 +71,45 @@ const buildHtmlEmail = (title, bodyHtml, btnText = null, btnUrl = null) => {
  * @param {string} [options.html]    - Full HTML (if not provided, a basic branded HTML is generated from message)
  */
 const sendEmail = async (options) => {
-    let transportConfig;
+  let transportConfig;
 
-    if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
-        transportConfig = {
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
-            secure: process.env.SMTP_SECURE === 'true',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        };
-    } else {
-        transportConfig = {
-            service: process.env.EMAIL_SERVICE || 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        };
-    }
-
-    const transporter = nodemailer.createTransport(transportConfig);
-
-    const message = {
-        from: `${process.env.FROM_NAME || 'MindWave'} <${process.env.FROM_EMAIL || process.env.EMAIL_USER}>`,
-        to: options.email,
-        subject: options.subject,
-        text: options.message, // Plain text fallback
-        html: options.html || null // Use provided HTML or none
+  if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
+    transportConfig = {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT, // wait, port should usually be parsed to number? Actually nodemailer handles string.
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000
     };
+  } else {
+    transportConfig = {
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000
+    };
+  }
 
-    await transporter.sendMail(message);
+  const transporter = nodemailer.createTransport(transportConfig);
+
+  const message = {
+    from: `${process.env.FROM_NAME || 'MindWave'} <${process.env.FROM_EMAIL || process.env.EMAIL_USER}>`,
+    to: options.email,
+    subject: options.subject,
+    text: options.message, // Plain text fallback
+    html: options.html || null // Use provided HTML or none
+  };
+
+  await transporter.sendMail(message);
 };
 
 module.exports = { sendEmail, buildHtmlEmail };
