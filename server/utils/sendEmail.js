@@ -71,6 +71,10 @@ const buildHtmlEmail = (title, bodyHtml, btnText = null, btnUrl = null) => {
  * @param {string} [options.html]    - Full HTML (if not provided, a basic branded HTML is generated from message)
  */
 const sendEmail = async (options) => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('⚠️ CRITICAL: EMAIL_USER or EMAIL_PASS is not set in the environment variables!');
+  }
+
   let transportConfig;
 
   if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
@@ -98,6 +102,8 @@ const sendEmail = async (options) => {
       socketTimeout: 10000
     };
   }
+
+  console.log(`Attempting to send email to ${options.email} via ${transportConfig.service || transportConfig.host}...`);
 
   const transporter = nodemailer.createTransport(transportConfig);
 
