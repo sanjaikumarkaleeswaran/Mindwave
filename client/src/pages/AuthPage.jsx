@@ -51,7 +51,7 @@ export default function AuthPage() {
             setResendSuccess(true);
         } catch (err) {
             setError(err.response?.data?.msg || 'Could not resend email. Try again.');
-            setIsUnverified(false);
+            // Don't set isUnverified to false, so the user can actually try again from the banner
         } finally {
             setResendLoading(false);
         }

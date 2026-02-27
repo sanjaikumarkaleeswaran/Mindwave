@@ -467,17 +467,22 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
             verifyUrl
         );
 
-        await sendEmail({
-            email: user.email,
-            subject: 'Verify Your MindWave Account',
-            message: plainMessage,
-            html: htmlMessage
-        });
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Verify Your MindWave Account',
+                message: plainMessage,
+                html: htmlMessage
+            });
+            res.json({ success: true, msg: 'Verification email resent successfully.' });
+        } catch (err) {
+            console.error('Error sending email:', err);
+            return res.status(500).json({ msg: 'Email could not be sent. Please check server logs.' });
+        }
 
-        res.json({ success: true, msg: 'Verification email resent successfully.' });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({ msg: 'Server Error' });
     }
 });
 
