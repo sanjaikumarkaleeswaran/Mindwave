@@ -18,6 +18,7 @@ const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
 const ResetPasswordPage = React.lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = React.lazy(() => import('./pages/VerifyEmailPage'));
+const GoalsPage = React.lazy(() => import('./pages/GoalsPage'));
 
 
 
@@ -86,6 +87,11 @@ function App() {
             <Route path="profile" element={
               <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Profile...</div>}>
                 <ProfilePage />
+              </Suspense>
+            } />
+            <Route path="goals" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Goals...</div>}>
+                <GoalsPage />
               </Suspense>
             } />
           </Route>

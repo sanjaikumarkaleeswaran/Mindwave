@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
@@ -24,6 +24,7 @@ export default function Dashboard() {
     const [journals, setJournals] = useState([]);
     const [quote, setQuote] = useState("");
     const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState(null);
 
     useEffect(() => {
         // Set Greeting Phrase
@@ -33,14 +34,16 @@ export default function Dashboard() {
 
         const fetchData = async () => {
             try {
-                const [habitsRes, chatsRes, journalsRes] = await Promise.all([
+                const [habitsRes, chatsRes, journalsRes, statsRes] = await Promise.all([
                     api.get('/habits'),
                     api.get('/chat/conversations'),
-                    api.get('/journal')
+                    api.get('/journal'),
+                    api.get('/search/stats')
                 ]);
                 setHabits(habitsRes.data);
                 setChats(chatsRes.data.slice(0, 3)); // Get top 3
                 setJournals(journalsRes.data);
+                setStats(statsRes.data);
             } catch (err) {
                 console.error("Dashboard Fetch Error", err);
             } finally {
@@ -245,9 +248,93 @@ export default function Dashboard() {
 
             </div>
 
+            {/* ── Stats Panel ── */}
+            {stats && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Productivity Score */}
+                    <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1">
+                        <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
+                        <div className="relative">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Brain className="w-4 h-4 text-indigo-400" />
+                                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Productivity</span>
+                            </div>
+                            <div className="text-4xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-lg text-zinc-500">/100</span></div>
+                            <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${stats.productivityScore}%` }} />
+                            </div>
+                            <p className="text-xs text-zinc-500 mt-1">Weekly score</p>
+                        </div>
+                    </div>
+
+                    {/* Best Streak */}
+                    <div className="glass-card p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Award className="w-4 h-4 text-amber-400" />
+                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Best Streak</span>
+                        </div>
+                        <div className="text-3xl font-bold text-amber-400 tabular-nums">{stats.habits.bestStreak}<span className="text-sm text-zinc-500"> days</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.habits.totalCompletions} total completions</p>
+                    </div>
+
+                    {/* Journal Streak */}
+                    <div className="glass-card p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Book className="w-4 h-4 text-pink-400" />
+                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Journal Streak</span>
+                        </div>
+                        <div className="text-3xl font-bold text-pink-400 tabular-nums">{stats.journal.streak}<span className="text-sm text-zinc-500"> days</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.journal.total} total entries</p>
+                    </div>
+
+                    {/* Goals */}
+                    <Link to="/goals" className="glass-card p-5 group hover:border-indigo-500/20 transition-colors">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Target className="w-4 h-4 text-emerald-400" />
+                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Goals</span>
+                        </div>
+                        <div className="text-3xl font-bold text-emerald-400 tabular-nums">{stats.goals.avgProgress}<span className="text-sm text-zinc-500">% avg</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.goals.active} active · {stats.goals.completed} done</p>
+                    </Link>
+                </div>
+            )}
+
+            {/* Mood Tracker strip (if journal data available) */}
+            {stats && Object.values(stats.journal.moodCounts).some(v => v > 0) && (
+                <div className="glass-card p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                        <TrendingUp className="w-4 h-4 text-zinc-400" />
+                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Mood Distribution · Last 30 Days</h3>
+                    </div>
+                    <div className="flex items-end gap-3">
+                        {[
+                            { key: 'great', label: '😄', color: '#10b981' },
+                            { key: 'good', label: '🙂', color: '#6366f1' },
+                            { key: 'okay', label: '😐', color: '#f59e0b' },
+                            { key: 'bad', label: '😟', color: '#f97316' },
+                            { key: 'terrible', label: '😢', color: '#ef4444' },
+                        ].map(({ key, label, color }) => {
+                            const count = stats.journal.moodCounts[key] || 0;
+                            const total = Object.values(stats.journal.moodCounts).reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                            return (
+                                <div key={key} className="flex-1 flex flex-col items-center gap-2">
+                                    <span className="text-xs font-bold tabular-nums" style={{ color }}>{pct > 0 ? `${pct}%` : ''}</span>
+                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden" style={{ height: 60 }}>
+                                        <div className="rounded-full transition-all duration-1000 mt-auto" style={{ height: `${pct}%`, background: color, marginTop: `${100 - pct}%` }} />
+                                    </div>
+                                    <span className="text-lg">{label}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
             {/* Weekly Activity Chart */}
             <div className="relative rounded-2xl overflow-hidden border border-white/5"
                 style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(15,15,20,0.95) 60%, rgba(16,185,129,0.04) 100%)' }}>
+
 
                 {/* Ambient glow blobs */}
                 <div className="absolute -top-16 left-1/4 w-56 h-56 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
