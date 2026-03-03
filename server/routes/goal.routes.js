@@ -9,7 +9,8 @@ router.get('/', auth, async (req, res) => {
         const goals = await Goal.find({ userId: req.user.id }).sort({ createdAt: -1 });
         res.json(goals);
     } catch (err) {
-        res.status(500).json({ msg: 'Server Error' });
+        console.error('GET /goals error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 
@@ -31,7 +32,8 @@ router.post('/', auth, async (req, res) => {
         await goal.save();
         res.json(goal);
     } catch (err) {
-        res.status(500).json({ msg: 'Server Error' });
+        console.error('POST /goals error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 
@@ -48,7 +50,8 @@ router.put('/:id', auth, async (req, res) => {
         await goal.save();
         res.json(goal);
     } catch (err) {
-        res.status(500).json({ msg: 'Server Error' });
+        console.error('PUT /goals/:id error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 

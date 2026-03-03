@@ -9,7 +9,21 @@ app.set('trust proxy', 1); // Trust the reverse proxy (Render) to get real clien
 
 // Middleware
 app.use(express.json({ limit: '10kb' })); // Body limit
-app.use(cors()); // Enable CORS
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    process.env.CLIENT_URL,        // e.g. http://10.130.85.107:5173
+].filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true
+})); // Enable CORS
 app.use(require('helmet')({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading resources (images) from different origins/ports
 }));
