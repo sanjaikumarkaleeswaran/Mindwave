@@ -13,6 +13,7 @@ export default function Layout() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [habits, setHabits] = useState([]);
     const [journals, setJournals] = useState([]);
+    const [goals, setGoals] = useState([]);
     const location = useLocation();
 
     // Close sidebar on route change
@@ -20,16 +21,18 @@ export default function Layout() {
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
-    // Fetch habits & journals for notification context (lightweight, cached)
+    // Fetch habits, journals & goals for notification context
     useEffect(() => {
         const fetchContext = async () => {
             try {
-                const [hRes, jRes] = await Promise.all([
+                const [hRes, jRes, gRes] = await Promise.all([
                     api.get('/habits'),
-                    api.get('/journal')
+                    api.get('/journal'),
+                    api.get('/goals'),
                 ]);
                 setHabits(hRes.data);
                 setJournals(jRes.data);
+                setGoals(gRes.data);
             } catch (e) { /* silent */ }
         };
         fetchContext();
@@ -80,7 +83,7 @@ export default function Layout() {
                         </button>
 
                         {/* Notifications */}
-                        <NotificationBell habits={habits} journals={journals} />
+                        <NotificationBell habits={habits} journals={journals} goals={goals} />
                     </div>
                 </header>
 

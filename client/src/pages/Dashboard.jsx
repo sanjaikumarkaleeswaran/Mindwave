@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
@@ -22,6 +22,7 @@ export default function Dashboard() {
     const [habits, setHabits] = useState([]);
     const [chats, setChats] = useState([]);
     const [journals, setJournals] = useState([]);
+    const [goals, setGoals] = useState([]);
     const [quote, setQuote] = useState("");
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
@@ -34,16 +35,18 @@ export default function Dashboard() {
 
         const fetchData = async () => {
             try {
-                const [habitsRes, chatsRes, journalsRes, statsRes] = await Promise.all([
+                const [habitsRes, chatsRes, journalsRes, statsRes, goalsRes] = await Promise.all([
                     api.get('/habits'),
                     api.get('/chat/conversations'),
                     api.get('/journal'),
-                    api.get('/search/stats')
+                    api.get('/search/stats'),
+                    api.get('/goals'),
                 ]);
                 setHabits(habitsRes.data);
-                setChats(chatsRes.data.slice(0, 3)); // Get top 3
+                setChats(chatsRes.data.slice(0, 3));
                 setJournals(journalsRes.data);
                 setStats(statsRes.data);
+                setGoals(goalsRes.data.filter(g => g.status === 'active').slice(0, 4));
             } catch (err) {
                 console.error("Dashboard Fetch Error", err);
             } finally {
@@ -325,6 +328,81 @@ export default function Dashboard() {
                                     </div>
                                     <span className="text-lg">{label}</span>
                                 </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Active Goals Progress ── */}
+            {goals.length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-indigo-500/15 rounded-lg"><Target className="w-4 h-4 text-indigo-400"/></div>
+                            <h3 className="text-lg font-bold text-white">Active Goals</h3>
+                        </div>
+                        <Link to="/goals" className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                            View all <ArrowRight className="w-3 h-3"/>
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {goals.map(goal => {
+                            const CAT_COLOR = {
+                                health:'#f43f5e', career:'#f59e0b', learning:'#8b5cf6',
+                                finance:'#10b981', relationships:'#3b82f6', personal:'#6366f1', other:'#71717a'
+                            };
+                            const color = CAT_COLOR[goal.category] || '#6366f1';
+                            const done  = goal.milestones.filter(m => m.completed).length;
+                            const total = goal.milestones.length;
+                            const msPct = total > 0 ? Math.round((done/total)*100) : 0;
+                            // Find next incomplete milestone
+                            const nextMs = goal.milestones.find(m => !m.completed);
+                            const daysLeft = goal.targetDate
+                                ? Math.ceil((new Date(goal.targetDate) - Date.now()) / 864e5) : null;
+                            return (
+                                <Link key={goal._id} to="/goals"
+                                    className="group relative bg-zinc-900/60 border border-white/5 hover:border-white/10 rounded-2xl p-5 overflow-hidden transition-all">
+                                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{background:color}}/>
+                                    <div className="flex items-start justify-between gap-3 mb-3">
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-semibold text-white text-sm truncate">{goal.title}</h4>
+                                            <span className="text-[10px] text-zinc-500 capitalize">{goal.category}</span>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <div className="text-lg font-bold" style={{color}}>{goal.progress}%</div>
+                                            {daysLeft !== null && (
+                                                <div className={`text-[10px] ${daysLeft < 0 ? 'text-rose-400' : daysLeft < 7 ? 'text-amber-400' : 'text-zinc-500'}`}>
+                                                    {daysLeft > 0 ? `${daysLeft}d left` : daysLeft === 0 ? 'Due today' : `${Math.abs(daysLeft)}d over`}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Progress bar */}
+                                    <div className="w-full bg-white/5 rounded-full h-1.5 mb-3 overflow-hidden">
+                                        <div className="h-full rounded-full transition-all duration-700" style={{width:`${goal.progress}%`, background:color}}/>
+                                    </div>
+                                    {/* Milestone dots */}
+                                    {total > 0 && (
+                                        <div className="flex items-center gap-1 mb-2">
+                                            {goal.milestones.slice(0,8).map((m,i) => (
+                                                <div key={i} className="w-2.5 h-2.5 rounded-full border transition-all"
+                                                    style={m.completed
+                                                        ? {background:color, borderColor:color}
+                                                        : {background:'transparent', borderColor:'rgba(255,255,255,0.15)'}}/>
+                                            ))}
+                                            {total > 8 && <span className="text-[9px] text-zinc-600">+{total-8}</span>}
+                                            <span className="text-[10px] text-zinc-500 ml-auto">{done}/{total} steps</span>
+                                        </div>
+                                    )}
+                                    {/* Next step */}
+                                    {nextMs && (
+                                        <div className="flex items-center gap-1.5 text-[10px] text-zinc-500 bg-white/3 rounded-lg px-2.5 py-1.5 border border-white/5">
+                                            <Flag className="w-2.5 h-2.5 shrink-0" style={{color}}/>
+                                            <span className="truncate">Next: {nextMs.text}</span>
+                                        </div>
+                                    )}
+                                </Link>
                             );
                         })}
                     </div>

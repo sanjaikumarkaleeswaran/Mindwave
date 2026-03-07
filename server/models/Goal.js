@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const MilestoneSchema = new mongoose.Schema({
     text: { type: String, required: true },
     completed: { type: Boolean, default: false },
-    completedAt: { type: Date }
+    completedAt: { type: Date },
+    notes: { type: String, default: '' },    // activity log / what you did
+    dueDate: { type: Date },                 // AI-assigned or user-set milestone date
 });
 
 const GoalSchema = new mongoose.Schema({
@@ -28,7 +30,7 @@ const GoalSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-GoalSchema.pre('save', function (next) {
+GoalSchema.pre('save', async function () {
     this.updatedAt = Date.now();
     // Auto-calc progress from milestones if any exist
     if (this.milestones.length > 0) {
@@ -36,7 +38,6 @@ GoalSchema.pre('save', function (next) {
         this.progress = Math.round((done / this.milestones.length) * 100);
     }
     if (this.progress >= 100) this.status = 'completed';
-    next();
 });
 
 module.exports = mongoose.model('Goal', GoalSchema);

@@ -1,151 +1,291 @@
 # 🧠 MindWave: Your AI-Powered Life OS
 
-A self-hosted, private "digital brain" that organizes your life. This application combines intelligent AI chat, robust habit tracking, journaling, and focus tools into a single, cohesive operating system for your daily routine.
+A self-hosted, private **"digital brain"** that organizes your entire life. MindWave combines intelligent AI chat, habit tracking, smart goal planning, journaling, and focus tools into a single, cohesive operating system for your daily routine.
 
-![MindWave Dashboard](https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
+---
 
 ## 🌟 Features
 
-### 📱 Fully Responsive & Mobile-First
-*   **Universal Design**: Works seamlessly on all devices, from small phones (375px) to large desktops.
-*   **Adaptive Layouts**:
-    *   **Dashboard**: Auto-adjusts from 1 column on mobile to 4 columns on large screens.
-    *   **Navigation**: Smooth mobile drawer with glassmorphism effects and touch-friendly controls.
-    *   **PWA Ready**: Installable as a native app on iOS and Android. Hide browser chrome and get a fullscreen experience.
+### 🤖 AI Chat Assistant
+- **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
+- **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
+- **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
+- **Multi-turn conversations** — full conversation history with support for file/PDF uploads.
 
-### 🤖 Context-Aware AI Chat
-*   **Powered by Groq/Llama 3**: Fast, intelligent responses using the Groq SDK.
-*   **Integrated Control**: The AI isn't just a chatbot; it connects to your data.
-    *   **Habit Management**: Tell the AI "I drank water" or "Add a running habit", and it updates your tracker automatically.
-    *   **Smart Analysis**: Ask for an analysis of your habit streaks ("How am I doing this week?"), and the AI will generate a personalized report.
+### 🎯 Smart Goal Tracking *(New)*
+- **AI Goal Creator (Chat)** — describe a goal in plain language; AI generates a full structured plan with title, description, category, target date, and step-by-step milestones.
+- **AI Milestone Generator** — inside the goal form, click "✨ AI Plan" to auto-generate 5–7 specific, dated milestones based on your target date.
+- **Step-by-step Timeline** — visual timeline with numbered steps, due date countdowns (*"8d left"*, *"2d overdue"*), and spine connector lines.
+- **Activity Logging** — click any step to open an activity modal, log what you did, and mark the step complete.
+- **Dashboard Integration** — see active goals, their progress bars, and your immediate next steps right from your home screen.
+- **Dedicated Calendar View** — see a unified monthly grid of all your milestone due dates, color-coded by category.
+- **Smart Reminders** — an intelligent notification bell alerts you when milestones are overdue, due today, or coming up soon.
+- **Dual Progress Tracking** — side-by-side time-elapsed bar vs actual progress bar with an **Ahead / On track / Behind** badge.
+- **Progress Rings** — animated circular progress indicator on every goal card.
+- **Milestone Dot Summary** — compact numbered dots on the card with tooltips; click any dot to log activity.
+- **Full CRUD** — create, read, edit, delete goals with confirmation modals.
+- **Fail-safe AI Redirect** — pencil icon quickly redirects you back to the main AI chat if you need more conversational planning.
+- **Status Management** — mark goals as Active, Paused, Completed, or Archived.
 
 ### 📅 Advanced Habit Tracker
-*   **Streak Tracking**: Monitor your daily progress and current streaks.
-*   **Visual Consistency**: Weekly calendar views to visually see your consistency with heatmaps.
-*   **Mobile Optimized**: Easy tap-to-complete interface for tracking habits on the go.
-*   **AI Insights**: Get qualitative feedback on your performance and actionable advice for improvement.
+- **Streak Tracking** — monitor daily progress and current/best streaks.
+- **Visual Consistency** — weekly calendar heatmaps to see your consistency at a glance.
+- **Mobile-optimized** — easy tap-to-complete interface.
+- **AI Insights** — qualitative feedback and actionable weekly challenges.
 
 ### ✍️ Intelligent Journaling
-*   **Mood Tracking**: Capture your daily mood and see trends over time.
-*   **AI Analysis**: Get instant feedback on your entries, including sentiment analysis, key topics, and actionable challenges to improve your wellbeing.
-*   **Secure & Private**: Your thoughts are stored securely.
+- **Mood Tracking** — capture your daily mood and identify trends over time.
+- **AI Analysis** — instant sentiment analysis, key topics, and wellbeing challenges on every entry.
+- **Secure & Private** — all entries stored securely in your own database.
 
 ### 🧘 Focus Mode
-*   **Flow State Tools**: Built-in timer and ambient soundscapes to help you get into the zone.
-*   **Curated Audio**: Selection of royalty-free ambient music (Cosmic, Nature, Lo-Fi) to block distractions.
+- **Pomodoro-style Timer** — built-in countdown to help you stay in flow state.
+- **Ambient Soundscapes** — curated royalty-free audio (Cosmic, Nature, Lo-Fi) to block distractions.
 
-### 🛡️ Privacy & Security
-*   **Self-Hosted**: You own your data.
-*   **Delete Everything**: A "Danger Zone" in settings allows you to permanently wipe all your data (journals, habits, chats, account) instantly.
-*   **Secure Auth**: JWT-based authentication with email verification.
+### 🔍 Global Search
+- **Unified Search** — search across goals, habits, and journal entries from a single search bar.
+
+### 🛡️ Security & Privacy
+- **Self-Hosted** — you own your data, stored in your own MongoDB instance.
+- **Security Middleware** — Helmet, CORS, HPP, rate-limiting, XSS sanitization, and MongoDB injection prevention.
+- **JWT Authentication** — secure stateless auth with bcrypt password hashing and email verification.
+- **Danger Zone** — permanently wipe all data (journals, habits, chats, goals, account) from settings.
+
+### 📱 PWA — Install as a Native App
+- **Progressive Web App** — installable on iOS and Android for a full-screen, native-like experience.
+- **Mobile-First Design** — responsive from 375px phones to large desktops.
+- **Offline-Capable** — service worker caching for core assets.
+
+---
 
 ## 🛠 Tech Stack
 
-*   **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons.
-*   **PWA**: Vite PWA Plugin, Manifest generation, Service Worker (offline capable).
-*   **Performance**: React Suspense & Lazy Loading for fast mobile performance.
-*   **Backend**: Node.js, Express.
-*   **Database**: MongoDB (via Mongoose).
-*   **AI Engine**: Groq SDK (Llama 3.3 70b Versatile).
-*   **Authentication**: Custom JWT implementation with Bcrypt hashing.
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons |
+| **State / Routing** | React Context, React Router v6 |
+| **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
+| **Backend** | Node.js, Express 5 |
+| **Database** | MongoDB via Mongoose 9 |
+| **AI Engine** | Groq SDK — Llama 3.3 70b Versatile |
+| **Auth** | Custom JWT + Bcrypt + Nodemailer (email verification) |
+| **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-1.  **Node.js** (v18+ recommended)
-2.  **MongoDB Atlas Account** or local MongoDB instance.
-3.  **Groq API Key**: Get a free key from [console.groq.com](https://console.groq.com).
+1. **Node.js** v18+
+2. **MongoDB Atlas** account or local MongoDB instance
+3. **Groq API Key** — free at [console.groq.com](https://console.groq.com)
+4. **Gmail App Password** — for email verification ([guide](https://support.google.com/accounts/answer/185833))
+
+---
 
 ### Installation
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/sanjaikumarkaleeswaran/Mindwave.git
-    cd Mindwave
-    ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/sanjaikumarkaleeswaran/Mindwave.git
+cd Mindwave
 
-2.  **Install Dependencies**:
-    *   **Server**:
-        ```bash
-        cd server
-        npm install
-        ```
-    *   **Client**:
-        ```bash
-        cd ../client
-        npm install
-        ```
+# 2. Install server dependencies
+cd server && npm install
 
-3.  **Environment Setup**:
-    *   Create a `.env` file in the `server/` directory:
-        ```env
-        PORT=5000
-        MONGO_URI=your_mongodb_connection_string
-        JWT_SECRET=your_secure_random_string
-        GROQ_API_KEY=your_groq_api_key
-        EMAIL_USER=your_email@gmail.com
-        EMAIL_PASS=your_app_specific_password
-        ```
+# 3. Install client dependencies
+cd ../client && npm install
+```
+
+---
+
+### Environment Setup
+
+Create a `.env` file inside the `server/` directory:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secure_random_string_min_32_chars
+GROQ_API_KEY=your_groq_api_key
+
+# Email (Gmail App Password — no spaces)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your16charapppassword
+```
+
+> **Client API URL** — create `client/.env` if you need to access from another device on your network:
+> ```env
+> VITE_API_URL=http://YOUR_LOCAL_IP:5000/api
+> ```
+
+---
 
 ### Running the Application
 
-**Option A: The Easy Way (Windows)**
-*   Double-click the `start_app.bat` file in the root directory. This will launch both the backend and frontend terminals automatically.
+**Option A — One click (Windows)**
+```
+Double-click  start_app.bat
+```
+This opens both the backend and frontend terminals automatically.
 
-**Option B: Manual Start**
-1.  **Start Backend**:
-    ```bash
-    cd server
-    npm run dev
-    ```
-2.  **Start Frontend**:
-    ```bash
-    cd client
-    npm run dev
-    ```
+**Option B — Manual**
+```bash
+# Terminal 1 — Backend
+cd server
+npm start          # runs on http://localhost:5000
+
+# Terminal 2 — Frontend
+cd client
+npm run dev        # runs on http://localhost:5173
+```
+
+---
 
 ## 📂 Project Structure
 
 ```
-d:/webforme
-├── client/                 # React Frontend & Vite Configuration
+Mindwave/
+├── client/                         # React Frontend
 │   ├── src/
-│   │   ├── components/     # Reusable UI components (Sidebar, Layout)
-│   │   ├── context/        # Auth & Theme Context
-│   │   ├── pages/          # Dashboard, Journal, Focus, Profile
-│   │   └── lib/            # Utilities (Axios, Date helpers)
-│   ├── public/             # PWA Static Assets (Icons, Manifest)
-│   └── vite.config.js      # Vite & PWA Configuration
-│   └── ...
-├── server/                 # Express Backend
-│   ├── models/             # Mongoose Schemas (User, Habit, Journal, Chat)
-│   ├── routes/             # API Endpoints (Auth, Journal, Habits)
-│   ├── middleware/         # Auth verification & Uploads
-│   └── index.js            # Server entry point
-└── start_app.bat           # One-click startup script
+│   │   ├── components/             # Reusable UI (Sidebar, Layout, GlobalSearch, NotificationBell)
+│   │   ├── context/                # AuthContext, ThemeContext
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx       # Overview stats & active goals
+│   │   │   ├── GoalsPage.jsx       # AI goal creator, CRUD, milestone timeline
+│   │   │   ├── CalendarPage.jsx    # Monthly grid of all goal milestone due dates
+│   │   │   ├── HabitsPage.jsx      # Habit tracker with streaks & heatmaps
+│   │   │   ├── JournalPage.jsx     # Journaling with AI mood analysis
+│   │   │   ├── ChatPage.jsx        # AI assistant with file upload
+│   │   │   ├── FocusPage.jsx       # Timer & ambient soundscapes
+│   │   │   └── ProfilePage.jsx     # Settings & danger zone
+│   │   └── lib/                    # Axios instance, date helpers
+│   ├── public/                     # PWA icons, manifest
+│   └── vite.config.js              # Vite & PWA configuration
+│
+├── server/                         # Express Backend
+│   ├── models/
+│   │   ├── User.js                 # User schema (auth, profile)
+│   │   ├── Goal.js                 # Goal + Milestone schema (with notes, dueDate)
+│   │   ├── Habit.js                # Habit schema (streaks, completedDates)
+│   │   ├── Journal.js              # Journal entry schema
+│   │   ├── ChatHistory.js          # Chat message schema
+│   │   └── Conversation.js        # Conversation thread schema
+│   ├── routes/
+│   │   ├── auth.routes.js          # Register, login, verify email, forgot password
+│   │   ├── goal.routes.js          # Goals CRUD + AI milestone/goal generation
+│   │   ├── habit.routes.js         # Habits CRUD + streak logic
+│   │   ├── journal.routes.js       # Journal CRUD + AI analysis
+│   │   ├── chat.routes.js          # AI chat, conversations, habit tool execution
+│   │   └── search.routes.js        # Global search across all collections
+│   ├── middleware/
+│   │   ├── auth.middleware.js      # JWT verification
+│   │   ├── validate.middleware.js  # Joi schema validation
+│   │   ├── mongoSanitize.js        # NoSQL injection prevention
+│   │   ├── xssSanitize.js          # XSS attack prevention
+│   │   └── rateLimiter.js          # Express rate limiting
+│   ├── schemas/                    # Joi validation schemas
+│   ├── utils/                      # sendEmail utility (Nodemailer)
+│   └── index.js                    # Server entry point
+│
+├── start_app.bat                   # One-click Windows startup
+└── README.md
 ```
 
-## 🔮 Future Roadmap
-- [ ] Voice interface for hands-free interaction.
-- [x] Mobile-responsive PWA (Progressive Web App).
-- [x] Tablet-optimized dashboard layout.
-- [ ] Export data feature (JSON/CSV).
+---
 
-## 📱 Mobile Installation (PWA)
+## 🔌 API Endpoints
 
-MindWave is a Progressive Web App (PWA), meaning you can install it on your mobile device for a native app experience.
+### Auth — `/api/auth`
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/register` | Register new user |
+| POST | `/login` | Login & get JWT |
+| GET | `/verify/:token` | Email verification |
+| POST | `/forgot-password` | Send reset email |
+| POST | `/reset-password/:token` | Reset password |
 
-1.  **Ensuring Network Access**:
-    *   Make sure your mobile device and computer are on the same WiFi network.
-    *   Find your computer's local IP address (e.g., `10.x.x.x`).
-    *   Update the `client/.env` file with `VITE_API_URL=http://YOUR_LOCAL_IP:5000/api`.
-    *   Restart the client server.
+### Goals — `/api/goals`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Get all goals |
+| POST | `/` | Create goal |
+| PUT | `/:id` | Update goal |
+| DELETE | `/:id` | Delete goal |
+| POST | `/ai-create` | **AI** — generate full goal from chat message |
+| POST | `/ai-milestones` | **AI** — generate milestone steps for a goal |
+| PATCH | `/:id/milestone` | Add a new milestone |
+| PATCH | `/:id/milestone/:msId` | Toggle/log activity on milestone |
 
-2.  **Installing on Android (Chrome)**:
-    *   Open Chrome and navigate to `http://YOUR_LOCAL_IP:5173`.
-    *   Tap the menu (three dots) and select **"Install App"** or **"Add to Home Screen"**.
+### Habits — `/api/habits`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Get all habits |
+| POST | `/` | Create habit |
+| PATCH | `/:id/complete` | Mark today as complete |
+| DELETE | `/:id` | Delete habit |
 
-3.  **Installing on iOS (Safari)**:
-    *   Open Safari and navigate to `http://YOUR_LOCAL_IP:5173`.
-    *   Tap the **Share** button.
-    *   Scroll down and select **"Add to Home Screen"**.
+### Journal — `/api/journal`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Get all entries |
+| POST | `/` | Create entry |
+| PUT | `/:id` | Update entry |
+| DELETE | `/:id` | Delete entry |
+
+### Chat — `/api/chat`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/conversations` | List conversations |
+| POST | `/conversations` | Start new conversation |
+| DELETE | `/conversations/:id` | Delete conversation |
+| GET | `/:conversationId` | Get messages |
+| POST | `/send` | Send message to AI (supports file upload) |
+| POST | `/analyze-habits` | AI habit performance report |
+
+### Search — `/api/search`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/?q=query` | Global search across goals, habits, journals |
+
+---
+
+## 📱 Mobile PWA Installation
+
+> Make sure your phone and computer are on the same Wi-Fi network.
+
+1. Find your computer's local IP: run `ipconfig` (Windows) → look for `IPv4 Address`
+2. Update `client/.env`:
+   ```env
+   VITE_API_URL=http://YOUR_LOCAL_IP:5000/api
+   ```
+3. Restart the client server
+
+**Android (Chrome):** Navigate to `http://YOUR_IP:5173` → tap menu → **"Install App"**
+
+**iOS (Safari):** Navigate to `http://YOUR_IP:5173` → tap Share → **"Add to Home Screen"**
+
+---
+
+## 🔮 Roadmap
+
+- [x] AI Chat with habit tool execution
+- [x] Habit tracker with streaks & heatmaps
+- [x] Mood-aware journaling with AI analysis
+- [x] Focus mode with ambient soundscapes
+- [x] Goal tracking with AI milestone generation
+- [x] Activity logging per milestone
+- [x] Step-by-step timeline with due date tracking
+- [x] Global search
+- [x] PWA — installable on mobile
+- [x] Security hardening (rate limiting, XSS, NoSQL injection)
+- [x] Push notifications for milestone due dates
+- [x] Calendar view for goal milestones
+- [ ] Export data (JSON / CSV)
+- [ ] Voice interface
+
+---
+
+## 📄 License
+
+MIT — feel free to fork, modify, and self-host.
