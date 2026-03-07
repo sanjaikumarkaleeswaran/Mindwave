@@ -48,44 +48,41 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 
         await user.save();
 
-        // Generate verification token
-        const verificationToken = crypto.randomBytes(20).toString('hex');
-        user.verificationToken = crypto
-            .createHash('sha256')
-            .update(verificationToken)
-            .digest('hex');
-        user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        // 🚀 BYPASS EMAIL VERIFICATION FOR RENDER FREE TIER
+        user.isVerified = true;
+        // const verificationToken = crypto.randomBytes(20).toString('hex');
+        // user.verificationToken = crypto
+        //     .createHash('sha256')
+        //     .update(verificationToken)
+        //     .digest('hex');
+        // user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
         await user.save();
 
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-        const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
+        const verifyUrl = `${clientUrl}/verify-email/bypass`;
 
+        // 🚀 SKIP SENDING ACTUAL EMAIL ON RENDER FREE TIER
+        /*
         const plainMessage = `Please verify your MindWave account by visiting: ${verifyUrl}`;
         const htmlMessage = buildHtmlEmail(
-            'Verify Your Account',
-            `<p>Hi <strong>${user.name}</strong>,</p>
-             <p>Welcome to <strong>MindWave</strong>! Please verify your email address to activate your account.</p>
-             <p>This link expires in <strong>24 hours</strong>.</p>`,
-            'Verify My Account',
-            verifyUrl
+            // ...
         );
+        */
 
         try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Verify Your MindWave Account',
-                message: plainMessage,
-                html: htmlMessage
-            });
+            // await sendEmail({...});
+            // Automatically log in the user after fast registration bypass
+            const payload = { user: { id: user.id } };
+            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' });
 
-            res.json({ success: true, msg: 'Verification email sent' });
+            res.json({ success: true, token, msg: 'Registration successful! (Email bypassed)' });
         } catch (err) {
             console.error(err);
-            user.verificationToken = undefined;
-            user.verificationTokenExpire = undefined;
-            await user.save();
-            return res.status(500).json({ msg: 'Email could not be sent' });
+            // user.verificationToken = undefined;
+            // user.verificationTokenExpire = undefined;
+            // await user.save();
+            return res.status(500).json({ msg: 'Registration failed during token generation.' });
         }
     } catch (err) {
         console.error(err.message);
@@ -118,10 +115,11 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
         }
 
         // Check if email is verified
-        if (!user.isVerified) {
-            console.log(`Unverified login attempt for: ${email}`);
-            return res.status(403).json({ msg: 'Please verify your email before logging in. Check your inbox for the verification link.' });
-        }
+        // 🚀 BYPASS CHECK FOR RENDER FREE TIER (All new users auto-verified)
+        // if (!user.isVerified) {
+        //     console.log(`Unverified login attempt for: ${email}`);
+        //     return res.status(403).json({ msg: 'Please verify your email before logging in. Check your inbox for the verification link.' });
+        // }
 
         const payload = {
             user: {
