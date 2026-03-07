@@ -1,4 +1,4 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
@@ -71,42 +71,51 @@ const buildHtmlEmail = (title, bodyHtml, btnText = null, btnUrl = null) => {
  * @param {string} [options.html]    - Full HTML (if not provided, a basic branded HTML is generated from message)
  */
 const sendEmail = async (options) => {
-  if (!process.env.RESEND_API_KEY) {
-    console.error('⚠️ CRITICAL: RESEND_API_KEY is not set in the environment variables!');
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('⚠️ CRITICAL: EMAIL_USER or EMAIL_PASS is not set in the environment variables!');
   }
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  let transportConfig;
 
-  console.log(`Attempting to send email to ${options.email} via Resend...`);
-
-  // For Resend Free Tier, you MUST send from onboarding@resend.dev unless you verify a custom domain.
-  // Public domains like @gmail.com are not allowed as 'from' addresses.
-  const configuredFrom = process.env.FROM_EMAIL || '';
-  const fromEmail = (configuredFrom.includes('@gmail.com') || !configuredFrom) 
-    ? 'onboarding@resend.dev' 
-    : configuredFrom;
-  const fromName = process.env.FROM_NAME || 'MindWave';
-
-  try {
-    const { data, error } = await resend.emails.send({
-      from: `${fromName} <${fromEmail}>`,
-      to: options.email,
-      subject: options.subject,
-      html: options.html || options.message,
-      text: options.message,
-    });
-
-    if (error) {
-      console.error('Resend API Error:', error);
-      throw new Error(error.message);
-    }
-
-    console.log(`Email successfully sent via Resend. ID:`, data.id);
-    return data;
-  } catch (err) {
-    console.error('Email Sending Failed:', err);
-    throw err;
+  if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
+    transportConfig = {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT, // wait, port should usually be parsed to number? Actually nodemailer handles string.
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000
+    };
+  } else {
+    transportConfig = {
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000
+    };
   }
+
+  console.log(`Attempting to send email to ${options.email} via ${transportConfig.service || transportConfig.host}...`);
+
+  const transporter = nodemailer.createTransport(transportConfig);
+
+  const message = {
+    from: `${process.env.FROM_NAME || 'MindWave'} <${process.env.FROM_EMAIL || process.env.EMAIL_USER}>`,
+    to: options.email,
+    subject: options.subject,
+    text: options.message, // Plain text fallback
+    html: options.html || null // Use provided HTML or none
+  };
+
+  await transporter.sendMail(message);
 };
 
 module.exports = { sendEmail, buildHtmlEmail };
