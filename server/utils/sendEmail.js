@@ -85,7 +85,7 @@ const sendEmail = async (options) => {
   const fromName = process.env.FROM_NAME || 'MindWave';
 
   try {
-    const data = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: options.email,
       subject: options.subject,
@@ -93,11 +93,16 @@ const sendEmail = async (options) => {
       text: options.message,
     });
 
+    if (error) {
+      console.error('Resend API Error:', error);
+      throw new Error(error.message);
+    }
+
     console.log(`Email successfully sent via Resend. ID:`, data.id);
     return data;
-  } catch (error) {
-    console.error('Resend Error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Email Sending Failed:', err);
+    throw err;
   }
 };
 
