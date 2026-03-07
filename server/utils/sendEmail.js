@@ -79,9 +79,12 @@ const sendEmail = async (options) => {
 
   console.log(`Attempting to send email to ${options.email} via Resend...`);
 
-  // Note: Resend requires a verified domain to send FROM in production.
-  // We use their testing domain or the users configured FROM email.
-  const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+  // For Resend Free Tier, you MUST send from onboarding@resend.dev unless you verify a custom domain.
+  // Public domains like @gmail.com are not allowed as 'from' addresses.
+  const configuredFrom = process.env.FROM_EMAIL || '';
+  const fromEmail = (configuredFrom.includes('@gmail.com') || !configuredFrom) 
+    ? 'onboarding@resend.dev' 
+    : configuredFrom;
   const fromName = process.env.FROM_NAME || 'MindWave';
 
   try {
