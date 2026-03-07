@@ -104,22 +104,37 @@ Generate 5 to 7 specific, actionable milestones. Respond ONLY with raw JSON arra
     }
 });
 
-// POST /api/goals/ai-create — Generate a FULL goal from a chat message
+// POST /api/goals/ai-create — Generate a FULL goal from a chat message (or modify an existing one)
 router.post('/ai-create', auth, async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, existingGoal } = req.body;
         if (!message) return res.status(400).json({ msg: 'Message is required' });
         if (!process.env.GROQ_API_KEY) return res.status(500).json({ msg: 'AI API key not configured' });
 
         const today = new Date().toISOString().split('T')[0];
 
-        const prompt = `You are a personal goal-setting coach. A user described a goal in natural language. Extract and structure it.
+        let prompt = `You are a personal goal-setting coach. A user described a goal in natural language. Extract and structure it.
 
 User's idea: "${message}"
 
-Today is ${today}.
+Today is ${today}.`;
 
-Create a complete, specific goal. Respond ONLY with raw JSON (no markdown):
+        if (existingGoal) {
+            prompt += `
+            
+The user currently has this existing goal plan. They want you to MODIFY IT based on their new idea/request above:
+Existing Plan: ${JSON.stringify(existingGoal, null, 2)}
+
+Please output a fully modified/updated goal JSON object. Maintain the good parts, but apply their requested changes (e.g. changing dates, adding/removing steps, changing the title).`;
+        } else {
+            prompt += `
+            
+Create a complete, specific goal.`;
+        }
+
+        prompt += `
+
+Respond ONLY with raw JSON (no markdown):
 {
   "title": "Clear, motivating goal title",
   "description": "2-3 sentences describing what success looks like",
@@ -132,8 +147,9 @@ Create a complete, specific goal. Respond ONLY with raw JSON (no markdown):
 }
 
 Rules:
-- Generate 4-6 meaningful milestones with realistic dates
-- targetDate should be 4-12 weeks from today unless user specified
+- Generate an appropriate number of meaningful milestones (from 2 up to 15) based on the goal's complexity, timeframe, and user context.
+- Analyze the user's request carefully to break down the schedule sensibly.
+- targetDate should be realistic for the scope of the goal (e.g., 4-12 weeks from today unless user specified a timeframe).
 - Pick the most fitting category`;
 
         const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });

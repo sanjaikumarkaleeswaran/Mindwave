@@ -6,7 +6,7 @@ import api from '../lib/axios';
 import {
     Target, Plus, Trash2, CheckCircle2, Circle, ChevronDown, ChevronUp,
     X, Calendar, Flag, Briefcase, BookOpen, Heart, DollarSign,
-    Users, Star, Edit3, AlertCircle, PenLine, TrendingUp,
+    Users, Star, Edit3, AlertCircle, PenLine, TrendingUp, ListChecks,
     TrendingDown, Minus, Clock, Zap, Sparkles, FileText, Send, Bot
 } from 'lucide-react';
 
@@ -59,35 +59,71 @@ function timeProg(createdAt, targetDate) {
 /* ══════════════════════════════════════════════════════════════
    AI CHAT GOAL CREATOR — the main new feature
 ══════════════════════════════════════════════════════════════ */
-function AIChatModal({ onClose, onGenerated }) {
+function AIChatModal({ onClose, onGenerated, initialGoal = null, chatMessages, setChatMessages, chatInput, setChatInput }) {
     const navigate = useNavigate();
-    const [messages, setMessages] = useState([
-        { role: 'ai', text: "Hi! 👋 Tell me about the goal you'd like to achieve. Describe it in your own words — I'll turn it into a structured plan you can edit." }
-    ]);
-    const [input, setInput] = useState('');
+    
+    const isEditMode = !!(initialGoal && initialGoal.title);
+    
+    useEffect(() => {
+        const currentGoalId = initialGoal?._id || 'new';
+        if (chatMessages.length === 0 || chatMessages.__goalId !== currentGoalId) {
+            const arr = [{ 
+                role: 'ai', 
+                text: isEditMode 
+                    ? `Hi! 👋 I see you're editing **"${initialGoal.title}"**.\n\nTell me what you'd like to change (e.g. "push the target date by 2 weeks", "add more steps for learning the basics").`
+                    : "Hi! 👋 Tell me about the goal you'd like to achieve. Describe it in your own words — I'll turn it into a structured plan you can edit." 
+            }];
+            arr.__goalId = currentGoalId;
+            setChatMessages(arr);
+        }
+    }, [initialGoal, isEditMode, chatMessages.length]);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const bottomRef = useRef(null);
 
-    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
     const send = async () => {
-        const msg = input.trim();
+        const msg = chatInput.trim();
         if (!msg || loading) return;
-        setInput(''); setError('');
-        setMessages(p => [...p, { role: 'user', text: msg }]);
+        setChatInput(''); setError('');
+        setChatMessages(p => {
+            const arr = [...p, { role: 'user', text: msg }];
+            arr.__goalId = p.__goalId;
+            return arr;
+        });
         setLoading(true);
         try {
-            setMessages(p => [...p, { role: 'ai', text: '⏳ Generating your goal plan…', loading: true }]);
-            const res = await api.post('/goals/ai-create', { message: msg });
+            setChatMessages(p => {
+                const arr = [...p, { role: 'ai', text: isEditMode ? '⏳ Modifying your goal plan…' : '⏳ Generating your goal plan…', loading: true }];
+                arr.__goalId = p.__goalId;
+                return arr;
+            });
+            const res = await api.post('/goals/ai-create', { 
+                message: msg, 
+                existingGoal: isEditMode ? initialGoal : undefined 
+            });
             const goal = res.data.goal;
-            setMessages(p => p.filter(m => !m.loading).concat({
-                role: 'ai',
-                text: `✅ I've created a goal plan for you!\n\n**${goal.title}**\n${goal.description}\n\n📅 Target: ${fmtDate(goal.targetDate)}\n🗂 Category: ${goal.category}\n📋 ${goal.milestones?.length || 0} steps planned\n\nClick **"Use this goal"** to review and edit, or describe a different goal.`,
-                goal,
-            }));
+            if (isEditMode && initialGoal._id) {
+                goal._id = initialGoal._id;
+            }
+
+            setChatMessages(p => {
+                const arr = p.filter(m => !m.loading).concat({
+                    role: 'ai',
+                    text: `✅ I've ${isEditMode ? 'updated the' : 'created a'} goal plan for you! Review the details below.`,
+                    goal,
+                });
+                arr.__goalId = p.__goalId;
+                return arr;
+            });
         } catch (e) {
-            setMessages(p => p.filter(m => !m.loading));
+            setChatMessages(p => {
+                const arr = p.filter(m => !m.loading);
+                arr.__goalId = p.__goalId;
+                return arr;
+            });
             setError(e?.response?.data?.msg || 'AI failed. Try again.');
         } finally { setLoading(false); }
     };
@@ -121,14 +157,14 @@ function AIChatModal({ onClose, onGenerated }) {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-                    {messages.map((m, i) => (
+                    {chatMessages.map((m, i) => (
                         <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                             {m.role === 'ai' && (
                                 <div className="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0 mt-0.5">
                                     <Bot className="w-3.5 h-3.5 text-indigo-400" />
                                 </div>
                             )}
-                            <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-zinc-800 border border-zinc-700/50 text-zinc-200 rounded-tl-sm'}`}>
+                            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-zinc-800 border border-zinc-700/50 text-zinc-200 rounded-tl-sm'}`}>
                                 {m.loading ? (
                                     <div className="flex items-center gap-2">
                                         <div className="flex gap-1">
@@ -140,10 +176,19 @@ function AIChatModal({ onClose, onGenerated }) {
                                     <>
                                         <p className="whitespace-pre-wrap">{m.text.replace(/\*\*(.*?)\*\*/g, '$1')}</p>
                                         {m.goal && (
-                                            <button onClick={() => { onGenerated(m.goal); onClose(); }}
-                                                className="mt-3 w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
-                                                <Sparkles className="w-3.5 h-3.5" /> Use this goal →
-                                            </button>
+                                            <div className="bg-black/20 border border-indigo-500/20 rounded-xl p-4 mt-3 space-y-3">
+                                                <h4 className="text-white font-semibold text-[15px]">{m.goal.title}</h4>
+                                                <p className="text-zinc-400 text-xs leading-relaxed">{m.goal.description}</p>
+                                                <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-400 mt-2">
+                                                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-indigo-400" /> {m.goal.targetDate ? fmtDate(m.goal.targetDate) : 'No date'}</span>
+                                                    <span className="flex items-center gap-1 capitalize"><Target className="w-3.5 h-3.5 text-indigo-400" /> {m.goal.category}</span>
+                                                    <span className="flex items-center gap-1"><ListChecks className="w-3.5 h-3.5 text-indigo-400" /> {m.goal.milestones?.length || 0} steps</span>
+                                                </div>
+                                                <button onClick={() => { onGenerated(m.goal); onClose(); }}
+                                                    className="w-full mt-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-1.5">
+                                                    <Sparkles className="w-3.5 h-3.5" /> Use this plan →
+                                                </button>
+                                            </div>
                                         )}
                                     </>
                                 )}
@@ -161,12 +206,12 @@ function AIChatModal({ onClose, onGenerated }) {
                 {/* Input */}
                 <div className="px-4 py-3 border-t border-zinc-800 shrink-0">
                     <div className="flex gap-2">
-                        <textarea value={input} onChange={e => setInput(e.target.value)}
+                        <textarea value={chatInput} onChange={e => setChatInput(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
                             placeholder="e.g. I want to learn guitar and perform a song in 3 months…"
                             rows={2}
                             className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-all resize-none placeholder-zinc-600" />
-                        <button onClick={send} disabled={loading || !input.trim()}
+                        <button onClick={send} disabled={loading || !chatInput.trim()}
                             className="p-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl transition-all self-end">
                             <Send className="w-4 h-4" />
                         </button>
@@ -266,7 +311,7 @@ function ActivityModal({ milestone, goalId, catColor, onClose, onSave }) {
 /* ══════════════════════════════════════════════════════════════
    GOAL FORM MODAL (Create / Edit — pre-fill from AI)
 ══════════════════════════════════════════════════════════════ */
-function GoalFormModal({ onClose, onSave, initialData = null }) {
+function GoalFormModal({ onClose, onSave, onOpenChat, initialData = null }) {
     const navigate = useNavigate();
     // Only treat as edit when the goal already exists in DB (has _id)
     const isEdit = !!(initialData && initialData._id);
@@ -326,7 +371,7 @@ function GoalFormModal({ onClose, onSave, initialData = null }) {
                         {isEdit ? <><PenLine className="w-5 h-5 text-indigo-400" />Edit Goal</> : <><Target className="w-5 h-5 text-indigo-400" />New Goal</>}
                     </h2>
                     <div className="flex items-center gap-1">
-                        <button type="button" onClick={() => { onClose(); navigate('/chat'); }} title="Open AI Chat instead" className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <button type="button" onClick={() => { onClose(); if (onOpenChat) onOpenChat(); else navigate('/chat'); }} title="Open AI Goal Creator instead" className="p-2 hover:bg-white/10 rounded-full transition-colors">
                             <PenLine className="w-5 h-5 text-zinc-500 hover:text-indigo-400" />
                         </button>
                         <button type="button" onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X className="w-5 h-5 text-zinc-400" /></button>
@@ -656,6 +701,8 @@ export default function GoalsPage() {
     const [delGoal, setDelGoal] = useState(null);
     const [delLoad, setDelLoad] = useState(false);
     const [filter, setFilter] = useState('all');
+    const [chatMessages, setChatMessages] = useState([]);
+    const [chatInput, setChatInput] = useState('');
 
     useEffect(() => { fetchGoals(); }, []);
 
@@ -759,17 +806,28 @@ export default function GoalsPage() {
 
             {/* Modals */}
             <AnimatePresence>
-                {showChat && <AIChatModal onClose={() => setShowChat(false)} onGenerated={handleAIGenerated} />}
+                {/* `showChat` can be true (new goal) OR an object (edit goal) */}
+                {showChat && (
+                    <AIChatModal 
+                        initialGoal={typeof showChat === 'object' ? showChat : null} 
+                        onClose={() => setShowChat(false)} 
+                        onGenerated={handleAIGenerated} 
+                        chatMessages={chatMessages}
+                        setChatMessages={setChatMessages}
+                        chatInput={chatInput}
+                        setChatInput={setChatInput}
+                    />
+                )}
             </AnimatePresence>
             <AnimatePresence>
                 {/* AI-generated goal opens in form for user to review */}
-                {aiGoal && <GoalFormModal initialData={aiGoal} onClose={() => setAiGoal(null)} onSave={g => { handleCreate(g); setAiGoal(null); }} />}
+                {aiGoal && <GoalFormModal initialData={aiGoal} onClose={() => setAiGoal(null)} onSave={g => { handleCreate(g); setAiGoal(null); }} onOpenChat={() => setShowChat(aiGoal)} />}
             </AnimatePresence>
             <AnimatePresence>
-                {showCreate && <GoalFormModal onClose={() => setShowCreate(false)} onSave={handleCreate} />}
+                {showCreate && <GoalFormModal onClose={() => setShowCreate(false)} onSave={handleCreate} onOpenChat={() => setShowChat(true)} />}
             </AnimatePresence>
             <AnimatePresence>
-                {editGoal && <GoalFormModal initialData={editGoal} onClose={() => setEditGoal(null)} onSave={handleUpdate} />}
+                {editGoal && <GoalFormModal initialData={editGoal} onClose={() => setEditGoal(null)} onSave={handleUpdate} onOpenChat={() => setShowChat(editGoal)} />}
             </AnimatePresence>
             <AnimatePresence>
                 {delGoal && <DeleteModal goal={delGoal} onClose={() => setDelGoal(null)} onConfirm={handleDelConfirm} loading={delLoad} />}
