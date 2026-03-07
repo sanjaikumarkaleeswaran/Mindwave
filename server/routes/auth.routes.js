@@ -370,21 +370,22 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
         );
 
         try {
+            // 🚀 SKIP ACTUAL EMAIL SENDING ON RENDER
+            /*
             await sendEmail({
                 email: user.email,
                 subject: 'Reset Your MindWave Password',
                 message: plainMessage,
                 html: htmlMessage
             });
-
-            res.status(200).json({ success: true, data: 'Email sent' });
+            */
+            console.log(`[RENDER HACK] Password reset link for ${user.email}: ${resetUrl}`);
+            res.status(200).json({ success: true, data: 'Email sent (Render Free Tier: Reset link logged to console)' });
         } catch (err) {
             console.error(err);
             user.resetPasswordToken = undefined;
             user.resetPasswordExpire = undefined;
-
             await user.save();
-
             return res.status(500).json({ msg: 'Email could not be sent' });
         }
     } catch (err) {
@@ -475,13 +476,17 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
         );
 
         try {
+            // 🚀 SKIP ACTUAL EMAIL SENDING ON RENDER
+            /*
             await sendEmail({
                 email: user.email,
                 subject: 'Verify Your MindWave Account',
                 message: plainMessage,
                 html: htmlMessage
             });
-            res.json({ success: true, msg: 'Verification email resent successfully.' });
+            */
+            console.log(`[RENDER HACK] resend-verification link for ${user.email}: ${verifyUrl}`);
+            res.json({ success: true, msg: 'Verification email resent successfully. (Render Free Tier: Link logged to console)' });
         } catch (err) {
             console.error('Error sending email:', err);
             return res.status(500).json({ msg: 'Email could not be sent. Please check server logs.' });
