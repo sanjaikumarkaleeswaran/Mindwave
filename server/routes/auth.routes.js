@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const Journal = require('../models/Journal');
 const Habit = require('../models/Habit');
+const Goal = require('../models/Goal');
 const Conversation = require('../models/Conversation');
 const ChatHistory = require('../models/ChatHistory');
 const validate = require('../middleware/validate.middleware');
@@ -48,18 +49,17 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 
         await user.save();
 
-        // 🚀 AUTO-VERIFY HACK (Render Free Tier)
-        user.isVerified = true;
-        // const verificationToken = crypto.randomBytes(20).toString('hex');
-        // user.verificationToken = crypto
-        //     .createHash('sha256')
-        //     .update(verificationToken)
-        //     .digest('hex');
-        // user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        user.isVerified = false;
+        const verificationToken = crypto.randomBytes(20).toString('hex');
+        user.verificationToken = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+        user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
         await user.save();
 
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
         const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
 
         const plainMessage = `Please verify your MindWave account by visiting: ${verifyUrl}`;
@@ -73,21 +73,18 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
         );
 
         try {
-            // 🚀 SKIP ACTUAL EMAIL SENDING ON RENDER
-            /*
             await sendEmail({
                 email: user.email,
                 subject: 'Verify Your MindWave Account',
                 message: plainMessage,
                 html: htmlMessage
             });
-            */
 
             // Auto-login the user after registration
             const payload = { user: { id: user.id } };
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' });
 
-            res.json({ success: true, token, msg: 'Registration successful! (Auto-verified)' });
+            res.json({ success: true, token, msg: 'Registration successful! Verification email sent.' });
         } catch (err) {
             console.error(err);
             return res.status(500).json({ msg: 'Registration failed during token generation.' });
@@ -123,12 +120,10 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
         }
 
         // Check if email is verified
-        /* 🚀 AUTO-VERIFY HACK (Bypass check on login)
         if (!user.isVerified) {
             console.log(`Unverified login attempt for: ${email}`);
             return res.status(403).json({ msg: 'Please verify your email before logging in. Check your inbox for the verification link.' });
         }
-        */
 
         const payload = {
             user: {
@@ -202,11 +197,14 @@ router.delete('/profile', auth, async (req, res) => {
         // 2. Delete all habits
         await Habit.deleteMany({ userId: req.user.id });
 
-        // 3. Delete all chat history & conversations
+        // 3. Delete all goals & milestones
+        await Goal.deleteMany({ userId: req.user.id });
+
+        // 4. Delete all chat history & conversations
         await ChatHistory.deleteMany({ userId: req.user.id });
         await Conversation.deleteMany({ userId: req.user.id });
 
-        // 4. Delete the user
+        // 5. Delete the user
         await User.findOneAndDelete({ _id: req.user.id });
 
         res.json({ msg: 'User deleted' });
@@ -234,14 +232,16 @@ router.get('/export', auth, async (req, res) => {
         }
 
         const journalQuery = { userId, ...(Object.keys(dateFilter).length ? { date: dateFilter } : {}) };
-        const habitQuery = { userId, ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}) };
-        const chatQuery = { userId, ...(Object.keys(dateFilter).length ? { timestamp: dateFilter } : {}) };
+        const habitQuery   = { userId, ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}) };
+        const goalQuery    = { userId, ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}) };
+        const chatQuery    = { userId, ...(Object.keys(dateFilter).length ? { timestamp: dateFilter } : {}) };
 
         // Fetch all data in parallel
-        const [user, journals, habits, conversationDocs, chatHistoryDocs] = await Promise.all([
+        const [user, journals, habits, goals, conversationDocs, chatHistoryDocs] = await Promise.all([
             User.findById(userId).select('-password -verificationToken -resetPasswordToken').lean(),
             Journal.find(journalQuery).sort({ date: -1 }).lean(),
             Habit.find(habitQuery).lean(),
+            Goal.find(goalQuery).sort({ createdAt: -1 }).lean(),
             Conversation.find({ userId }).lean(),
             ChatHistory.find(chatQuery).sort({ timestamp: 1 }).lean()
         ]);
@@ -250,6 +250,7 @@ router.get('/export', auth, async (req, res) => {
             user,
             journals,
             habits,
+            goals,
             chat: {
                 conversations: conversationDocs,
                 history: chatHistoryDocs
@@ -355,7 +356,7 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
         await user.save();
 
         // Create reset url
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
         const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
         const plainMessage = `You requested a password reset. Visit this link to reset your password: ${resetUrl}\n\nThis link expires in 10 minutes.`;
@@ -370,17 +371,14 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), asy
         );
 
         try {
-            // 🚀 SKIP ACTUAL EMAIL SENDING ON RENDER
-            /*
             await sendEmail({
                 email: user.email,
                 subject: 'Reset Your MindWave Password',
                 message: plainMessage,
                 html: htmlMessage
             });
-            */
-            console.log(`[RENDER HACK] Password reset link for ${user.email}: ${resetUrl}`);
-            res.status(200).json({ success: true, data: 'Email sent (Render Free Tier: Reset link logged to console)' });
+            console.log(`Password reset link sent to ${user.email}`);
+            res.status(200).json({ success: true, data: 'Email sent successfully' });
         } catch (err) {
             console.error(err);
             user.resetPasswordToken = undefined;
@@ -462,7 +460,7 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
 
         await user.save();
 
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
         const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
 
         const plainMessage = `Verify your MindWave account here: ${verifyUrl}`;
@@ -476,17 +474,13 @@ router.post('/resend-verification', authLimiter, async (req, res) => {
         );
 
         try {
-            // 🚀 SKIP ACTUAL EMAIL SENDING ON RENDER
-            /*
             await sendEmail({
                 email: user.email,
                 subject: 'Verify Your MindWave Account',
                 message: plainMessage,
                 html: htmlMessage
             });
-            */
-            console.log(`[RENDER HACK] resend-verification link for ${user.email}: ${verifyUrl}`);
-            res.json({ success: true, msg: 'Verification email resent successfully. (Render Free Tier: Link logged to console)' });
+            res.json({ success: true, msg: 'Verification email resent successfully.' });
         } catch (err) {
             console.error('Error sending email:', err);
             return res.status(500).json({ msg: 'Email could not be sent. Please check server logs.' });

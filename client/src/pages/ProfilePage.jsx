@@ -21,7 +21,7 @@ export default function ProfilePage() {
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [exportPreview, setExportPreview] = useState(null);
-    const [exportSections, setExportSections] = useState({ journals: true, habits: true, chat: true });
+    const [exportSections, setExportSections] = useState({ journals: true, habits: true, goals: true, chat: true });
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [deleteError, setDeleteError] = useState('');
@@ -162,8 +162,9 @@ export default function ProfilePage() {
             const d = res.data;
             setExportPreview({
                 journals: (d.journals || []).length,
-                habits: (d.habits || []).length,
-                chat: (d.chat?.history || []).length
+                habits:   (d.habits   || []).length,
+                goals:    (d.goals    || []).length,
+                chat:     (d.chat?.history || []).length
             });
         }).catch(() => { });
     }, []);
@@ -202,7 +203,7 @@ export default function ProfilePage() {
         const dateStr = new Date().toISOString().split('T')[0];
 
         // Guard: at least one section selected
-        if (!exportSections.journals && !exportSections.habits && !exportSections.chat) {
+        if (!exportSections.journals && !exportSections.habits && !exportSections.goals && !exportSections.chat) {
             setMessage({ type: 'error', text: 'Please select at least one section to export.' });
             setExporting(false);
             return;
@@ -222,8 +223,9 @@ export default function ProfilePage() {
                 // Filter JSON to only selected sections
                 const filtered = { exportDate: data.exportDate };
                 if (exportSections.journals) filtered.journals = data.journals;
-                if (exportSections.habits) filtered.habits = data.habits;
-                if (exportSections.chat) filtered.chat = data.chat;
+                if (exportSections.habits)   filtered.habits   = data.habits;
+                if (exportSections.goals)    filtered.goals    = data.goals;
+                if (exportSections.chat)     filtered.chat     = data.chat;
                 downloadBlob(
                     JSON.stringify(filtered, null, 2),
                     `mindwave_export_${dateStr}.json`,
@@ -263,6 +265,25 @@ export default function ProfilePage() {
                         created_at: h.createdAt ? new Date(h.createdAt).toLocaleDateString() : ''
                     }));
                     setTimeout(() => downloadBlob(toCSV(habitRows), `mindwave_habits_${dateStr}.csv`, 'text/csv;charset=utf-8'), delay);
+                    delay += 300;
+                }
+
+                if (exportSections.goals) {
+                    const goalRows = (data.goals || []).map(g => ({
+                        title:       g.title       || '',
+                        description: g.description || '',
+                        category:    g.category    || '',
+                        status:      g.status      || '',
+                        progress:    g.progress    || 0,
+                        target_date: g.targetDate  ? new Date(g.targetDate).toLocaleDateString() : '',
+                        total_steps: (g.milestones || []).length,
+                        completed_steps: (g.milestones || []).filter(m => m.completed).length,
+                        milestones:  (g.milestones || []).map(m =>
+                            `[${m.completed ? '✓' : ' '}] ${m.text}${m.dueDate ? ' (' + new Date(m.dueDate).toLocaleDateString() + ')' : ''}`
+                        ).join(' | '),
+                        created_at:  g.createdAt ? new Date(g.createdAt).toLocaleDateString() : ''
+                    }));
+                    setTimeout(() => downloadBlob(toCSV(goalRows), `mindwave_goals_${dateStr}.csv`, 'text/csv;charset=utf-8'), delay);
                     delay += 300;
                 }
 
@@ -648,15 +669,15 @@ export default function ProfilePage() {
                             <p className="text-sm font-semibold text-zinc-300">Include in Export</p>
                             <button
                                 onClick={() => {
-                                    const allOn = exportSections.journals && exportSections.habits && exportSections.chat;
-                                    setExportSections({ journals: !allOn, habits: !allOn, chat: !allOn });
+                                    const allOn = exportSections.journals && exportSections.habits && exportSections.goals && exportSections.chat;
+                                    setExportSections({ journals: !allOn, habits: !allOn, goals: !allOn, chat: !allOn });
                                 }}
                                 className="text-[11px] text-zinc-500 hover:text-indigo-400 transition-colors font-medium"
                             >
-                                {exportSections.journals && exportSections.habits && exportSections.chat ? 'Deselect all' : 'Select all'}
+                                {exportSections.journals && exportSections.habits && exportSections.goals && exportSections.chat ? 'Deselect all' : 'Select all'}
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             {[
                                 {
                                     key: 'journals',
@@ -683,6 +704,19 @@ export default function ProfilePage() {
                                     activeBorder: 'border-emerald-500/50',
                                     activeText: 'text-emerald-400',
                                     activeDot: 'bg-emerald-500',
+                                },
+                                {
+                                    key: 'goals',
+                                    emoji: '🎯',
+                                    label: 'Goals',
+                                    desc: 'Milestones, progress & timeline',
+                                    fields: ['title', 'status', 'progress', 'target_date', 'milestones'],
+                                    color: 'purple',
+                                    count: exportPreview?.goals,
+                                    activeGradient: 'from-purple-600/20 to-violet-500/10',
+                                    activeBorder: 'border-purple-500/50',
+                                    activeText: 'text-purple-400',
+                                    activeDot: 'bg-purple-500',
                                 },
                                 {
                                     key: 'chat',
