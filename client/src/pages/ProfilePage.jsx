@@ -24,6 +24,7 @@ export default function ProfilePage() {
     const [exportSections, setExportSections] = useState({ journals: true, habits: true, chat: true });
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
+    const [deleteError, setDeleteError] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
 
     // --- Drag Range Slider ---
@@ -838,11 +839,17 @@ export default function ProfilePage() {
                             onChange={(e) => setDeleteConfirmation(e.target.value)}
                         />
 
+                        {deleteError && (
+                            <div className="mb-4 flex items-center gap-2 text-rose-400 text-sm bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
+                                <AlertTriangle className="w-4 h-4 shrink-0" />{deleteError}
+                            </div>
+                        )}
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={() => {
                                     setShowDeleteModal(false);
                                     setDeleteConfirmation('');
+                                    setDeleteError('');
                                 }}
                                 className="px-4 py-2 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 rounded-lg transition-colors text-sm font-medium"
                             >
@@ -851,11 +858,12 @@ export default function ProfilePage() {
                             <button
                                 disabled={deleteConfirmation !== 'DELETE'}
                                 onClick={async () => {
+                                    setDeleteError('');
                                     try {
                                         await deleteAccount();
                                     } catch (err) {
-                                        alert("Failed to delete account. Please try again.");
                                         console.error(err);
+                                        setDeleteError(err?.response?.data?.msg || 'Failed to delete account. Please try again.');
                                     }
                                 }}
                                 className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${deleteConfirmation === 'DELETE'
