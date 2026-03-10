@@ -7,6 +7,10 @@ const getDismissed = () => { try { return JSON.parse(localStorage.getItem(STORAG
 const saveDismissed = ids => localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 
 function buildNotifications(habits = [], journals = [], goals = []) {
+    if (!Array.isArray(habits)) habits = [];
+    if (!Array.isArray(journals)) journals = [];
+    if (!Array.isArray(goals)) goals = [];
+    
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
     const hour = now.getHours();
