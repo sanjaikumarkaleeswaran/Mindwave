@@ -45,7 +45,7 @@ const JournalPage = () => {
         try {
             setLoading(true);
             const response = await api.get('/journal');
-            setJournals(response.data);
+            setJournals(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Error fetching journals:', error);
         } finally {

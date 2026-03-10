@@ -26,7 +26,7 @@ export default function GoalsPage() {
     useEffect(() => { fetchGoals(); }, []);
 
     const fetchGoals = async () => {
-        try { const r = await api.get('/goals'); setGoals(r.data); }
+        try { const r = await api.get('/goals'); setGoals(Array.isArray(r.data) ? r.data : []); }
         catch (e) { console.error(e); } finally { setLoading(false); }
     };
 

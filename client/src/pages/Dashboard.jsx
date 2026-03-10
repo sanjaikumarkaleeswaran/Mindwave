@@ -42,11 +42,11 @@ export default function Dashboard() {
                     api.get('/search/stats'),
                     api.get('/goals'),
                 ]);
-                setHabits(habitsRes.data);
-                setChats(chatsRes.data.slice(0, 3));
-                setJournals(journalsRes.data);
-                setStats(statsRes.data);
-                setGoals(goalsRes.data.filter(g => g.status === 'active').slice(0, 4));
+                setHabits(Array.isArray(habitsRes.data) ? habitsRes.data : []);
+                setChats(Array.isArray(chatsRes.data) ? chatsRes.data.slice(0, 3) : []);
+                setJournals(Array.isArray(journalsRes.data) ? journalsRes.data : []);
+                setStats(statsRes.data || null);
+                setGoals(Array.isArray(goalsRes.data) ? goalsRes.data.filter(g => g.status === 'active').slice(0, 4) : []);
             } catch (err) {
                 console.error("Dashboard Fetch Error", err);
             } finally {

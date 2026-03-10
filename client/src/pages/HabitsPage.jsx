@@ -131,7 +131,7 @@ export default function HabitsPage() {
         queryKey: ['habits'],
         queryFn: async () => {
             const res = await api.get('/habits');
-            return res.data.sort((a, b) => a.order - b.order);
+            return Array.isArray(res.data) ? res.data.sort((a, b) => a.order - b.order) : [];
         }
     });
 

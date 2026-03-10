@@ -47,7 +47,7 @@ const connectDB = async () => {
         if (!uri) {
             console.error("CRITICAL ERROR: MongoDB URI is undefined. Check .env file.");
             console.log("Current Environment Variables Keys:", Object.keys(process.env));
-            process.exit(1); // Exit process with failure
+            // process.exit(1); // Exit process with failure
             return;
         }
 
@@ -55,7 +55,7 @@ const connectDB = async () => {
         console.log('MongoDB Connected...');
     } catch (err) {
         console.error('MongoDB Connection Error:', err.message);
-        process.exit(1); // Exit process with failure
+        // process.exit(1); // Exit process with failure
     }
 };
 connectDB();
@@ -87,4 +87,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+}
+
+module.exports = app;
