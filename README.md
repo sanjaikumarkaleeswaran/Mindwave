@@ -225,7 +225,7 @@ Mindwave/
 - [x] Security hardening (rate limiting, XSS, NoSQL injection)
 - [x] Push notifications for milestone due dates
 - [x] Calendar view for goal milestones
-- [ ] Export data (JSON / CSV)
+- [x] Export data (JSON / CSV)
 - [ ] Voice interface
 
 ---
