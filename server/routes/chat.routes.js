@@ -4,7 +4,7 @@ const auth = require('../middleware/auth.middleware');
 const ChatHistory = require('../models/ChatHistory');
 const Conversation = require('../models/Conversation');
 const Habit = require('../models/Habit');
-const Groq = require('groq-sdk');
+const { getGroqCompletion } = require('../utils/llmCache');
 const multer = require('multer');
 const fs = require('fs');
 const pdf = require('pdf-parse');
@@ -162,22 +162,20 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         `;
 
         // 4. Call Groq
-        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
         const apiMessages = [
             { role: "system", content: systemPrompt },
             ...recentHistory.reverse().map(m => ({ role: m.role, content: m.content })),
             { role: "user", content: llmContent }
         ];
 
-        // Use model from request or default
         const selectedModel = req.body.model || "llama-3.3-70b-versatile";
 
-        const chatCompletion = await groq.chat.completions.create({
+        const chatCompletion = await getGroqCompletion({
             messages: apiMessages,
             model: selectedModel,
             temperature: 0.1, // Lower temperature for precise JSON
             max_tokens: 1024,
-        });
+        }, true);
 
         let aiResponseContent = chatCompletion.choices[0]?.message?.content || "Sorry, I couldn't process that.";
         let toolExecuted = false;
@@ -337,12 +335,11 @@ router.post('/analyze-habits', auth, async (req, res) => {
         Keep the tone encouraging but accountability-focused. Use emojis.
         `;
 
-        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-        const completion = await groq.chat.completions.create({
+        const completion = await getGroqCompletion({
             messages: [{ role: "user", content: prompt }],
             model: "llama-3.3-70b-versatile",
             temperature: 0.3,
-        });
+        }, true);
 
         res.json({ analysis: completion.choices[0]?.message?.content });
 

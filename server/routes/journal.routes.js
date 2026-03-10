@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Journal = require('../models/Journal');
-const Groq = require('groq-sdk');
 const auth = require('../middleware/auth.middleware');
 const validate = require('../middleware/validate.middleware');
 const {
@@ -12,10 +11,7 @@ const {
     analyzeJournalSchema,
     batchAnalyzeSchema
 } = require('../schemas/journal.schemas');
-
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
+const { getGroqCompletion } = require('../utils/llmCache');
 
 // Get all journal entries for a user
 router.get('/', auth, async (req, res) => {
@@ -184,7 +180,7 @@ Provide your analysis in JSON format:
   "actionableChallenge": "One specific challenge here"
 }`;
 
-        const completion = await groq.chat.completions.create({
+        const completion = await getGroqCompletion({
             messages: [
                 {
                     role: 'system',
@@ -198,7 +194,7 @@ Provide your analysis in JSON format:
             model: 'llama-3.3-70b-versatile',
             temperature: 0.7,
             max_tokens: 1000
-        });
+        }, true); // Use cache: true
 
         const aiResponse = completion.choices[0]?.message?.content || '';
 
@@ -280,7 +276,7 @@ Provide analysis in JSON format:
   "recommendations": ["recommendation 1", "recommendation 2"]
 }`;
 
-        const completion = await groq.chat.completions.create({
+        const completion = await getGroqCompletion({
             messages: [
                 {
                     role: 'system',
@@ -294,7 +290,7 @@ Provide analysis in JSON format:
             model: 'llama-3.3-70b-versatile',
             temperature: 0.7,
             max_tokens: 1500
-        });
+        }, true); // Use cache: true
 
         const aiResponse = completion.choices[0]?.message?.content || '';
 

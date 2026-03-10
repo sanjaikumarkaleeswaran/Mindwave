@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const Goal = require('../models/Goal');
-const Groq = require('groq-sdk');
+const { getGroqCompletion } = require('../utils/llmCache');
 
 // Helper: safely map incoming milestones to schema objects
 function parseMilestones(arr) {
@@ -82,13 +82,12 @@ Generate 5 to 7 specific, actionable milestones. Respond ONLY with raw JSON arra
   ...
 ]`;
 
-        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-        const completion = await groq.chat.completions.create({
+        const completion = await getGroqCompletion({
             messages: [{ role: 'user', content: prompt }],
             model: 'llama-3.3-70b-versatile',
             temperature: 0.4,
             max_tokens: 600,
-        });
+        }, true);
 
         let raw = (completion.choices[0]?.message?.content || '[]')
             .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
@@ -152,13 +151,12 @@ Rules:
 - targetDate should be realistic for the scope of the goal (e.g., 4-12 weeks from today unless user specified a timeframe).
 - Pick the most fitting category`;
 
-        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-        const completion = await groq.chat.completions.create({
+        const completion = await getGroqCompletion({
             messages: [{ role: 'user', content: prompt }],
             model: 'llama-3.3-70b-versatile',
             temperature: 0.5,
             max_tokens: 800,
-        });
+        }, true);
 
         let raw = (completion.choices[0]?.message?.content || '{}')
             .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
