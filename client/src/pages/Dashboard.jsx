@@ -276,8 +276,8 @@ export default function Dashboard() {
                             <Award className="w-4 h-4 text-amber-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Best Streak</span>
                         </div>
-                        <div className="text-3xl font-bold text-amber-400 tabular-nums">{stats.habits.bestStreak}<span className="text-sm text-zinc-500"> days</span></div>
-                        <p className="text-xs text-zinc-500 mt-1">{stats.habits.totalCompletions} total completions</p>
+                        <div className="text-3xl font-bold text-amber-400 tabular-nums">{stats.habits?.bestStreak || 0}<span className="text-sm text-zinc-500"> days</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.habits?.totalCompletions || 0} total completions</p>
                     </div>
 
                     {/* Journal Streak */}
@@ -286,8 +286,8 @@ export default function Dashboard() {
                             <Book className="w-4 h-4 text-pink-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Journal Streak</span>
                         </div>
-                        <div className="text-3xl font-bold text-pink-400 tabular-nums">{stats.journal.streak}<span className="text-sm text-zinc-500"> days</span></div>
-                        <p className="text-xs text-zinc-500 mt-1">{stats.journal.total} total entries</p>
+                        <div className="text-3xl font-bold text-pink-400 tabular-nums">{stats.journal?.streak || 0}<span className="text-sm text-zinc-500"> days</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.journal?.total || 0} total entries</p>
                     </div>
 
                     {/* Goals */}
@@ -296,8 +296,8 @@ export default function Dashboard() {
                             <Target className="w-4 h-4 text-emerald-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Goals</span>
                         </div>
-                        <div className="text-3xl font-bold text-emerald-400 tabular-nums">{stats.goals.avgProgress}<span className="text-sm text-zinc-500">% avg</span></div>
-                        <p className="text-xs text-zinc-500 mt-1">{stats.goals.active} active · {stats.goals.completed} done</p>
+                        <div className="text-3xl font-bold text-emerald-400 tabular-nums">{stats.goals?.avgProgress || 0}<span className="text-sm text-zinc-500">% avg</span></div>
+                        <p className="text-xs text-zinc-500 mt-1">{stats.goals?.active || 0} active · {stats.goals?.completed || 0} done</p>
                     </Link>
                 </div>
             )}
