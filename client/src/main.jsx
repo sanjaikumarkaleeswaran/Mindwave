@@ -8,7 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import { registerSW } from 'virtual:pwa-register';
 
-const updateSW = registerSW({
+registerSW({
   onNeedRefresh() { },
   onOfflineReady() { },
 });

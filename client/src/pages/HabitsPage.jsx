@@ -127,7 +127,7 @@ export default function HabitsPage() {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    const { data: habits = [], isLoading: loading } = useQuery({
+    const { data: habits = [] } = useQuery({
         queryKey: ['habits'],
         queryFn: async () => {
             const res = await api.get('/habits');

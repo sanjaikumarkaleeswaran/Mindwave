@@ -22,7 +22,7 @@ export default function AIChatModal({ onClose, onGenerated, initialGoal = null, 
             arr.__goalId = currentGoalId;
             setChatMessages(arr);
         }
-    }, [initialGoal, isEditMode, chatMessages.length]);
+    }, [initialGoal, isEditMode, chatMessages.length, chatMessages.__goalId, setChatMessages]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError]   = useState('');

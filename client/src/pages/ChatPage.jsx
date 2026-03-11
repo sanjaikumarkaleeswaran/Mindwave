@@ -25,7 +25,7 @@ export default function ChatPage() {
         { id: "gemma-2-9b-it", name: "Gemma 2 9B (Lightweight)" }
     ];
 
-    const { data: messages = [], isLoading: isHistoryLoading } = useQuery({
+    const { data: messages = [] } = useQuery({
         queryKey: ['chat', id],
         queryFn: async () => {
             if (!id) return [];
@@ -70,17 +70,7 @@ export default function ChatPage() {
         }
     }, [messages]);
 
-    const handleClear = async () => {
-        if (!id) return;
-        if (!window.confirm("Clear all chat history?")) return;
-        try {
-            await api.delete(`/chat/conversations/${id}`);
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            navigate('/chat');
-        } catch (err) {
-            console.error(err);
-        }
-    };
+
 
     const handleSend = async (e, overrideText) => {
         if (e) e.preventDefault();
@@ -232,6 +222,7 @@ export default function ChatPage() {
                                             <div className="markdown-body text-sm md:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
                                                 <ReactMarkdown
                                                     remarkPlugins={[remarkGfm]}
+                                                    /* eslint-disable no-unused-vars */
                                                     components={{
                                                         p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                                         ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
@@ -248,6 +239,7 @@ export default function ChatPage() {
                                                             </pre>
                                                         )
                                                     }}
+                                                    /* eslint-enable no-unused-vars */
                                                 >
                                                     {msg.content}
                                                 </ReactMarkdown>

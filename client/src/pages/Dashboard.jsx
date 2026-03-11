@@ -18,13 +18,13 @@ const QUOTES = [
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const [time, setTime] = useState(new Date().getHours());
+    const [time] = useState(new Date().getHours());
     const [habits, setHabits] = useState([]);
     const [chats, setChats] = useState([]);
     const [journals, setJournals] = useState([]);
     const [goals, setGoals] = useState([]);
     const [quote, setQuote] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
@@ -355,7 +355,6 @@ export default function Dashboard() {
                             const color = CAT_COLOR[goal.category] || '#6366f1';
                             const done  = goal.milestones.filter(m => m.completed).length;
                             const total = goal.milestones.length;
-                            const msPct = total > 0 ? Math.round((done/total)*100) : 0;
                             // Find next incomplete milestone
                             const nextMs = goal.milestones.find(m => !m.completed);
                             const daysLeft = goal.targetDate

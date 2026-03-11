@@ -1,0 +1,8 @@
+
+D:\webforme\client\src\pages\ProfilePage.jsx
+   90:8  warning  React Hook useEffect has a missing dependency: 'percentToDateStr'. Either include it or remove the dependency array                                                                                                                   react-hooks/exhaustive-deps
+  170:8  warning  React Hook useEffect has an unnecessary dependency: 'yearData'. Either exclude it or remove the dependency array. Outer scope values like 'yearData' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  170:9  error    'yearData' is not defined                                                                                                                                                                                                             no-undef
+
+✖ 3 problems (1 error, 2 warnings)
+

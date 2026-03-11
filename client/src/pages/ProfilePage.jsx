@@ -87,7 +87,7 @@ export default function ProfilePage() {
             window.removeEventListener('touchmove', onMove);
             window.removeEventListener('touchend', onUp);
         };
-    }, [dateFrom, dateTo]);
+    }, [dateFrom, dateTo, percentToDateStr]);
 
     const startDrag = (handle) => (e) => {
         e.preventDefault();

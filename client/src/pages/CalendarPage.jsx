@@ -20,10 +20,6 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 
 function pad(n) { return String(n).padStart(2, '0'); }
 function toYMD(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
-function fmtDate(d) {
-    if (!d) return '';
-    return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-}
 
 // Build a map: "YYYY-MM-DD" → [{ goalTitle, milestoneText, completed, color, goalId }]
 function buildEventMap(goals) {
@@ -151,7 +147,6 @@ export default function CalendarPage() {
 
     // Summary stats
     const allEvents = Object.values(eventMap).flat();
-    const totalMs = allEvents.length;
     const doneMs = allEvents.filter(e => e.completed).length;
     const overdueMs = allEvents.filter(e => !e.completed && new Date(Object.keys(eventMap).find(k => eventMap[k].includes(e))) < today).length;
     const thisMonthEvents = Object.entries(eventMap)

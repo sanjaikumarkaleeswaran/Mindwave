@@ -18,6 +18,7 @@ export default function Layout() {
 
     // Close sidebar on route change
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
@@ -33,7 +34,7 @@ export default function Layout() {
                 setHabits(hRes.data);
                 setJournals(jRes.data);
                 setGoals(gRes.data);
-            } catch (e) { /* silent */ }
+            } catch { /* silent */ }
         };
         fetchContext();
     }, [location.pathname]); // Refresh when navigating

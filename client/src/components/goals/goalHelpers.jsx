@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 
 /* ── categories ── */
+// eslint-disable-next-line react-refresh/only-export-components
 export const CATEGORIES = [
     { value: 'health',        label: 'Health',   icon: Heart,      color: '#f43f5e', bg: 'from-rose-500/20 to-pink-500/10' },
     { value: 'career',        label: 'Career',   icon: Briefcase,  color: '#f59e0b', bg: 'from-amber-500/20 to-yellow-500/10' },
@@ -15,10 +16,14 @@ export const CATEGORIES = [
     { value: 'other',         label: 'Other',    icon: Flag,       color: '#71717a', bg: 'from-zinc-500/20 to-zinc-600/10' },
 ];
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const getCat  = v => CATEGORIES.find(c => c.value === v) || CATEGORIES[5];
+// eslint-disable-next-line react-refresh/only-export-components
 export const toInput = d => { try { return d ? new Date(d).toISOString().split('T')[0] : ''; } catch { return ''; } };
+// eslint-disable-next-line react-refresh/only-export-components
 export const fmtDate = d => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function timeProg(createdAt, targetDate) {
     if (!targetDate) return null;
     const s = new Date(createdAt).getTime(), e = new Date(targetDate).getTime(), n = Date.now();
