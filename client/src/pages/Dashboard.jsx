@@ -303,7 +303,7 @@ export default function Dashboard() {
             )}
 
             {/* Mood Tracker strip (if journal data available) */}
-            {stats && Object.values(stats.journal.moodCounts).some(v => v > 0) && (
+            {stats && stats.journal?.moodCounts && Object.values(stats.journal.moodCounts).some(v => v > 0) && (
                 <div className="glass-card p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <TrendingUp className="w-4 h-4 text-zinc-400" />
