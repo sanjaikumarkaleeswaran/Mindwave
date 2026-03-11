@@ -128,7 +128,7 @@ export default function Sidebar({ isOpen, onClose }) {
                                 onClick={() => { if (window.innerWidth < 768) onClose(); }}
                                 end={item.path !== '/chat' && item.path !== '/'}
                                 className={({ isActive }) => clsx(
-                                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm border border-transparent relative overflow-hidden",
+                                    "group flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm border border-transparent relative overflow-hidden",
                                     isActive || (item.path === '/chat' && isChat)
                                         ? "text-indigo-400 border-indigo-500/20 bg-indigo-500/10"
                                         : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
