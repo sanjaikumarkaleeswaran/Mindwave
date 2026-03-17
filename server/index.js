@@ -12,8 +12,9 @@ app.use(express.json({ limit: '10kb' })); // Body limit
 const ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'https://mindwave-snowy.vercel.app', // Vercel production frontend
-    process.env.CLIENT_URL,             // Dynamic CLIENT_URL from environment
+    'https://mindwave-snowy.vercel.app',
+    'https://mindwave-a62e.onrender.com', // Render frontend
+    process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, '') : null,
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
 ].filter(Boolean);
 
