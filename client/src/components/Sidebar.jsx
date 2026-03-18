@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home, MessageSquare, CheckCircle, Settings, LogOut, Plus, Trash2, Zap, User, BookOpen, Target, CalendarDays } from 'lucide-react';
+import { Home, MessageSquare, CheckCircle, LogOut, Plus, Trash2, Zap, User, BookOpen, Target, CalendarDays } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,7 +21,7 @@ export default function Sidebar({ isOpen, onClose }) {
             const res = await api.get('/chat/conversations');
             return res.data;
         },
-        enabled: isChat // Only fetch when chat section is visible/active
+        enabled: isChat
     });
 
     const createMutation = useMutation({
@@ -29,7 +29,7 @@ export default function Sidebar({ isOpen, onClose }) {
         onSuccess: (res) => {
             queryClient.invalidateQueries(['conversations']);
             navigate(`/chat/${res.data._id}`);
-            if (window.innerWidth < 768) onClose();
+            onClose();
         }
     });
 
@@ -45,37 +45,32 @@ export default function Sidebar({ isOpen, onClose }) {
         onSettled: () => queryClient.invalidateQueries(['conversations'])
     });
 
-    const createNewChat = () => {
-        createMutation.mutate();
-    };
+    const createNewChat = () => createMutation.mutate();
 
     const deleteConversation = (e, id) => {
         e.preventDefault();
         e.stopPropagation();
         if (!window.confirm("Delete this chat?")) return;
-
         deleteMutation.mutate(id);
-
-        if (location.pathname.includes(id)) {
-            navigate('/chat');
-        }
+        if (location.pathname.includes(id)) navigate('/chat');
     };
 
     const navItems = [
-        { icon: Home, label: 'Home', path: '/' },
-        { icon: MessageSquare, label: 'Chat', path: '/chat' },
-        { icon: Zap, label: 'Focus', path: '/focus' },
-        { icon: CheckCircle, label: 'Habits', path: '/habits' },
-        { icon: Target, label: 'Goals', path: '/goals' },
+        { icon: Home,         label: 'Home',     path: '/'         },
+        { icon: MessageSquare,label: 'Chat',     path: '/chat'     },
+        { icon: Zap,          label: 'Focus',    path: '/focus'    },
+        { icon: CheckCircle,  label: 'Habits',   path: '/habits'   },
+        { icon: Target,       label: 'Goals',    path: '/goals'    },
         { icon: CalendarDays, label: 'Calendar', path: '/calendar' },
-        { icon: BookOpen, label: 'Journal', path: '/journal' },
+        { icon: BookOpen,     label: 'Journal',  path: '/journal'  },
     ];
 
     return (
         <AnimatePresence>
-            {/* Mobile Overlay */}
+            {/* ── Mobile backdrop overlay ── */}
             {isOpen && (
                 <motion.div
+                    key="sidebar-backdrop"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -85,28 +80,20 @@ export default function Sidebar({ isOpen, onClose }) {
                 />
             )}
 
-            {/* Sidebar */}
-            <motion.aside
-                initial={false}
-                animate={{
-                    x: isOpen ? 0 : "-100%"
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            {/* ── Sidebar panel ──
+                On MOBILE  → offscreen by default, slides in when isOpen=true
+                On DESKTOP → always visible via CSS (translate-x-0 forced by md:translate-x-0)
+            ── */}
+            <aside
+                key="sidebar-panel"
                 className={clsx(
-                    "w-64 glass-panel flex flex-col h-screen fixed left-0 top-0 z-50",
-                    // On desktop (md), we force translate-x-0 via !important or specific class that overrides the inline style if possible,
-                    // BUT inline styles from Framer Motion usually win.
-                    // Strategy: Use a variant that accounts for media query or disable animation on desktop?
-                    // Better: Use a conditional render or style reset for desktop.
-                    // However, we want the sidebar to be always visible on desktop.
-                    // We can use a separate div for desktop sidebar and mobile sidebar, but that duplicates code.
-                    // The best way with Framer Motion + Tailwind responsive is to use the `style` prop reset or distinct logic.
-                    // Here we will use a Layout effect or simply rely on "md:translate-x-0 md:!translate-x-0" and ensure Framer doesn't overwrite it if we can.
-                    // Actually, modifying the animate prop to be null on desktop is cleaner if we can detect it.
-                    // A simple CSS override works best.
-                    "md:!translate-x-0"
+                    // Base layout
+                    'w-64 glass-panel flex flex-col h-full fixed left-0 top-0 z-50 transition-transform duration-300',
+                    // Mobile: hidden unless open; Desktop: always show
+                    isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 )}
-                style={{ x: isOpen ? 0 : "-100%" }}
+                // Prevent closing when clicking inside
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* Brand */}
                 <div className="p-6 flex items-center gap-3">
@@ -114,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         <Zap className="w-5 h-5 text-white" fill="currentColor" />
                     </div>
                     <span className="text-xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                        Life OS
+                        MindWave
                     </span>
                 </div>
 
@@ -125,7 +112,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <NavLink
                                 key={item.path}
                                 to={item.path}
-                                onClick={() => { if (window.innerWidth < 768) onClose(); }}
+                                onClick={onClose}
                                 end={item.path !== '/chat' && item.path !== '/'}
                                 className={({ isActive }) => clsx(
                                     "group flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm border border-transparent relative overflow-hidden",
@@ -136,7 +123,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             >
                                 {({ isActive }) => (
                                     <>
-                                        {isActive && (
+                                        {(isActive || (item.path === '/chat' && isChat)) && (
                                             <motion.div
                                                 layoutId="activeNavIndicator"
                                                 className="absolute inset-0 bg-indigo-500/10"
@@ -184,7 +171,7 @@ export default function Sidebar({ isOpen, onClose }) {
                                         >
                                             <NavLink
                                                 to={`/chat/${conv._id}`}
-                                                onClick={() => { if (window.innerWidth < 768) onClose(); }}
+                                                onClick={onClose}
                                                 className={({ isActive }) => clsx(
                                                     "flex items-center justify-between group px-3 py-2.5 rounded-lg text-sm transition-all border border-transparent",
                                                     isActive
@@ -218,7 +205,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 <div className="p-4 border-t border-white/5 space-y-2 bg-black/20">
                     <NavLink
                         to="/profile"
-                        onClick={() => { if (window.innerWidth < 768) onClose(); }}
+                        onClick={onClose}
                         className={({ isActive }) => clsx(
                             "flex items-center gap-3 px-4 py-3 w-full rounded-xl transition-colors text-sm font-medium",
                             isActive ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
@@ -240,7 +227,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         Sign Out
                     </button>
                 </div>
-            </motion.aside>
+            </aside>
         </AnimatePresence>
     );
 }

@@ -116,7 +116,8 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="fixed inset-x-0 bottom-0 top-[65px] md:static md:top-auto md:bottom-auto md:inset-x-auto md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl z-0">
+        {/* On mobile: fills the space between top header and bottom nav. On desktop: sits inside the content area. */}
+        <div className="fixed inset-x-0 top-[57px] bottom-[64px] md:static md:top-auto md:bottom-auto md:inset-x-auto md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl z-0">
             <Helmet>
                 <title>Chat | Life OS</title>
             </Helmet>

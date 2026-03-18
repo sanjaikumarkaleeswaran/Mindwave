@@ -433,18 +433,18 @@ export default function HabitsPage() {
             }
 
             {/* Stats */}
-            <div className="flex gap-6 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+            <div className="grid grid-cols-3 gap-2 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <div className="text-center">
-                    <div className="text-3xl font-bold text-indigo-400">{getDailyProgress(new Date())}%</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Today Progress</div>
+                    <div className="text-2xl md:text-3xl font-bold text-indigo-400">{getDailyProgress(new Date())}%</div>
+                    <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider mt-1">Today</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-3xl font-bold text-white">{habits.length}</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Active Streaks</div>
+                    <div className="text-2xl md:text-3xl font-bold text-white">{habits.length}</div>
+                    <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider mt-1">Active</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-3xl font-bold text-green-400">{Math.round(habits.reduce((sum, h) => sum + getWeeklyProgress(h), 0) / (habits.length || 1))}%</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Weekly Consistency</div>
+                    <div className="text-2xl md:text-3xl font-bold text-green-400">{Math.round(habits.reduce((sum, h) => sum + getWeeklyProgress(h), 0) / (habits.length || 1))}%</div>
+                    <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider mt-1">Weekly</div>
                 </div>
             </div>
 
@@ -454,23 +454,26 @@ export default function HabitsPage() {
                     <Calendar className="w-4 h-4 text-zinc-400" />
                     <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Last 60 Days Consistency</h2>
                 </div>
-                <div className="flex gap-1">
-                    {heatmapData.map((d, i) => {
-                        let bgClass = "bg-zinc-800/50";
-                        if (d.intensity > 0) bgClass = "bg-indigo-900/60";
-                        if (d.intensity > 0.3) bgClass = "bg-indigo-700/60";
-                        if (d.intensity > 0.6) bgClass = "bg-indigo-500/80";
-                        if (d.intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]";
+                {/* overflow-x-auto so the 60 bars can scroll on narrow screens */}
+                <div className="overflow-x-auto -mx-2 px-2">
+                    <div className="flex gap-1 min-w-max">
+                        {heatmapData.map((d, i) => {
+                            let bgClass = "bg-zinc-800/50";
+                            if (d.intensity > 0) bgClass = "bg-indigo-900/60";
+                            if (d.intensity > 0.3) bgClass = "bg-indigo-700/60";
+                            if (d.intensity > 0.6) bgClass = "bg-indigo-500/80";
+                            if (d.intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]";
 
-                        const isToday = isSameDay(d.date, new Date());
-                        return (
-                            <div
-                                key={i}
-                                title={`${d.date.toDateString()}: ${Math.round(d.intensity * 100)}%`}
-                                className={`w-2 h-8 rounded-sm ${bgClass} ${isToday ? 'ring-1 ring-white' : ''} transition-all hover:opacity-80`}
-                            ></div>
-                        )
-                    })}
+                            const isToday = isSameDay(d.date, new Date());
+                            return (
+                                <div
+                                    key={i}
+                                    title={`${d.date.toDateString()}: ${Math.round(d.intensity * 100)}%`}
+                                    className={`w-2 h-8 rounded-sm ${bgClass} ${isToday ? 'ring-1 ring-white' : ''} transition-all hover:opacity-80`}
+                                ></div>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
 

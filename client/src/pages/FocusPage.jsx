@@ -267,7 +267,7 @@ export default function FocusPage() {
     const currentSoundUrl = FOCUS_SOUNDS.find(s => s.id === selectedSound)?.url;
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-[80dvh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
             <Helmet>
                 <title>Focus Mode | Life OS</title>
             </Helmet>
@@ -325,7 +325,7 @@ export default function FocusPage() {
                 <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
             </div>
 
-            <div className="z-10 flex flex-col items-center w-full max-w-md space-y-8">
+            <div className="z-10 flex flex-col items-center w-full max-w-md space-y-5 sm:space-y-8">
 
                 {/* Header */}
                 <div className="text-center space-y-2">
@@ -414,11 +414,11 @@ export default function FocusPage() {
                 {/* Timer Display */}
                 <div className="relative group cursor-pointer" onClick={() => !isActive && setShowEditModal(true)}>
                     {/* Ring */}
-                    <div className="relative w-72 h-72 flex items-center justify-center">
-                        <svg className="w-full h-full transform -rotate-90">
-                            <circle cx="50%" cy="50%" r="120" fill="none" stroke="#27272a" strokeWidth="8" />
+                    <div className="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 260 260">
+                            <circle cx="130" cy="130" r="120" fill="none" stroke="#27272a" strokeWidth="8" />
                             <circle
-                                cx="50%" cy="50%" r="120" fill="none"
+                                cx="130" cy="130" r="120" fill="none"
                                 stroke={isActive ? "#6366f1" : "#71717a"}
                                 strokeWidth="8" strokeLinecap="round"
                                 style={{ strokeDasharray, strokeDashoffset, transition: 'stroke-dashoffset 1s linear' }}
@@ -427,7 +427,7 @@ export default function FocusPage() {
 
                         {/* Text */}
                         <div className="absolute flex flex-col items-center">
-                            <span className="text-6xl font-mono font-bold text-white tracking-wider tabular-nums">
+                            <span className="text-4xl sm:text-6xl font-mono font-bold text-white tracking-wider tabular-nums">
                                 {formatTime(timeLeft)}
                             </span>
                             {isActive ? (
