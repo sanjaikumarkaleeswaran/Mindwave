@@ -72,6 +72,7 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
             verifyUrl
         );
 
+        let emailSent = false;
         try {
             await sendEmail({
                 email: user.email,
@@ -79,16 +80,38 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
                 message: plainMessage,
                 html: htmlMessage
             });
+            emailSent = true;
+            console.log(`Verification email sent to ${user.email}`);
+        } catch (emailErr) {
+            console.error('Email Sending Error during registration:', emailErr.message);
+            // We don't fail the whole registration if email fails, but we'll inform the user
+        }
 
+        try {
             // Auto-login the user after registration
             const payload = { user: { id: user.id } };
+            
+            if (!process.env.JWT_SECRET) {
+                console.error('⚠️ CRITICAL ERROR: JWT_SECRET is not defined in the environment variables!');
+                throw new Error('JWT_SECRET is missing');
+            }
+
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' });
 
-            res.json({ success: true, token, msg: 'Registration successful! Verification email sent.' });
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ msg: 'Registration failed during token generation.' });
+            if (emailSent) {
+                res.json({ success: true, token, msg: 'Registration successful! Verification email sent.' });
+            } else {
+                res.status(201).json({ 
+                    success: true, 
+                    token, 
+                    msg: 'Account created, but we couldn\'t send the verification email. Please try logging in or resending later.' 
+                });
+            }
+        } catch (jwtErr) {
+            console.error('JWT Signing Error during registration:', jwtErr.message);
+            return res.status(500).json({ msg: 'Registration completed but auth token could not be generated.' });
         }
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
