@@ -49,43 +49,7 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 
         await user.save();
 
-        user.isVerified = false;
-        const verificationToken = crypto.randomBytes(20).toString('hex');
-        user.verificationToken = crypto
-            .createHash('sha256')
-            .update(verificationToken)
-            .digest('hex');
-        user.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
         await user.save();
-
-        const clientUrl = process.env.CLIENT_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
-        const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
-
-        const plainMessage = `Please verify your MindWave account by visiting: ${verifyUrl}`;
-        const htmlMessage = buildHtmlEmail(
-            'Verify Your Account',
-            `<p>Hi <strong>${user.name}</strong>,</p>
-             <p>Welcome to <strong>MindWave</strong>! Please verify your email address to activate your account.</p>
-             <p>This link expires in <strong>24 hours</strong>.</p>`,
-            'Verify My Account',
-            verifyUrl
-        );
-
-        let emailSent = false;
-        try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Verify Your MindWave Account',
-                message: plainMessage,
-                html: htmlMessage
-            });
-            emailSent = true;
-            console.log(`Verification email sent to ${user.email}`);
-        } catch (emailErr) {
-            console.error('Email Sending Error during registration:', emailErr.message);
-            // We don't fail the whole registration if email fails, but we'll inform the user
-        }
 
         try {
             // Auto-login the user after registration
@@ -98,20 +62,15 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' });
 
-            if (emailSent) {
-                res.json({ success: true, token, msg: 'Registration successful! Verification email sent.' });
-            } else {
-                res.status(201).json({ 
-                    success: true, 
-                    token, 
-                    msg: 'Account created, but we couldn\'t send the verification email. Please try logging in or resending later.' 
-                });
-            }
+            res.status(201).json({ 
+                success: true, 
+                token, 
+                msg: 'Registration successful!' 
+            });
         } catch (jwtErr) {
             console.error('JWT Signing Error during registration:', jwtErr.message);
             return res.status(500).json({ msg: 'Registration completed but auth token could not be generated.' });
         }
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
@@ -142,11 +101,8 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
-        // Check if email is verified
-        if (!user.isVerified) {
-            console.log(`Unverified login attempt for: ${email}`);
-            return res.status(403).json({ msg: 'Please verify your email before logging in. Check your inbox for the verification link.' });
-        }
+        // Skip verification check as it's disabled
+
 
         const payload = {
             user: {

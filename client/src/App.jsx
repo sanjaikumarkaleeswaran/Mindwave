@@ -44,11 +44,7 @@ function App() {
               <ResetPasswordPage />
             </Suspense>
           } />
-          <Route path="/verify-email/:token" element={
-            <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
-              <VerifyEmailPage />
-            </Suspense>
-          } />
+
 
           <Route path="/" element={
             <RequireAuth>

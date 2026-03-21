@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
   isVerified: {
     type: Boolean,
-    default: false
+    default: true
   },
   verificationToken: String,
   verificationTokenExpire: Date
