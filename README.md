@@ -8,9 +8,10 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 🤖 AI Chat Assistant
 - **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
+- **True Vector RAG (New)** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions without exceeding token limits.
 - **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
 - **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
-- **Multi-turn conversations** — full conversation history with support for file/PDF uploads.
+- **Multi-turn conversations** — full conversation memory with permanent document storage.
 
 ### 🎯 Smart Goal Tracking *(New)*
 - **AI Goal Creator (Chat)** — describe a goal in plain language; AI generates a full structured plan with title, description, category, target date, and step-by-step milestones.
@@ -68,8 +69,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
 | **AI Engine** | Groq SDK — Llama 3.3 70b Versatile |
+| **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (email verification) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
+
+See the full architectural breakdown in [RAG_IMPLEMENTATION.md](./RAG_IMPLEMENTATION.md).
 
 ---
 
@@ -170,13 +174,14 @@ Mindwave/
 │   │   ├── Habit.js                # Habit schema (streaks, completedDates)
 │   │   ├── Journal.js              # Journal entry schema
 │   │   ├── ChatHistory.js          # Chat message schema
-│   │   └── Conversation.js        # Conversation thread schema
+│   │   ├── Conversation.js         # Conversation thread schema
+│   │   └── VectorChunk.js          # RAG chunk and embedding schema
 │   ├── routes/
 │   │   ├── auth.routes.js          # Register, login, verify email, forgot password
 │   │   ├── goal.routes.js          # Goals CRUD + AI milestone/goal generation
 │   │   ├── habit.routes.js         # Habits CRUD + streak logic
 │   │   ├── journal.routes.js       # Journal CRUD + AI analysis
-│   │   ├── chat.routes.js          # AI chat, conversations, habit tool execution
+│   │   ├── chat.routes.js          # AI chat, True Vector RAG, tool execution
 │   │   └── search.routes.js        # Global search across all collections
 │   ├── middleware/
 │   │   ├── auth.middleware.js      # JWT verification
@@ -185,7 +190,9 @@ Mindwave/
 │   │   ├── xssSanitize.js          # XSS attack prevention
 │   │   └── rateLimiter.js          # Express rate limiting
 │   ├── schemas/                    # Joi validation schemas
-│   ├── utils/                      # sendEmail utility (Nodemailer)
+│   ├── utils/                      
+│   │   ├── sendEmail.js            # Nodemailer utility
+│   │   └── vectorStore.js          # Local embedding and cosine similarity logic
 │   └── index.js                    # Server entry point
 │
 ├── start_app.bat                   # One-click Windows startup
