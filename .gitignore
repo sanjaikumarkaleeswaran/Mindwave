@@ -56,3 +56,6 @@ mindwave_mobile/ios/Flutter/Flutter.framework/
 mindwave_mobile/ios/Flutter/Generated.xcconfig
 mindwave_mobile/ios/Flutter/ephemeral/
 mindwave_mobile/.fvm/
+
+# AI Documentation Files
+RAG_IMPLEMENTATION.md
