@@ -78,6 +78,7 @@ app.get('/', (req, res) => res.send('API Running'));
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error('Unhandled Error:', err.stack);
+    require('fs').writeFileSync('global_crash.json', JSON.stringify({message: err.message, stack: err.stack}, null, 2));
     res.status(500).json({
         success: false,
         message: 'Server Error',

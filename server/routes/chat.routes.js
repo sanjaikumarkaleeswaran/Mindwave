@@ -9,6 +9,7 @@ const multer = require('multer');
 const fs = require('fs');
 const pdf = require('pdf-parse');
 const validate = require('../middleware/validate.middleware');
+const { ingestDocument, searchSimilarChunks } = require('../utils/vectorStore');
 const {
     sendChatSchema,
     conversationIdSchema,
@@ -98,27 +99,30 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
     }
 
     try {
-        let fileContent = "";
+        let rawContent = "";
 
         // 1. Process File if exists
         if (file) {
             if (file.mimetype === 'application/pdf') {
                 const dataBuffer = fs.readFileSync(file.path);
                 const data = await pdf(dataBuffer);
-                fileContent = `[USER UPLOADED FILE CONTENT]:\n${data.text.substring(0, 20000)}\n[END OF FILE]\n\n`; // Limit text size
+                rawContent = data.text;
             } else if (file.mimetype.startsWith('text/') || file.mimetype === 'application/json' || file.mimetype === 'application/javascript') {
-                fileContent = `[USER UPLOADED FILE CONTENT]:\n${fs.readFileSync(file.path, 'utf-8').substring(0, 20000)}\n[END OF FILE]\n\n`;
+                rawContent = fs.readFileSync(file.path, 'utf-8');
             }
             // Cleanup temp file
             fs.unlinkSync(file.path);
         }
 
+        if (rawContent) {
+           // Ingest the entire text into the Vector Store in chunks! (True RAG)
+           await ingestDocument(req.user.id, conversationId, file.originalname, rawContent);
+        }
+
         // 2. Save User Message
-        // We include file content in the DB message so context persists
-        // Ideally we'd store a reference, but for simple text RAG this works
-        // We'll show just the "message" user typed in UI, but send "message + file" to AI
+        // Only save displayContent in DB. The Vector chunks handle the file content now!
         const displayContent = message + (file ? `\n\n[Attached: ${file.originalname}]` : "");
-        const llmContent = fileContent + message;
+        const llmContent = message;
 
         const userMsg = new ChatHistory({
             userId: req.user.id,
@@ -136,17 +140,35 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         }
 
 
-        // 2. Fetch Context (RAG - Lite)
+        // 2. Fetch Context (RAG - Vector Search)
         const habits = await Habit.find({ userId: req.user.id });
         const recentHistory = await ChatHistory.find({ conversationId })
             .sort({ timestamp: -1 })
             .limit(10); // History *of this conversation only*
+
+        // Perform Semantic Similarity Search across stored chunks for this conversation
+        const relevantChunks = await searchSimilarChunks(req.user.id, message, conversationId, 4);
+        let ragContext = "";
+        if (relevantChunks.length > 0) {
+            ragContext = "RELEVANT DOCUMENT EXCERPTS (Use these to answer questions if applicable):\n";
+            let foundGoodChunk = false;
+            for (const chunk of relevantChunks) {
+                // Only include chunks with a minor baseline of similarity
+                if (chunk.similarity > 0.05) { 
+                    ragContext += `[From document: ${chunk.source}]:\n"${chunk.content}"\n\n`;
+                    foundGoodChunk = true;
+                }
+            }
+            if (!foundGoodChunk) ragContext = ""; // Ignore if all similarities are really bad
+        }
 
         // 3. Construct System Prompt
         const systemPrompt = `You are a personal AI Life OS assistant.
         
         USER CONTEXT:
         - Habits: ${habits.map(h => `${h.name} (ID: ${h._id}, Streak: ${h.streak})`).join(', ') || 'None'}
+        
+        ${ragContext}
 
         CAPABILITIES:
         1. CREATE_HABIT: Track a new habit.
@@ -154,6 +176,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         3. MARK_HABIT_COMPLETE: Mark a habit as done for today.
 
         INSTRUCTIONS:
+        - If the user relies on a document, look at the RELEVANT DOCUMENT EXCERPTS.
         - If the user wants to ADD a habit, output ONLY this JSON: {"action": "CREATE_HABIT", "name": "...", "frequency": "daily"}
         - If the user wants to DELETE a habit, output ONLY this JSON: {"action": "DELETE_HABIT", "habitId": "..."}
         - If the user says they DID a habit (e.g., "I ran", "Drank water"), output ONLY this JSON: {"action": "MARK_HABIT_COMPLETE", "habitId": "..."} (Match closely to the context Name/ID).
@@ -278,6 +301,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
 
     } catch (err) {
         console.error("CHAT ROUTE ERROR:", err);
+        require('fs').writeFileSync('chat_crash.json', JSON.stringify({message: err.message, stack: err.stack}, null, 2));
         res.status(500).json({
             msg: 'Server Error',
             error: err.message,

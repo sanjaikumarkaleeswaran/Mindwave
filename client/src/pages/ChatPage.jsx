@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { Send, Bot, User, Trash2, ChevronDown } from 'lucide-react';
+import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import ReactMarkdown from 'react-markdown';
@@ -12,7 +12,9 @@ export default function ChatPage() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [input, setInput] = useState('');
+    const [file, setFile] = useState(null);
     const scrollRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     // Model Selection State
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
@@ -36,8 +38,19 @@ export default function ChatPage() {
     });
 
     const sendMutation = useMutation({
-        mutationFn: async ({ content, conversationId, model }) => {
-            return api.post('/chat/send', { message: content, conversationId, model });
+        mutationFn: async ({ content, conversationId, model, fileData }) => {
+            if (fileData) {
+                const formData = new FormData();
+                if (content.trim()) formData.append('message', content);
+                else formData.append('message', 'What is this file?'); // Default generic message if skipped
+                formData.append('conversationId', conversationId);
+                formData.append('model', model);
+                formData.append('file', fileData);
+                return api.post('/chat/send', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            }
+            return api.post('/chat/send', { message: content || '...', conversationId, model });
         },
         onMutate: async ({ content, conversationId }) => {
             await queryClient.cancelQueries({ queryKey: ['chat', conversationId] });
@@ -75,7 +88,8 @@ export default function ChatPage() {
     const handleSend = async (e, overrideText) => {
         if (e) e.preventDefault();
         const msgContent = overrideText ?? input;
-        if (!msgContent.trim()) return;
+        
+        if (!msgContent.trim() && !file) return;
 
         let targetId = id;
 
@@ -93,12 +107,15 @@ export default function ChatPage() {
             }
         }
 
+        const fileAttachment = file;
         setInput(''); // Clear input immediately
+        setFile(null); // Clear file immediately
 
         sendMutation.mutate({
             content: msgContent,
             conversationId: targetId,
-            model: selectedModel
+            model: selectedModel,
+            fileData: fileAttachment
         });
     };
 
@@ -115,8 +132,8 @@ export default function ChatPage() {
         handleSend({ preventDefault: () => { } }, text);
     };
 
+    // On mobile: fills the space between top header and bottom nav. On desktop: sits inside the content area.
     return (
-        {/* On mobile: fills the space between top header and bottom nav. On desktop: sits inside the content area. */}
         <div className="fixed inset-x-0 top-[57px] bottom-[64px] md:static md:top-auto md:bottom-auto md:inset-x-auto md:h-[calc(100vh-6rem)] flex flex-col bg-zinc-900/50 md:rounded-2xl border-t md:border border-zinc-800 overflow-hidden relative md:m-6 shadow-2xl z-0">
             <Helmet>
                 <title>Chat | Life OS</title>
@@ -183,6 +200,21 @@ export default function ChatPage() {
                         </div>
 
                         <form onSubmit={handleSend} className="w-full max-w-lg relative">
+                            {file && (
+                                <div className="absolute -top-10 left-0 bg-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-indigo-500/30 font-medium tracking-wide">
+                                    <Paperclip className="w-3 h-3" />
+                                    <span className="truncate max-w-[150px]">{file.name}</span>
+                                    <button type="button" onClick={() => setFile(null)} className="hover:text-white transition-colors"><X className="w-3 h-3" /></button>
+                                </div>
+                            )}
+                            <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx" />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="absolute left-3 top-3 text-zinc-500 hover:text-white transition-colors"
+                            >
+                                <Paperclip className="w-5 h-5" />
+                            </button>
                             <textarea
                                 autoFocus
                                 rows={1}
@@ -194,13 +226,13 @@ export default function ChatPage() {
                                         handleSend(e);
                                     }
                                 }}
-                                placeholder="Message Life OS..."
-                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 pr-24 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner resize-none min-h-[56px] custom-scrollbar"
+                                placeholder="Message Life OS or upload a file..."
+                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-11 pr-14 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
                                 style={{ maxHeight: '200px' }}
                             />
                             <button
                                 type="submit"
-                                disabled={sendMutation.isPending || !input.trim()}
+                                disabled={sendMutation.isPending || (!input.trim() && !file)}
                                 className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
                             >
                                 <Send className="w-5 h-5" />
@@ -263,8 +295,23 @@ export default function ChatPage() {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800">
+                        <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800 relative">
                             <div className="relative max-w-5xl mx-auto">
+                                {file && (
+                                    <div className="absolute -top-10 left-0 bg-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-indigo-500/30 transform transition-all shadow-lg font-medium">
+                                        <Paperclip className="w-3 h-3" />
+                                        <span className="truncate max-w-[150px]">{file.name}</span>
+                                        <button type="button" onClick={() => setFile(null)} className="hover:text-white transition-colors"><X className="w-3 h-3" /></button>
+                                    </div>
+                                )}
+                                <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx" />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="absolute left-3 top-3 text-zinc-500 hover:text-indigo-400 transition-colors z-10"
+                                >
+                                    <Paperclip className="w-5 h-5" />
+                                </button>
                                 <textarea
                                     autoFocus
                                     rows={1}
@@ -276,14 +323,14 @@ export default function ChatPage() {
                                             handleSend(e);
                                         }
                                     }}
-                                    placeholder="Message Life OS..."
-                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 pr-24 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                    placeholder="Message Life OS or upload a file..."
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-11 pr-14 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
                                     style={{ maxHeight: '200px' }}
                                 />
                                 <button
                                     type="submit"
-                                    disabled={sendMutation.isPending || !input.trim()}
-                                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                                    disabled={sendMutation.isPending || (!input.trim() && !file)}
+                                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20 z-10"
                                 >
                                     <Send className="w-5 h-5" />
                                 </button>
