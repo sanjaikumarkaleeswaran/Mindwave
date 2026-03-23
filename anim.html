@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Hardening</title>
+    <style>
+        body {
+            background-color: #f8f9fa; /* Plain empty background */
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-width: center;
+            height: 100vh;
+            font-family: 'Inter', '-apple-system', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; /* Clean font */
+            color: #212529;
+            overflow: hidden;
+            padding-left: 10vw;
+        }
+        #terminal {
+            font-size: 24px;
+            font-weight: 500;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 28px;
+            background-color: #0d6efd;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+        /* Syntax highlighting */
+        .token.comment { color: #6c757d; }
+        .token.keyword { color: #0d6efd; font-weight: bold; }
+        .token.string { color: #198754; }
+        .token.function { color: #6f42c1; }
+        .token.operator { color: #495057; }
+    </style>
+</head>
+<body>
+
+<div id="terminal"></div><div class="cursor"></div>
+
+<script>
+    const code = `// 1. Rate limiting on all public endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  keyGenerator: (req) => req.user?.id || req.ip
+});
+
+// 2. Strict input validation & sanitization
+const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(12)
+}).strict(); // Reject unexpected fields
+
+// 3. Secure API key handling
+const apiKey = process.env.SECURE_API_KEY;
+if (!apiKey) throw new Error("Missing Key");`;
+
+    const terminal = document.getElementById('terminal');
+    let i = 0;
+    
+    // Paste / type animation over ~1.5 seconds (1500ms)
+    // There are ~400 characters, so ~3.75ms per character.
+    // To make it look more like chunks pasting, we can insert multiple chars at once.
+    const duration = 1500;
+    const interval = duration / code.length;
+    
+    function typeWriter() {
+        if (i < code.length) {
+            // Type 3 chars at a time to be faster
+            const chunk = code.substring(i, i + 3);
+            terminal.textContent += chunk;
+            i += 3;
+            setTimeout(typeWriter, interval * 3);
+        }
+    }
+    
+    // Start animation shortly after load
+    setTimeout(typeWriter, 200);
+</script>
+
+</body>
+</html>

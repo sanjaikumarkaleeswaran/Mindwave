@@ -3,6 +3,13 @@ const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const Goal = require('../models/Goal');
 const { getGroqCompletion } = require('../utils/llmCache');
+const validate = require('../middleware/validate.middleware');
+const {
+    createGoalSchema,
+    updateGoalSchema,
+    aiMilestonesSchema,
+    aiCreateSchema
+} = require('../schemas/goal.schemas');
 
 // Helper: safely map incoming milestones to schema objects
 function parseMilestones(arr) {
@@ -34,7 +41,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // POST create goal
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, validate(createGoalSchema), async (req, res) => {
     try {
         const { title, description, category, targetDate, color, milestones } = req.body;
         if (!title) return res.status(400).json({ msg: 'Title is required' });
@@ -57,7 +64,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // POST /api/goals/ai-milestones — Generate step plan via AI
-router.post('/ai-milestones', auth, async (req, res) => {
+router.post('/ai-milestones', auth, validate(aiMilestonesSchema), async (req, res) => {
     try {
         const { title, description, category, targetDate } = req.body;
         if (!title) return res.status(400).json({ msg: 'Goal title is required' });
@@ -104,7 +111,7 @@ Generate 5 to 7 specific, actionable milestones. Respond ONLY with raw JSON arra
 });
 
 // POST /api/goals/ai-create — Generate a FULL goal from a chat message (or modify an existing one)
-router.post('/ai-create', auth, async (req, res) => {
+router.post('/ai-create', auth, validate(aiCreateSchema), async (req, res) => {
     try {
         const { message, existingGoal } = req.body;
         if (!message) return res.status(400).json({ msg: 'Message is required' });
@@ -173,7 +180,7 @@ Rules:
 });
 
 // PUT update goal
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, validate(updateGoalSchema), async (req, res) => {
     try {
         const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
         if (!goal) return res.status(404).json({ msg: 'Goal not found' });
