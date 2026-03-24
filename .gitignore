@@ -58,4 +58,21 @@ mindwave_mobile/ios/Flutter/ephemeral/
 mindwave_mobile/.fvm/
 
 # AI Documentation Files
-RAG_IMPLEMENTATION.md
+# Project specific uploads
+server/uploads/*
+!server/uploads/.gitkeep
+!server/uploads/avatars/
+server/uploads/avatars/*
+!server/uploads/avatars/.gitkeep
+
+# Temporary AI test scripts/logs/crash reports
+server/test_*.js
+server/*_crash.json
+server/models.json
+server/test_vision_model.js
+server/out.txt
+server/api_*.json
+server/api_*.log
+server/dummy.txt
+server/global_crash.json
+

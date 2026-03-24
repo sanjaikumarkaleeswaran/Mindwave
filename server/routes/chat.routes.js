@@ -7,6 +7,7 @@ const Habit = require('../models/Habit');
 const { getGroqCompletion } = require('../utils/llmCache');
 const multer = require('multer');
 const fs = require('fs');
+const path = require('path');
 const pdf = require('pdf-parse');
 const validate = require('../middleware/validate.middleware');
 const { ingestDocument, searchSimilarChunks } = require('../utils/vectorStore');
@@ -101,17 +102,28 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
     try {
         let rawContent = "";
 
+        let imageBase64 = null;
+        let imageMimeType = null;
+
         // 1. Process File if exists
+        let savedFilePath = null;
         if (file) {
+            const ext = path.extname(file.originalname);
+            savedFilePath = file.filename + ext;
+            fs.renameSync(file.path, path.join('uploads', savedFilePath));
+
             if (file.mimetype === 'application/pdf') {
-                const dataBuffer = fs.readFileSync(file.path);
+                const dataBuffer = fs.readFileSync(path.join('uploads', savedFilePath));
                 const data = await pdf(dataBuffer);
                 rawContent = data.text;
             } else if (file.mimetype.startsWith('text/') || file.mimetype === 'application/json' || file.mimetype === 'application/javascript') {
-                rawContent = fs.readFileSync(file.path, 'utf-8');
+                rawContent = fs.readFileSync(path.join('uploads', savedFilePath), 'utf-8');
+            } else if (file.mimetype.startsWith('image/')) {
+                // Convert image to base64
+                const bitmap = fs.readFileSync(path.join('uploads', savedFilePath));
+                imageBase64 = Buffer.from(bitmap).toString('base64');
+                imageMimeType = file.mimetype;
             }
-            // Cleanup temp file
-            fs.unlinkSync(file.path);
         }
 
         if (rawContent) {
@@ -121,7 +133,20 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
 
         // 2. Save User Message
         // Only save displayContent in DB. The Vector chunks handle the file content now!
-        const displayContent = message + (file ? `\n\n[Attached: ${file.originalname}]` : "");
+        let displayContent = message;
+        if (file) {
+            if (savedFilePath) {
+                const serverUrl = req.protocol + "://" + req.get("host");
+                const fileUrl = `${serverUrl}/uploads/${savedFilePath}`;
+                if (file.mimetype.startsWith('image/')) {
+                    displayContent += `\n\n![${file.originalname}](${fileUrl})`;
+                } else {
+                    displayContent += `\n\n[${file.originalname}](attachment://${fileUrl})`;
+                }
+            } else {
+                displayContent += `\n\n[Attached: ${file.originalname}]`;
+            }
+        }
         const llmContent = message;
 
         const userMsg = new ChatHistory({
@@ -185,13 +210,31 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         `;
 
         // 4. Call Groq
+        let finalUserMessage = llmContent;
+
+        if (imageBase64) {
+            finalUserMessage = [
+                { type: "text", text: llmContent },
+                {
+                    type: "image_url",
+                    image_url: {
+                        url: `data:${imageMimeType};base64,${imageBase64}`,
+                    },
+                },
+            ];
+        }
+
         const apiMessages = [
             { role: "system", content: systemPrompt },
             ...recentHistory.reverse().map(m => ({ role: m.role, content: m.content })),
-            { role: "user", content: llmContent }
+            { role: "user", content: finalUserMessage }
         ];
 
-        const selectedModel = req.body.model || "llama-3.3-70b-versatile";
+        // Ensure we use a vision model if an image is present
+        let selectedModel = req.body.model || "llama-3.3-70b-versatile";
+        if (imageBase64) {
+            selectedModel = "meta-llama/llama-4-scout-17b-16e-instruct"; // Fast, capable vision model available directly via Groq
+        }
 
         const chatCompletion = await getGroqCompletion({
             messages: apiMessages,

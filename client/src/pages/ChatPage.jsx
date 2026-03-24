@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X } from 'lucide-react';
+import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X, FileText, Download } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import ReactMarkdown from 'react-markdown';
@@ -16,9 +16,9 @@ export default function ChatPage() {
     const scrollRef = useRef(null);
     const fileInputRef = useRef(null);
 
-    // Model Selection State
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
     const [showModelMenu, setShowModelMenu] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const models = [
         { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B (Smartest)" },
@@ -52,12 +52,22 @@ export default function ChatPage() {
             }
             return api.post('/chat/send', { message: content || '...', conversationId, model });
         },
-        onMutate: async ({ content, conversationId }) => {
+        onMutate: async ({ content, conversationId, fileData }) => {
             await queryClient.cancelQueries({ queryKey: ['chat', conversationId] });
             const previousMessages = queryClient.getQueryData(['chat', conversationId]) || [];
 
             // Optimistic update
-            const newMsg = { role: 'user', content, timestamp: new Date() };
+            let optContent = content || 'What is this file?';
+            if (fileData) {
+                if (fileData.type.startsWith('image/')) {
+                    const tempUrl = URL.createObjectURL(fileData);
+                    optContent += `\n\n![${fileData.name}](${tempUrl})`;
+                } else {
+                    optContent += `\n\n[${fileData.name}](attachment://local)`;
+                }
+            }
+
+            const newMsg = { role: 'user', content: optContent, timestamp: new Date() };
             queryClient.setQueryData(['chat', conversationId], [...previousMessages, newMsg]);
 
             return { previousMessages };
@@ -138,6 +148,28 @@ export default function ChatPage() {
             <Helmet>
                 <title>Chat | Life OS</title>
             </Helmet>
+
+            {/* Full Screen Image Preview Modal */}
+            {previewImage && (
+                <div 
+                    className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 cursor-zoom-out transition-all animate-in fade-in duration-300"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+                    <button 
+                        className="absolute top-10 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all border border-white/10 shadow-2xl backdrop-blur-md z-[201] active:scale-95"
+                        onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }}
+                    >
+                        <X className="w-5 h-5 md:w-6 md:h-6" />
+                    </button>
+                    <img 
+                        src={previewImage} 
+                        alt="Preview" 
+                        className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-300"
+                        onClick={(e) => e.stopPropagation()} 
+                    />
+                </div>
+            )}
             {/* Model Selector - Centered Top */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-xs flex justify-center">
                 <div className="relative">
@@ -201,13 +233,19 @@ export default function ChatPage() {
 
                         <form onSubmit={handleSend} className="w-full max-w-lg relative">
                             {file && (
-                                <div className="absolute -top-10 left-0 bg-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-indigo-500/30 font-medium tracking-wide">
-                                    <Paperclip className="w-3 h-3" />
+                                <div className="absolute -top-14 left-0 bg-zinc-800/90 text-zinc-300 px-3 py-2 rounded-xl text-xs flex items-center gap-3 border border-zinc-700/50 shadow-lg font-medium">
+                                    {file.type.startsWith('image/') ? (
+                                        <img src={URL.createObjectURL(file)} alt="preview" className="w-8 h-8 rounded shrink-0 object-cover border border-zinc-700" />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded bg-zinc-700/50 flex items-center justify-center shrink-0 border border-zinc-600">
+                                            <Paperclip className="w-4 h-4 text-zinc-400" />
+                                        </div>
+                                    )}
                                     <span className="truncate max-w-[150px]">{file.name}</span>
-                                    <button type="button" onClick={() => setFile(null)} className="hover:text-white transition-colors"><X className="w-3 h-3" /></button>
+                                    <button type="button" onClick={() => setFile(null)} className="p-1 hover:bg-zinc-700 rounded-full transition-colors ml-1"><X className="w-3.5 h-3.5" /></button>
                                 </div>
                             )}
-                            <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx" />
+                            <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx,image/*" />
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
@@ -255,6 +293,7 @@ export default function ChatPage() {
                                             <div className="markdown-body text-sm md:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
                                                 <ReactMarkdown
                                                     remarkPlugins={[remarkGfm]}
+                                                    urlTransform={(url) => url}
                                                     /* eslint-disable no-unused-vars */
                                                     components={{
                                                         p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
@@ -270,7 +309,41 @@ export default function ChatPage() {
                                                             <pre className="bg-zinc-900/50 p-3 rounded-lg overflow-x-auto my-2 text-xs font-mono border border-zinc-700/50" {...props}>
                                                                 {children}
                                                             </pre>
-                                                        )
+                                                        ),
+                                                        img: ({ node, ...props }) => (
+                                                            <div className="relative inline-block cursor-zoom-in group mt-2" onClick={() => setPreviewImage(props.src)}>
+                                                                <img className="rounded-xl max-w-full max-h-[300px] object-cover my-2 border border-zinc-700/50 shadow-md transition-all group-hover:opacity-90 group-hover:ring-2 group-hover:ring-indigo-500/50" {...props} />
+                                                            </div>
+                                                        ),
+                                                        a: ({ node, children, ...props }) => {
+                                                            if (props.href && props.href.startsWith('attachment://')) {
+                                                                const url = props.href.replace('attachment://', '');
+                                                                const filename = children[0];
+                                                                const extMatch = String(filename).match(/\.([^.]+)$/);
+                                                                const ext = extMatch ? extMatch[1].toUpperCase() : 'FILE';
+                                                                
+                                                                return (
+                                                                    <a 
+                                                                        href={url === 'local' ? '#' : url} 
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-3 md:gap-4 p-3 md:p-4 mt-3 bg-black/20 hover:bg-black/30 border border-white/10 rounded-xl transition-colors w-full max-w-sm group text-left no-underline"
+                                                                    >
+                                                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-black/40 flex items-center justify-center shrink-0 border border-white/5">
+                                                                            <FileText className="w-5 h-5 md:w-6 md:h-6 text-zinc-300" />
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <h4 className="text-white font-medium text-xs md:text-sm truncate">{filename}</h4>
+                                                                            <p className="text-zinc-300 text-[10px] md:text-xs mt-0.5">Document · {ext}</p>
+                                                                        </div>
+                                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                            <Download className="w-4 h-4 text-white" />
+                                                                        </div>
+                                                                    </a>
+                                                                );
+                                                            }
+                                                            return <a className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors" {...props}>{children}</a>;
+                                                        }
                                                     }}
                                                     /* eslint-enable no-unused-vars */
                                                 >
@@ -298,13 +371,19 @@ export default function ChatPage() {
                         <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800 relative">
                             <div className="relative max-w-5xl mx-auto">
                                 {file && (
-                                    <div className="absolute -top-10 left-0 bg-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-indigo-500/30 transform transition-all shadow-lg font-medium">
-                                        <Paperclip className="w-3 h-3" />
+                                    <div className="absolute -top-14 left-0 bg-zinc-800/90 text-zinc-300 px-3 py-2 rounded-xl text-xs flex items-center gap-3 border border-zinc-700/50 shadow-lg font-medium backdrop-blur-md">
+                                        {file.type.startsWith('image/') ? (
+                                            <img src={URL.createObjectURL(file)} alt="preview" className="w-8 h-8 rounded shrink-0 object-cover border border-zinc-600" />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded bg-zinc-700/50 flex items-center justify-center shrink-0 border border-zinc-600">
+                                                <Paperclip className="w-4 h-4 text-zinc-400" />
+                                            </div>
+                                        )}
                                         <span className="truncate max-w-[150px]">{file.name}</span>
-                                        <button type="button" onClick={() => setFile(null)} className="hover:text-white transition-colors"><X className="w-3 h-3" /></button>
+                                        <button type="button" onClick={() => setFile(null)} className="p-1 hover:bg-zinc-700 rounded-full transition-colors ml-1"><X className="w-3.5 h-3.5" /></button>
                                     </div>
                                 )}
-                                <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx" />
+                                <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx,image/*" />
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
