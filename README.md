@@ -8,7 +8,10 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 🤖 AI Chat Assistant
 - **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
-- **True Vector RAG (New)** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions without exceeding token limits.
+- **Multimodal Vision AI (New)** — upload images (screenshots, fitness stats, etc.). The backend automatically switches to high-performance vision models (`meta-llama/llama-4-scout-17b-16e-instruct`) to analyze your data visually.
+- **Interactive Image Lightbox** — click any image in your chat history to open it in a beautiful, full-screen blurred "Lightbox" mode for detailed inspection.
+- **Premium File Cards** — documents (PDFs, JS, JSON, etc.) are rendered as elegant, interactive file cards with automatic extension detection and one-click download.
+- **True Vector RAG** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions.
 - **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
 - **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
 - **Multi-turn conversations** — full conversation memory with permanent document storage.
@@ -68,7 +71,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
-| **AI Engine** | Groq SDK — Llama 3.3 70b Versatile |
+| **AI Engine** | Groq SDK — Llama 3.3 70b & Llama 4 Scout Vision |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (email verification) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
@@ -233,6 +236,9 @@ Mindwave/
 - [x] Push notifications for milestone due dates
 - [x] Calendar view for goal milestones
 - [x] Export data (JSON / CSV)
+- [x] Multimodal Vision AI for image analysis
+- [x] Full-screen Image Lightbox
+- [x] Interactive Document File Cards
 - [ ] Voice interface
 
 ---
