@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import api from '../lib/axios';
-import { Plus, Check, Flame, Trash2, TrendingUp, Calendar, GripVertical, Pencil, History, Sparkles, X } from 'lucide-react';
+import { Plus, Check, Flame, Trash2, TrendingUp, Calendar, GripVertical, Pencil, History, Sparkles, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import confetti from 'canvas-confetti';
 import {
@@ -116,6 +116,7 @@ export default function HabitsPage() {
     const [newHabit, setNewHabit] = useState('');
     const [viewMode, setViewMode] = useState(() => window.innerWidth < 768 ? 'grid' : 'table');
     const [showCalendar, setShowCalendar] = useState(false);
+    const [calendarDate, setCalendarDate] = useState(new Date());
     const [currentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
@@ -359,7 +360,10 @@ export default function HabitsPage() {
                     </button>
 
                     <button
-                        onClick={() => setShowCalendar(true)}
+                        onClick={() => {
+                            setCalendarDate(new Date());
+                            setShowCalendar(true);
+                        }}
                         className="col-span-1 sm:flex-none px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm"
                     >
                         <Calendar className="w-3.5 h-3.5" />
@@ -393,39 +397,112 @@ export default function HabitsPage() {
             {/* Calendar Modal */}
             {
                 showCalendar && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setShowCalendar(false)}>
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in" onClick={() => setShowCalendar(false)}>
+                        <div className="bg-zinc-900 border border-zinc-700/50 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-white">Calendar View</h2>
-                                <button onClick={() => setShowCalendar(false)} className="text-zinc-400 hover:text-white">
-                                    <X className="w-6 h-6" />
+                                <div className="flex items-center gap-4">
+                                    <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+                                        <div className="p-2 bg-indigo-500/10 rounded-lg">
+                                            <Calendar className="w-5 h-5 text-indigo-400" />
+                                        </div>
+                                        {calendarDate.toLocaleDateString('default', { month: 'long', year: 'numeric' })}
+                                    </h2>
+                                    <div className="flex bg-zinc-800 rounded-lg p-0.5 border border-zinc-700">
+                                        <button 
+                                            onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))}
+                                            className="p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
+                                        >
+                                            <ChevronLeft className="w-4 h-4 text-zinc-400" />
+                                        </button>
+                                        <button 
+                                            onClick={() => setCalendarDate(new Date())}
+                                            className="px-2 py-1.5 hover:bg-zinc-700 rounded-md text-[10px] font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors border-x border-zinc-700"
+                                        >
+                                            Today
+                                        </button>
+                                        <button 
+                                            onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1))}
+                                            className="p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
+                                        >
+                                            <ChevronRight className="w-4 h-4 text-zinc-400" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onClick={() => setShowCalendar(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-zinc-400 hover:text-white">
+                                    <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            <div className="grid grid-cols-7 gap-2">
+                            
+                            <div className="grid grid-cols-7 gap-1 md:gap-3">
                                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                    <div key={day} className="text-center text-xs font-medium text-zinc-500 py-2">{day}</div>
+                                    <div key={day} className="text-center text-[10px] md:text-xs font-bold text-zinc-500 py-2 uppercase tracking-widest">{day}</div>
                                 ))}
-                                {Array.from({ length: 35 }).map((_, i) => {
-                                    const date = new Date();
-                                    date.setDate(date.getDate() - date.getDay() + i - 28);
-                                    const isToday = isSameDay(date, new Date());
-                                    return (
-                                        <div key={i} className={`aspect-square p-2 rounded-lg ${isToday ? 'bg-indigo-900/50 border border-indigo-500' : 'bg-zinc-800/50'}`}>
-                                            <div className={`text-right text-sm mb-2 ${isSameDay(date, new Date()) ? 'text-indigo-400 font-bold' : 'text-zinc-500'}`}>{date.getDate()}</div>
-                                            <div className="space-y-1">
-                                                {habits.map(h => {
-                                                    const isDone = h.completedDates.some(cd => isSameDay(cd, date));
-                                                    if (!isDone) return null;
-                                                    return (
-                                                        <div key={h._id} className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 truncate">
+                                {(() => {
+                                    const year = calendarDate.getFullYear();
+                                    const month = calendarDate.getMonth();
+                                    const firstDay = new Date(year, month, 1).getDay();
+                                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                                    
+                                    // Previous month days to fill early slots
+                                    const prevMonthDays = new Date(year, month, 0).getDate();
+                                    const slots = [];
+                                    
+                                    // Add slots from previous month
+                                    for (let i = firstDay - 1; i >= 0; i--) {
+                                        slots.push({ date: new Date(year, month - 1, prevMonthDays - i), currentMonth: false });
+                                    }
+                                    
+                                    // Add current month days
+                                    for (let i = 1; i <= daysInMonth; i++) {
+                                        slots.push({ date: new Date(year, month, i), currentMonth: true });
+                                    }
+                                    
+                                    // Buffer to complete the grid (up to 42 slots for 6 rows)
+                                    const remaining = 42 - slots.length;
+                                    for (let i = 1; i <= remaining; i++) {
+                                        slots.push({ date: new Date(year, month + 1, i), currentMonth: false });
+                                    }
+                                    
+                                    return slots.map((slot, i) => {
+                                        const isToday = isSameDay(slot.date, new Date());
+                                        const completedHabits = habits.filter(h => h.completedDates.some(cd => isSameDay(cd, slot.date)));
+                                        const intensity = habits.length > 0 ? completedHabits.length / habits.length : 0;
+                                        
+                                        return (
+                                            <div 
+                                                key={i} 
+                                                className={`min-h-[80px] md:min-h-[100px] p-2 rounded-xl border transition-all flex flex-col gap-1.5 ${
+                                                    slot.currentMonth 
+                                                        ? isToday 
+                                                            ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
+                                                            : 'bg-zinc-800/40 border-zinc-700/50' 
+                                                        : 'bg-zinc-900/40 border-transparent opacity-40'
+                                                }`}
+                                            >
+                                                <div className="flex items-start justify-between">
+                                                    <span className={`text-[10px] md:text-xs font-bold tabular-nums ${isToday ? 'bg-indigo-500 text-white px-1.5 py-0.5 rounded' : slot.currentMonth ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                                                        {slot.date.getDate()}
+                                                    </span>
+                                                    {completedHabits.length > 0 && (
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${intensity === 1 ? 'bg-indigo-400' : intensity > 0.5 ? 'bg-indigo-600' : 'bg-indigo-900'}`} />
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 space-y-1 overflow-hidden custom-scrollbar">
+                                                    {completedHabits.slice(0, 3).map(h => (
+                                                        <div key={h._id} className="text-[8px] md:text-[10px] px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 truncate font-medium">
                                                             {h.name}
                                                         </div>
-                                                    )
-                                                })}
+                                                    ))}
+                                                    {completedHabits.length > 3 && (
+                                                        <div className="text-[8px] text-zinc-600 pl-1">
+                                                            +{completedHabits.length - 3} more
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    });
+                                })()}
                             </div>
                         </div>
                     </div>
@@ -652,12 +729,22 @@ export default function HabitsPage() {
                         for (let i = 1; i <= daysInMonth; i++) slots.push(new Date(year, monthIndex, i));
 
                         return (
-                            <div key={monthIndex} className="bg-zinc-900/30 border border-zinc-800/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
-                                <h3 className="text-sm font-semibold text-zinc-300 mb-3">{monthName}</h3>
+                            <div 
+                                key={monthIndex} 
+                                className="bg-zinc-900/30 border border-zinc-800/50 p-4 rounded-xl hover:border-indigo-500/50 hover:bg-zinc-800/40 transition-all cursor-pointer group"
+                                onClick={() => {
+                                    setCalendarDate(new Date(year, monthIndex, 1));
+                                    setShowCalendar(true);
+                                }}
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-bold text-zinc-300 group-hover:text-white">{monthName}</h3>
+                                    <div className="w-2 h-2 rounded-full border border-zinc-700 bg-zinc-800 group-hover:border-indigo-500/50 transition-colors" />
+                                </div>
 
                                 <div className="grid grid-cols-7 gap-1">
                                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                                        <div key={i} className="text-[8px] text-zinc-600 text-center font-medium">{d}</div>
+                                        <div key={i} className="text-[8px] text-zinc-600 text-center font-bold">{d}</div>
                                     ))}
 
                                     {slots.map((date, i) => {
@@ -672,8 +759,8 @@ export default function HabitsPage() {
                                         let bgClass = "bg-zinc-800/50";
                                         if (intensity > 0) bgClass = "bg-indigo-900/60";
                                         if (intensity > 0.3) bgClass = "bg-indigo-700/60";
-                                        if (intensity > 0.6) bgClass = "bg-indigo-500/80";
-                                        if (intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]";
+                                        if (intensity > 0.6) bgClass = "bg-indigo-400/80";
+                                        if (intensity === 1) bgClass = "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.2)]";
 
                                         const isToday = isSameDay(date, new Date());
 
@@ -681,9 +768,9 @@ export default function HabitsPage() {
                                             <div
                                                 key={i}
                                                 title={`${date.toDateString()}: ${Math.round(intensity * 100)}%`}
-                                                className={`aspect-square rounded-sm ${bgClass} ${isToday ? 'ring-1 ring-white' : ''} transition-all hover:opacity-80 flex items-center justify-center`}
+                                                className={`aspect-square rounded-sm ${bgClass} ${isToday ? 'ring-1 ring-white/50' : ''} transition-all hover:scale-110 flex items-center justify-center`}
                                             >
-                                                <span className="text-[6px] text-zinc-400">{date.getDate()}</span>
+                                                <span className="text-[6px] text-zinc-400/80 font-medium">{date.getDate()}</span>
                                             </div>
                                         )
                                     })}
