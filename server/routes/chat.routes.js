@@ -4,6 +4,7 @@ const auth = require('../middleware/auth.middleware');
 const ChatHistory = require('../models/ChatHistory');
 const Conversation = require('../models/Conversation');
 const Habit = require('../models/Habit');
+const Goal = require('../models/Goal');
 const { getGroqCompletion } = require('../utils/llmCache');
 const multer = require('multer');
 const fs = require('fs');
@@ -199,12 +200,14 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         1. CREATE_HABIT: Track a new habit.
         2. DELETE_HABIT: Remove a habit.
         3. MARK_HABIT_COMPLETE: Mark a habit as done for today.
+        4. CREATE_GOAL: Create a structured goal plan with title, description, category (health, career, learning, finance, relationships, personal, other), targetDate (YYYY-MM-DD), and milestones (array of strings).
 
         INSTRUCTIONS:
         - If the user relies on a document, look at the RELEVANT DOCUMENT EXCERPTS.
-        - If the user wants to ADD a habit, output ONLY this JSON: {"action": "CREATE_HABIT", "name": "...", "frequency": "daily"}
-        - If the user wants to DELETE a habit, output ONLY this JSON: {"action": "DELETE_HABIT", "habitId": "..."}
-        - If the user says they DID a habit (e.g., "I ran", "Drank water"), output ONLY this JSON: {"action": "MARK_HABIT_COMPLETE", "habitId": "..."} (Match closely to the context Name/ID).
+        - To CREATE a habit, output ONLY this JSON: {"action": "CREATE_HABIT", "name": "...", "frequency": "daily"}
+        - To DELETE a habit, output ONLY this JSON: {"action": "DELETE_HABIT", "habitId": "..."}
+        - If they DID a habit, output ONLY this JSON: {"action": "MARK_HABIT_COMPLETE", "habitId": "..."}
+        - To CREATE a goal, output ONLY this JSON: {"action": "CREATE_GOAL", "title": "...", "description": "...", "category": "...", "targetDate": "...", "milestones": ["step 1", "step 2", ...]}
         - If no action is needed, just reply casually.
         - Do not output Markdown formatting (like \`\`\`json) around the JSON. Just the raw JSON string if performing an action.
         `;
@@ -233,7 +236,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         // Ensure we use a vision model if an image is present
         let selectedModel = req.body.model || "llama-3.3-70b-versatile";
         if (imageBase64) {
-            selectedModel = "meta-llama/llama-4-scout-17b-16e-instruct"; // Fast, capable vision model available directly via Groq
+            selectedModel = "llama-3.2-11b-vision-preview"; // Valid, high-performance vision model on Groq
         }
 
         const chatCompletion = await getGroqCompletion({
@@ -316,6 +319,21 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
                                     }
                                 }
                             }
+                        }
+                        else if (actionData.action === 'CREATE_GOAL') {
+                            const milestones = Array.isArray(actionData.milestones) 
+                                ? actionData.milestones.map(m => ({ text: m, completed: false }))
+                                : [];
+                            const newGoal = new Goal({
+                                userId: req.user.id,
+                                title: actionData.title,
+                                description: actionData.description || '',
+                                category: actionData.category || 'personal',
+                                targetDate: actionData.targetDate || undefined,
+                                milestones
+                            });
+                            await newGoal.save();
+                            successCount++;
                         }
                     } catch (innerErr) {
                         console.error("Error executing action:", innerErr);

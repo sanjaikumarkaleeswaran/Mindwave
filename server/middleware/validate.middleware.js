@@ -7,9 +7,10 @@ const validate = (schema) => (req, res, next) => {
         });
         next();
     } catch (err) {
+        console.error("Zod Validation Error:", err);
         return res.status(400).json({
             msg: 'Validation Error',
-            errors: err.errors.map((e) => ({
+            errors: (err.errors || []).map((e) => ({
                 field: e.path.join('.'),
                 message: e.message,
             })),

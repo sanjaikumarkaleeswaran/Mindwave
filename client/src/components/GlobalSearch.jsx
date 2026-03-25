@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, BookOpen, CheckCircle, MessageSquare, Target, Loader2, ArrowRight } from 'lucide-react';
+import { Search, X, BookOpen, CheckCircle, MessageSquare, Target, Loader2, ArrowRight, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 
@@ -18,6 +18,7 @@ const SECTION_META = {
     journals: { icon: BookOpen, label: 'Journal', color: 'text-purple-400', path: '/journal' },
     conversations: { icon: MessageSquare, label: 'Chat', color: 'text-indigo-400', pathFn: (item) => `/chat/${item._id}` },
     goals: { icon: Target, label: 'Goals', color: 'text-amber-400', path: '/goals' },
+    documents: { icon: FileText, label: 'Docs', color: 'text-rose-400', path: '/chat' },
 };
 
 export default function GlobalSearch({ isOpen, onClose }) {
@@ -135,14 +136,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                                     </div>
                                                     {items.map(item => {
                                                         const path = meta.pathFn ? meta.pathFn(item) : meta.path;
-                                                        const title = item.name || item.title || 'Untitled';
-                                                        const subtitle = item.content
+                                                        const title = item.name || item.title || (item.source ? item.content.substring(0, 40) + '...' : 'Untitled');
+                                                        const subtitle = item.content && !item.source
                                                             ? item.content.substring(0, 80) + '...'
                                                             : item.description
                                                                 ? item.description.substring(0, 80)
-                                                                : item.mood
-                                                                    ? `Mood: ${item.mood}`
-                                                                    : item.category || '';
+                                                                 : item.mood
+                                                                     ? `Mood: ${item.mood}`
+                                                                     : item.source 
+                                                                        ? `From: ${item.source}`
+                                                                        : item.category || '';
 
                                                         return (
                                                             <button

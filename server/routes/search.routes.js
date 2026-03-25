@@ -5,6 +5,7 @@ const Habit = require('../models/Habit');
 const Journal = require('../models/Journal');
 const Conversation = require('../models/Conversation');
 const Goal = require('../models/Goal');
+const { searchSimilarChunks } = require('../utils/vectorStore');
 
 // GET /api/search?q=query
 router.get('/', auth, async (req, res) => {
@@ -24,10 +25,11 @@ router.get('/', auth, async (req, res) => {
                 .select('title content mood date tags')
                 .lean(),
             Conversation.find({ userId, title: regex }).limit(5).lean(),
-            Goal.find({ userId, $or: [{ title: regex }, { description: regex }] }).limit(5).lean()
+            Goal.find({ userId, $or: [{ title: regex }, { description: regex }] }).limit(5).lean(),
+            searchSimilarChunks(userId, q, null, 3) // Global search (no convo filter)
         ]);
 
-        res.json({ habits, journals, conversations, goals });
+        res.json({ habits, journals, conversations, goals, documents });
     } catch (err) {
         console.error('Search Error:', err);
         res.status(500).json({ msg: 'Server Error' });

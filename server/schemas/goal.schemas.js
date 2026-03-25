@@ -10,38 +10,46 @@ const milestoneSchema = z.object({
 
 // Schema for creating a goal
 const createGoalSchema = z.object({
-    title: z.string().min(1, 'Title is required').max(255),
-    description: z.string().max(2000).optional(),
-    category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
-    targetDate: z.string().optional(),
-    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
-    milestones: z.array(z.union([z.string(), milestoneSchema])).optional(),
-}).strict();
+    body: z.object({
+        title: z.string().min(1, 'Title is required').max(255),
+        description: z.string().max(2000).optional(),
+        category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
+        targetDate: z.string().optional(),
+        color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
+        milestones: z.array(z.union([z.string(), milestoneSchema])).optional(),
+    }).strict()
+});
 
 // Schema for updating a goal
 const updateGoalSchema = z.object({
-    title: z.string().min(1).max(255).optional(),
-    description: z.string().max(2000).optional(),
-    category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
-    targetDate: z.string().optional(),
-    progress: z.number().min(0).max(100).optional(),
-    status: z.enum(['active', 'completed', 'archived']).optional(),
-    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-    milestones: z.array(z.union([z.string(), milestoneSchema])).optional(),
-}).strict();
+    body: z.object({
+        title: z.string().min(1).max(255).optional(),
+        description: z.string().max(2000).optional(),
+        category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
+        targetDate: z.string().optional(),
+        progress: z.number().min(0).max(100).optional(),
+        status: z.enum(['active', 'completed', 'archived']).optional(),
+        color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+        milestones: z.array(z.union([z.string(), milestoneSchema])).optional(),
+    }).strict()
+});
 
 // Input schemas for AI generation
 const aiMilestonesSchema = z.object({
-    title: z.string().min(1).max(255),
-    description: z.string().max(2000).optional(),
-    category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
-    targetDate: z.string().optional(),
-}).strict();
+    body: z.object({
+        title: z.string().min(1).max(255),
+        description: z.string().max(2000).optional(),
+        category: z.enum(['health', 'career', 'learning', 'finance', 'relationships', 'personal', 'other']).optional(),
+        targetDate: z.string().optional(),
+    }).strict()
+});
 
 const aiCreateSchema = z.object({
-    message: z.string().min(1, 'Message is required').max(1000),
-    existingGoal: z.record(z.any()).optional(), // Loose for now to accommodate existing state, could strictly validate
-}).strict();
+    body: z.object({
+        message: z.string().min(1, 'Message is required').max(1000),
+        existingGoal: z.record(z.any()).optional(),
+    }).strict()
+});
 
 module.exports = {
     createGoalSchema,
