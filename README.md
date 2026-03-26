@@ -8,7 +8,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 🤖 AI Chat Assistant
 - **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
-- **Multimodal Vision AI (New)** — upload images (screenshots, fitness stats, etc.). The backend automatically switches to high-performance vision models (`meta-llama/llama-4-scout-17b-16e-instruct`) to analyze your data visually.
+- **Multimodal Vision AI (New)** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`meta-llama/llama-4-scout-17b-16e-instruct`) to analyze your data visually.
 - **Interactive Image Lightbox** — click any image in your chat history to open it in a beautiful, full-screen blurred "Lightbox" mode for detailed inspection.
 - **Premium File Cards** — documents (PDFs, JS, JSON, etc.) are rendered as elegant, interactive file cards with automatic extension detection and one-click download.
 - **True Vector RAG** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions.
@@ -47,12 +47,12 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Ambient Soundscapes** — curated royalty-free audio (Cosmic, Nature, Lo-Fi) to block distractions.
 
 ### 🔍 Global Search
-- **Unified Search** — search across goals, habits, and journal entries from a single search bar.
+- **Semantic Unified Search** — search across goals, habits, and journal entries. Now includes **vector-based document retrieval** for uploaded PDFs and files, allowing you to search for information *inside* your documents using natural language.
 
 ### 🛡️ Security & Privacy
 - **Self-Hosted** — you own your data, stored in your own MongoDB instance.
 - **Security Middleware** — Helmet, CORS, HPP, rate-limiting, XSS sanitization, and MongoDB injection prevention.
-- **JWT Authentication** — secure stateless auth with bcrypt password hashing and email verification.
+- **JWT Authentication** — secure stateless auth with bcrypt password hashing. Registration is instant with no email verification required (verification optional/bypassed for speed).
 - **Danger Zone** — permanently wipe all data (journals, habits, chats, goals, account) from settings.
 
 ### 📱 PWA — Install as a Native App
@@ -73,7 +73,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | **Database** | MongoDB via Mongoose 9 |
 | **AI Engine** | Groq SDK — Llama 3.3 70b & Llama 4 Scout Vision |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
-| **Auth** | Custom JWT + Bcrypt + Nodemailer (email verification) |
+| **Auth** | Custom JWT + Bcrypt + Nodemailer (for password resets) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
 
 See the full architectural breakdown in [RAG_IMPLEMENTATION.md](./RAG_IMPLEMENTATION.md).
@@ -86,7 +86,7 @@ See the full architectural breakdown in [RAG_IMPLEMENTATION.md](./RAG_IMPLEMENTA
 1. **Node.js** v18+
 2. **MongoDB Atlas** account or local MongoDB instance
 3. **Groq API Key** — free at [console.groq.com](https://console.groq.com)
-4. **Gmail App Password** — for email verification ([guide](https://support.google.com/accounts/answer/185833))
+4. **Gmail App Password (Optional)** — required only if you want password reset emails ([guide](https://support.google.com/accounts/answer/185833))
 
 ---
 
@@ -116,7 +116,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secure_random_string_min_32_chars
 GROQ_API_KEY=your_groq_api_key
 
-# Email (Gmail App Password — no spaces)
+# Email (Optional — for password resets)
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your16charapppassword
 ```
@@ -239,6 +239,7 @@ Mindwave/
 - [x] Multimodal Vision AI for image analysis
 - [x] Full-screen Image Lightbox
 - [x] Interactive Document File Cards
+- [x] Semantic Vector Search for Documents
 - [ ] Voice interface
 
 ---
