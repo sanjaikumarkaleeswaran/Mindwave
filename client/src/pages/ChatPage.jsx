@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X, FileText, Download } from 'lucide-react';
+import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X, FileText, Download, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import ReactMarkdown from 'react-markdown';
@@ -19,6 +19,11 @@ export default function ChatPage() {
     const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
     const [showModelMenu, setShowModelMenu] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+
+    // Voice & Audio States
+    const [isListening, setIsListening] = useState(false);
+    const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+    const recognitionRef = useRef(null);
 
     const models = [
         { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B (Smartest)" },
@@ -85,6 +90,68 @@ export default function ChatPage() {
             queryClient.setQueryData(['chat', vars.conversationId], context.previousMessages);
         }
     });
+
+    // 🎙️ Speech Recognition Initialization
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.interimResults = false;
+            recognitionRef.current.lang = 'en-US';
+
+            recognitionRef.current.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                setInput(transcript);
+                setIsListening(false);
+            };
+
+            recognitionRef.current.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                setIsListening(false);
+            };
+
+            recognitionRef.current.onend = () => {
+                setIsListening(false);
+            };
+        }
+    }, []);
+
+    const toggleListening = () => {
+        if (!recognitionRef.current) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
+
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            setIsListening(true);
+            recognitionRef.current.start();
+        }
+    };
+
+    // 🔊 Text-to-Speech
+    const speakText = (text) => {
+        if (!isVoiceEnabled) return;
+        // Clean markdown for clearer speech
+        const cleanText = text.replace(/[*#_`]/g, '').replace(/\[(.*?)\]\((.*?)\)/g, '$1');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.cancel(); // Stop current speech
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Trigger TTS on new AI success
+    useEffect(() => {
+        if (isVoiceEnabled && messages.length > 0) {
+            const lastMsg = messages[messages.length - 1];
+            if (lastMsg.role === 'assistant') {
+                speakText(lastMsg.content);
+            }
+        }
+    }, [messages, isVoiceEnabled]);
 
     // Auto-scroll logic
     useEffect(() => {
@@ -204,6 +271,22 @@ export default function ChatPage() {
                         </div>
                     )}
                 </div>
+                
+                {/* Voice Control Toggle */}
+                <button
+                    onClick={() => {
+                        setIsVoiceEnabled(!isVoiceEnabled);
+                        if (isVoiceEnabled) window.speechSynthesis.cancel();
+                    }}
+                    className={`ml-2 p-1.5 rounded-lg border transition-all ${
+                        isVoiceEnabled 
+                        ? 'bg-indigo-600/20 border-indigo-500/50 text-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]' 
+                        : 'bg-zinc-800/80 border-zinc-700/50 text-zinc-500 hover:text-zinc-300'
+                    }`}
+                    title={isVoiceEnabled ? "Disable AI Voice" : "Enable AI Voice"}
+                >
+                    {isVoiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
             </div>
 
             {
@@ -274,6 +357,17 @@ export default function ChatPage() {
                                 className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
                             >
                                 <Send className="w-5 h-5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={toggleListening}
+                                className={`absolute right-12 top-2 p-2 rounded-lg transition-all ${
+                                    isListening 
+                                    ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                                    : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700'
+                                }`}
+                            >
+                                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                             </button>
                         </form>
                     </div>
@@ -412,6 +506,17 @@ export default function ChatPage() {
                                     className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20 z-10"
                                 >
                                     <Send className="w-5 h-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={toggleListening}
+                                    className={`absolute right-12 top-2 p-2 rounded-lg transition-all z-10 ${
+                                        isListening 
+                                        ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                                        : 'bg-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-600'
+                                    }`}
+                                >
+                                    {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                                 </button>
                             </div>
                         </form>
