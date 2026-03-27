@@ -18,7 +18,7 @@ router.get('/', auth, async (req, res) => {
         const regex = { $regex: q, $options: 'i' };
         const userId = req.user.id;
 
-        const [habits, journals, conversations, goals] = await Promise.all([
+        const [habits, journals, conversations, goals, documents] = await Promise.all([
             Habit.find({ userId, name: regex }).limit(5).lean(),
             Journal.find({ userId, $or: [{ title: regex }, { content: regex }, { tags: regex }] })
                 .limit(5)
