@@ -15,6 +15,8 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
 - **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
 - **Multi-turn conversations** — full conversation memory with permanent document storage.
+- **Voice-to-Text (New)** — tap the microphone button to dictate your thoughts; AI automatically populates the input field.
+- **Text-to-Speech (New)** — toggle the speaker icon to hear the AI's responses read out loud with natural voice synthesis.
 
 ### 🎯 Smart Goal Tracking *(New)*
 - **AI Goal Creator (Chat)** — describe a goal in plain language; AI generates a full structured plan with title, description, category, target date, and step-by-step milestones.
@@ -240,7 +242,7 @@ Mindwave/
 - [x] Full-screen Image Lightbox
 - [x] Interactive Document File Cards
 - [x] Semantic Vector Search for Documents
-- [ ] Voice interface
+- [x] Voice interface (STT & TTS)
 
 ---
 
