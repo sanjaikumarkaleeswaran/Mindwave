@@ -8,7 +8,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 🤖 AI Chat Assistant
 - **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
-- **Multimodal Vision AI (New)** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`meta-llama/llama-4-scout-17b-16e-instruct`) to analyze your data visually.
+- **Multimodal Vision AI (New)** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`llama-3.2-11b-vision-preview`) to analyze your data visually.
 - **Interactive Image Lightbox** — click any image in your chat history to open it in a beautiful, full-screen blurred "Lightbox" mode for detailed inspection.
 - **Premium File Cards** — documents (PDFs, JS, JSON, etc.) are rendered as elegant, interactive file cards with automatic extension detection and one-click download.
 - **True Vector RAG** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions.
@@ -56,6 +56,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Security Middleware** — Helmet, CORS, HPP, rate-limiting, XSS sanitization, and MongoDB injection prevention.
 - **JWT Authentication** — secure stateless auth with bcrypt password hashing. Registration is instant with no email verification required (verification optional/bypassed for speed).
 - **Danger Zone** — permanently wipe all data (journals, habits, chats, goals, account) from settings.
+- **Privacy-First Data Portability (New)** — Export all your data (Journals, Habits, Goals, Chat History) as **JSON** or **CSV** (Excel-ready). Features a smart date-range filter to export specific work periods or your entire history.
 
 ### 📱 PWA — Install as a Native App
 - **Progressive Web App** — installable on iOS and Android for a full-screen, native-like experience.
@@ -69,11 +70,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons |
-| **State / Routing** | React Context, React Router v6 |
+| **State / Routing** | React Context, React Router v7 |
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
-| **AI Engine** | Groq SDK — Llama 3.3 70b & Llama 4 Scout Vision |
+| **AI Engine** | Groq SDK — Llama 3.3 70b & Llama 3.2 11b Vision |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (for password resets) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
