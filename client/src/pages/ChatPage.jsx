@@ -4,25 +4,27 @@ import { Helmet } from 'react-helmet-async';
 import { Send, Bot, User, Trash2, ChevronDown, Paperclip, X, FileText, Download, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
+import { useAuth } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export default function ChatPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user, updatePreferences } = useAuth();
     const queryClient = useQueryClient();
     const [input, setInput] = useState('');
     const [file, setFile] = useState(null);
     const scrollRef = useRef(null);
     const fileInputRef = useRef(null);
 
-    const [selectedModel, setSelectedModel] = useState("llama-3.3-70b-versatile");
+    const [selectedModel, setSelectedModel] = useState(user?.preferences?.selectedModel || "llama-3.3-70b-versatile");
     const [showModelMenu, setShowModelMenu] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
     // Voice & Audio States
     const [isListening, setIsListening] = useState(false);
-    const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+    const [isVoiceEnabled, setIsVoiceEnabled] = useState(user?.preferences?.voiceEnabled || false);
     const recognitionRef = useRef(null);
 
     const models = [
@@ -152,6 +154,25 @@ export default function ChatPage() {
             }
         }
     }, [messages, isVoiceEnabled]);
+
+    // Save preferences when they change
+    useEffect(() => {
+        if (!user) return;
+        const syncPrefs = async () => {
+            if (user.preferences?.voiceEnabled !== isVoiceEnabled || 
+                user.preferences?.selectedModel !== selectedModel) {
+                    try {
+                        await updatePreferences({ 
+                            voiceEnabled: isVoiceEnabled, 
+                            selectedModel 
+                        });
+                    } catch (err) {
+                        console.error("Failed to sync preferences", err);
+                    }
+            }
+        };
+        syncPrefs();
+    }, [isVoiceEnabled, selectedModel, user, updatePreferences]);
 
     // Auto-scroll logic
     useEffect(() => {

@@ -7,18 +7,17 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 ## 🌟 Features
 
 ### 🤖 AI Chat Assistant
-- **Powered by Groq / Llama 3.3 70b** — fast, intelligent, context-aware responses.
-- **Multimodal Vision AI (New)** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`llama-3.2-11b-vision-preview`) to analyze your data visually.
+- **Granular Model Selection (New)** — toggle between **Llama 3.3 70B** (Smartest), **DeepSeek R1 70B** (Reasoning), **Llama 3 70B** (Fast), or **Gemma 2 9B** directly from the chat interface.
+- **Multimodal Vision AI** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`llama-3.2-11b-vision-preview`) to analyze your data visually.
 - **Interactive Image Lightbox** — click any image in your chat history to open it in a beautiful, full-screen blurred "Lightbox" mode for detailed inspection.
 - **Premium File Cards** — documents (PDFs, JS, JSON, etc.) are rendered as elegant, interactive file cards with automatic extension detection and one-click download.
 - **True Vector RAG** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions.
 - **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
 - **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
+- **Voice Interface (Refined)** — Tap the microphone icon for **Speech-to-Text** dictation. Toggle the speaker icon for **Text-to-Speech** (TTS) responses with natural voice synthesis. Preferences are synced to your profile.
 - **Multi-turn conversations** — full conversation memory with permanent document storage.
-- **Voice-to-Text (New)** — tap the microphone button to dictate your thoughts; AI automatically populates the input field.
-- **Text-to-Speech (New)** — toggle the speaker icon to hear the AI's responses read out loud with natural voice synthesis.
 
-### 🎯 Smart Goal Tracking *(New)*
+### 🎯 Smart Goal Tracking
 - **AI Goal Creator (Chat)** — describe a goal in plain language; AI generates a full structured plan with title, description, category, target date, and step-by-step milestones.
 - **AI Milestone Generator** — inside the goal form, click "✨ AI Plan" to auto-generate 5–7 specific, dated milestones based on your target date.
 - **Step-by-step Timeline** — visual timeline with numbered steps, due date countdowns (*"8d left"*, *"2d overdue"*), and spine connector lines.
@@ -26,12 +25,9 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Dashboard Integration** — see active goals, their progress bars, and your immediate next steps right from your home screen.
 - **Dedicated Calendar View** — see a unified monthly grid of all your milestone due dates, color-coded by category.
 - **Smart Reminders** — an intelligent notification bell alerts you when milestones are overdue, due today, or coming up soon.
-- **Dual Progress Tracking** — side-by-side time-elapsed bar vs actual progress bar with an **Ahead / On track / Behind** badge.
 - **Progress Rings** — animated circular progress indicator on every goal card.
 - **Milestone Dot Summary** — compact numbered dots on the card with tooltips; click any dot to log activity.
 - **Full CRUD** — create, read, edit, delete goals with confirmation modals.
-- **Fail-safe AI Redirect** — pencil icon quickly redirects you back to the main AI chat if you need more conversational planning.
-- **Status Management** — mark goals as Active, Paused, Completed, or Archived.
 
 ### 📅 Advanced Habit Tracker
 - **Streak Tracking** — monitor daily progress and current/best streaks.
@@ -49,19 +45,19 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Ambient Soundscapes** — curated royalty-free audio (Cosmic, Nature, Lo-Fi) to block distractions.
 
 ### 🔍 Global Search
-- **Semantic Unified Search** — search across goals, habits, and journal entries. Now includes **vector-based document retrieval** for uploaded PDFs and files, allowing you to search for information *inside* your documents using natural language.
+- **Semantic Unified Search** — search across goals, habits, and journal entries. Includes **vector-based document retrieval** for uploaded PDFs and files, allowing you to search for information *inside* your documents using natural language.
 
 ### 🛡️ Security & Privacy
 - **Self-Hosted** — you own your data, stored in your own MongoDB instance.
+- **Privacy-First Data Portability** — Export all your data (Journals, Habits, Goals, Chat History) as **JSON** or **CSV** (Excel-ready). Features a **smart date-range filter** with a visual drag-slider and presets (7d, 30d, 90d, All).
 - **Security Middleware** — Helmet, CORS, HPP, rate-limiting, XSS sanitization, and MongoDB injection prevention.
-- **JWT Authentication** — secure stateless auth with bcrypt password hashing. Registration is instant with no email verification required (verification optional/bypassed for speed).
+- **JWT Authentication** — secure stateless auth with bcrypt password hashing. Registration is instant with no email verification required.
 - **Danger Zone** — permanently wipe all data (journals, habits, chats, goals, account) from settings.
-- **Privacy-First Data Portability (New)** — Export all your data (Journals, Habits, Goals, Chat History) as **JSON** or **CSV** (Excel-ready). Features a smart date-range filter to export specific work periods or your entire history.
 
 ### 📱 PWA — Install as a Native App
 - **Progressive Web App** — installable on iOS and Android for a full-screen, native-like experience.
 - **Mobile-First Design** — responsive from 375px phones to large desktops.
-- **Offline-Capable** — service worker caching for core assets.
+- **Offline-Capable** — service worker caching for core assets and API responses.
 
 ---
 
@@ -70,11 +66,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons |
-| **State / Routing** | React Context, React Router v7 |
+| **State / Routing** | React Context, React Router v7, React Query (TanStack) |
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
-| **AI Engine** | Groq SDK — Llama 3.3 70b & Llama 3.2 11b Vision |
+| **AI Engine** | Groq SDK — Llama 3.3 70B, DeepSeek R1, Llama 3.2 Vision |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (for password resets) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
@@ -166,16 +162,16 @@ Mindwave/
 │   │   │   ├── CalendarPage.jsx    # Monthly grid of all goal milestone due dates
 │   │   │   ├── HabitsPage.jsx      # Habit tracker with streaks & heatmaps
 │   │   │   ├── JournalPage.jsx     # Journaling with AI mood analysis
-│   │   │   ├── ChatPage.jsx        # AI assistant with file upload
+│   │   │   ├── ChatPage.jsx        # AI assistant with file upload & voice
 │   │   │   ├── FocusPage.jsx       # Timer & ambient soundscapes
-│   │   │   └── ProfilePage.jsx     # Settings & danger zone
+│   │   │   └── ProfilePage.jsx     # Settings, model selection & data export
 │   │   └── lib/                    # Axios instance, date helpers
 │   ├── public/                     # PWA icons, manifest
 │   └── vite.config.js              # Vite & PWA configuration
 │
 ├── server/                         # Express Backend
 │   ├── models/
-│   │   ├── User.js                 # User schema (auth, profile)
+│   │   ├── User.js                 # User schema (auth, profile, preferences)
 │   │   ├── Goal.js                 # Goal + Milestone schema (with notes, dueDate)
 │   │   ├── Habit.js                # Habit schema (streaks, completedDates)
 │   │   ├── Journal.js              # Journal entry schema
@@ -183,7 +179,7 @@ Mindwave/
 │   │   ├── Conversation.js         # Conversation thread schema
 │   │   └── VectorChunk.js          # RAG chunk and embedding schema
 │   ├── routes/
-│   │   ├── auth.routes.js          # Register, login, verify email, forgot password
+│   │   ├── auth.routes.js          # Register, login, verify email, forgot password, EXPORT
 │   │   ├── goal.routes.js          # Goals CRUD + AI milestone/goal generation
 │   │   ├── habit.routes.js         # Habits CRUD + streak logic
 │   │   ├── journal.routes.js       # Journal CRUD + AI analysis
@@ -199,6 +195,7 @@ Mindwave/
 │   ├── utils/                      
 │   │   ├── sendEmail.js            # Nodemailer utility
 │   │   └── vectorStore.js          # Local embedding and cosine similarity logic
+│   │   └── llmCache.js             # LLM orchestration and model handling
 │   └── index.js                    # Server entry point
 │
 ├── start_app.bat                   # One-click Windows startup
@@ -233,17 +230,18 @@ Mindwave/
 - [x] Goal tracking with AI milestone generation
 - [x] Activity logging per milestone
 - [x] Step-by-step timeline with due date tracking
-- [x] Global search
+- [x] Global search (Semantic & Keyword)
 - [x] PWA — installable on mobile
 - [x] Security hardening (rate limiting, XSS, NoSQL injection)
-- [x] Push notifications for milestone due dates
+- [x] Smart Notification Bell for reminders
 - [x] Calendar view for goal milestones
-- [x] Export data (JSON / CSV)
+- [x] Advanced Data Export (Visual Date Slider, JSON/CSV)
 - [x] Multimodal Vision AI for image analysis
 - [x] Full-screen Image Lightbox
 - [x] Interactive Document File Cards
-- [x] Semantic Vector Search for Documents
-- [x] Voice interface (STT & TTS)
+- [x] True Vector RAG for Documents (Local Embeddings)
+- [x] Voice Interface (STT & TTS)
+- [x] Granular AI Model Selection (Llama 3.3, DeepSeek, etc.)
 
 ---
 

@@ -46,6 +46,12 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data);
     };
 
+    const updatePreferences = async (prefs) => {
+        const res = await api.put('/auth/preferences', prefs);
+        setUser(res.data);
+        return res.data;
+    };
+
     const uploadAvatar = async (file) => {
         const formData = new FormData();
         formData.append('avatar', file);
@@ -77,7 +83,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, uploadAvatar, deleteAccount }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, updatePreferences, uploadAvatar, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

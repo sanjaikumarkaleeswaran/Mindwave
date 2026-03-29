@@ -18,7 +18,8 @@ const {
     updateProfileSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
-    verifyEmailSchema
+    verifyEmailSchema,
+    updatePreferencesSchema
 } = require('../schemas/auth.schemas');
 const { authLimiter } = require('../config/rateLimit');
 
@@ -46,8 +47,6 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res)
 
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
-
-        await user.save();
 
         await user.save();
 
@@ -161,6 +160,35 @@ router.put('/profile', auth, validate(updateProfileSchema), async (req, res) => 
         res.json(user);
     } catch (err) {
         console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   PUT api/auth/preferences
+// @desc    Update user preferences
+// @access  Private
+router.put('/preferences', auth, validate(updatePreferencesSchema), async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        // Update top-level field if present
+        if (req.body.lastNotificationCheck) {
+            user.lastNotificationCheck = req.body.lastNotificationCheck;
+        }
+
+        // Update preferences sub-document
+        const prefKeys = ['theme', 'aiTone', 'voiceEnabled', 'selectedModel'];
+        prefKeys.forEach(key => {
+            if (req.body[key] !== undefined) {
+                user.preferences[key] = req.body[key];
+            }
+        });
+
+        await user.save();
+        res.json(user);
+    } catch (err) {
+        console.error('Preference Update Error:', err.message);
         res.status(500).send('Server Error');
     }
 });

@@ -22,6 +22,16 @@ const updateProfileSchema = z.object({
     }).strict(),
 });
 
+const updatePreferencesSchema = z.object({
+    body: z.object({
+        theme: z.enum(['light', 'dark']).optional(),
+        aiTone: z.string().optional(),
+        voiceEnabled: z.boolean().optional(),
+        selectedModel: z.string().optional(),
+        lastNotificationCheck: z.string().datetime().optional(),
+    }).strict(),
+});
+
 const forgotPasswordSchema = z.object({
     body: z.object({
         email: z.string().email('Invalid email address'),
@@ -47,6 +57,7 @@ module.exports = {
     registerSchema,
     loginSchema,
     updateProfileSchema,
+    updatePreferencesSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
     verifyEmailSchema,

@@ -7,8 +7,11 @@ const UserSchema = new mongoose.Schema({
   avatar: { type: String }, // URL to profile picture
   preferences: {
     theme: { type: String, default: 'dark' },
-    aiTone: { type: String, default: 'helpful' }
+    aiTone: { type: String, default: 'helpful' },
+    voiceEnabled: { type: Boolean, default: false },
+    selectedModel: { type: String, default: 'llama-3.3-70b-versatile' }
   },
+  lastNotificationCheck: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
