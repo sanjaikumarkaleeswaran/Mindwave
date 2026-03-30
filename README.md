@@ -4,60 +4,44 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ---
 
-## 🌟 Features
+## 🌟 Key Features
 
-### 🤖 AI Chat Assistant
-- **Granular Model Selection (New)** — toggle between **Llama 3.3 70B** (Smartest), **DeepSeek R1 70B** (Reasoning), **Llama 3 70B** (Fast), or **Gemma 2 9B** directly from the chat interface.
+### 🤖 Intelligent AI Assistant
+- **Granular Model Selection** — toggle between **Llama 3.3 70B** (Smartest), **DeepSeek R1 70B** (Reasoning), **Llama 3 70B** (Fast), or **Gemma 2 9B** directly from the chat interface. Preferences are saved to your profile.
 - **Multimodal Vision AI** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`llama-3.2-11b-vision-preview`) to analyze your data visually.
-- **Interactive Image Lightbox** — click any image in your chat history to open it in a beautiful, full-screen blurred "Lightbox" mode for detailed inspection.
-- **Premium File Cards** — documents (PDFs, JS, JSON, etc.) are rendered as elegant, interactive file cards with automatic extension detection and one-click download.
-- **True Vector RAG** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and mathematically retrieves the most relevant paragraphs using cosine similarity to answer your questions.
-- **Habit control via chat** — say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically.
-- **AI Habit Analysis** — ask *"How am I doing this week?"* for a personalized performance report with strengths and recommendations.
-- **Voice Interface (Refined)** — Tap the microphone icon for **Speech-to-Text** dictation. Toggle the speaker icon for **Text-to-Speech** (TTS) responses with natural voice synthesis. Preferences are synced to your profile.
-- **Multi-turn conversations** — full conversation memory with permanent document storage.
+- **True Vector RAG (Document Intelligence)** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and retrieves relevant context using cosine similarity.
+- **Interactive Tool Execution** — control your Life OS via chat. Say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically. It can also create full structured goal plans.
+- **Voice Interface (STT & TTS)** — Tap the microphone icon for **Speech-to-Text** dictation. Toggle the speaker icon for **Text-to-Speech** responses with natural voice synthesis.
 
 ### 🎯 Smart Goal Tracking
-- **AI Goal Creator (Chat)** — describe a goal in plain language; AI generates a full structured plan with title, description, category, target date, and step-by-step milestones.
-- **AI Milestone Generator** — inside the goal form, click "✨ AI Plan" to auto-generate 5–7 specific, dated milestones based on your target date.
-- **Step-by-step Timeline** — visual timeline with numbered steps, due date countdowns (*"8d left"*, *"2d overdue"*), and spine connector lines.
+- **AI Goal Plan Creator** — describe a goal (e.g., *"I want to run a marathon in 3 months"*); the AI generates a full structured plan with category, target date, and 5–7 specific milestones.
+- **Dynamic Milestone Timeline** — a beautiful visual timeline with numbered steps, due date countdowns (*"2d overdue"*), and spine connector lines.
 - **Activity Logging** — click any step to open an activity modal, log what you did, and mark the step complete.
-- **Dashboard Integration** — see active goals, their progress bars, and your immediate next steps right from your home screen.
-- **Dedicated Calendar View** — see a unified monthly grid of all your milestone due dates, color-coded by category.
-- **Smart Reminders** — an intelligent notification bell alerts you when milestones are overdue, due today, or coming up soon.
-- **Progress Rings** — animated circular progress indicator on every goal card.
-- **Milestone Dot Summary** — compact numbered dots on the card with tooltips; click any dot to log activity.
-- **Full CRUD** — create, read, edit, delete goals with confirmation modals.
+- **Calendar View** — a unified monthly grid showing all milestone due dates, color-coded by category.
+- **Animated Progress Rings** — high-quality circular progress indicators on every goal card and dashboard summary.
 
 ### 📅 Advanced Habit Tracker
-- **Streak Tracking** — monitor daily progress and current/best streaks.
-- **Visual Consistency** — weekly calendar heatmaps to see your consistency at a glance.
-- **Mobile-optimized** — easy tap-to-complete interface.
-- **AI Insights** — qualitative feedback and actionable weekly challenges.
+- **Streak & Consistency Tracking** — monitor daily progress with current/best streaks and weekly calendar heatmaps.
+- **AI Habit Insights** — ask for a performance report; the AI analyzes your data to provide qualitative feedback and actionable weekly challenges.
+- **Mobile-Optimized UI** — easy "tap-to-complete" interface designed for quick updates on the go.
 
 ### ✍️ Intelligent Journaling
-- **Mood Tracking** — capture your daily mood and identify trends over time.
-- **AI Analysis** — instant sentiment analysis, key topics, and wellbeing challenges on every entry.
-- **Secure & Private** — all entries stored securely in your own database.
+- **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
+- **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
-### 🧘 Focus Mode
+### 🧘 Focus & Zen
 - **Pomodoro-style Timer** — built-in countdown to help you stay in flow state.
-- **Ambient Soundscapes** — curated royalty-free audio (Cosmic, Nature, Lo-Fi) to block distractions.
+- **Ambient Soundscapes** — curated audio (Cosmic, Nature, Lo-Fi) to block distractions while you work.
 
-### 🔍 Global Search
-- **Semantic Unified Search** — search across goals, habits, and journal entries. Includes **vector-based document retrieval** for uploaded PDFs and files, allowing you to search for information *inside* your documents using natural language.
+### 🔔 Proactive Systems
+- **Smart Notification Bell** — real-time alerts for overdue milestones, habits at risk of losing streaks, and daily reminders.
+- **Global Semantic Search** — one search bar to find anything across goals, habits, and journals. Includes **vector-search** for content *inside* your uploaded PDFs.
 
 ### 🛡️ Security & Privacy
 - **Self-Hosted** — you own your data, stored in your own MongoDB instance.
-- **Privacy-First Data Portability** — Export all your data (Journals, Habits, Goals, Chat History) as **JSON** or **CSV** (Excel-ready). Features a **smart date-range filter** with a visual drag-slider and presets (7d, 30d, 90d, All).
-- **Security Middleware** — Helmet, CORS, HPP, rate-limiting, XSS sanitization, and MongoDB injection prevention.
-- **JWT Authentication** — secure stateless auth with bcrypt password hashing. Registration is instant with no email verification required.
-- **Danger Zone** — permanently wipe all data (journals, habits, chats, goals, account) from settings.
-
-### 📱 PWA — Install as a Native App
-- **Progressive Web App** — installable on iOS and Android for a full-screen, native-like experience.
-- **Mobile-First Design** — responsive from 375px phones to large desktops.
-- **Offline-Capable** — service worker caching for core assets and API responses.
+- **Data Portability** — Export everything (Journals, Habits, Goals, Chat) as **JSON** or **CSV**. features a visual date-range slider.
+- **Privacy Controls** — "Danger Zone" in settings to permanently wipe all data and account.
+- **Security Hardened** — Helmet, rate-limiting, XSS sanitization, and NoSQL injection prevention.
 
 ---
 
@@ -70,12 +54,10 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
-| **AI Engine** | Groq SDK — Llama 3.3 70B, DeepSeek R1, Llama 3.2 Vision |
+| **AI Engine** | Groq SDK (Llama 3.3, DeepSeek R1, Llama 3.2 Vision) |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (for password resets) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
-
-See the full architectural breakdown in [RAG_IMPLEMENTATION.md](./RAG_IMPLEMENTATION.md).
 
 ---
 
@@ -83,68 +65,33 @@ See the full architectural breakdown in [RAG_IMPLEMENTATION.md](./RAG_IMPLEMENTA
 
 ### Prerequisites
 1. **Node.js** v18+
-2. **MongoDB Atlas** account or local MongoDB instance
-3. **Groq API Key** — free at [console.groq.com](https://console.groq.com)
-4. **Gmail App Password (Optional)** — required only if you want password reset emails ([guide](https://support.google.com/accounts/answer/185833))
-
----
+2. **MongoDB** instance (Local or Atlas)
+3. **Groq API Key** — [console.groq.com](https://console.groq.com)
+4. **Gmail App Password** (Optional) — for password resets
 
 ### Installation
 
 ```bash
-# 1. Clone the repository
+# 1. Clone & Enter
 git clone https://github.com/sanjaikumarkaleeswaran/Mindwave.git
 cd Mindwave
 
-# 2. Install server dependencies
+# 2. Server setup
 cd server && npm install
+cp .env.example .env # create your .env
 
-# 3. Install client dependencies
+# 3. Client setup
 cd ../client && npm install
+npm run build # for production mode
 ```
 
----
+### Running Locally
 
-### Environment Setup
+**One click (Windows):** Double-click `start_app.bat`.
 
-Create a `.env` file inside the `server/` directory:
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secure_random_string_min_32_chars
-GROQ_API_KEY=your_groq_api_key
-
-# Email (Optional — for password resets)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your16charapppassword
-```
-
-> **Client API URL** — create `client/.env` if you need to access from another device on your network:
-> ```env
-> VITE_API_URL=http://YOUR_LOCAL_IP:5000/api
-> ```
-
----
-
-### Running the Application
-
-**Option A — One click (Windows)**
-```
-Double-click  start_app.bat
-```
-This opens both the backend and frontend terminals automatically.
-
-**Option B — Manual**
-```bash
-# Terminal 1 — Backend
-cd server
-npm start          # runs on http://localhost:5000
-
-# Terminal 2 — Frontend
-cd client
-npm run dev        # runs on http://localhost:5173
-```
+**Manual:**
+- Terminal 1 (Backend): `cd server && npm start`
+- Terminal 2 (Frontend): `cd client && npm run dev`
 
 ---
 
@@ -152,99 +99,59 @@ npm run dev        # runs on http://localhost:5173
 
 ```
 Mindwave/
-├── client/                         # React Frontend
+├── client/                     # React Frontend (Vite)
 │   ├── src/
-│   │   ├── components/             # Reusable UI (Sidebar, Layout, GlobalSearch, NotificationBell)
-│   │   ├── context/                # AuthContext, ThemeContext
-│   │   ├── pages/
-│   │   │   ├── Dashboard.jsx       # Overview stats & active goals
-│   │   │   ├── GoalsPage.jsx       # AI goal creator, CRUD, milestone timeline
-│   │   │   ├── CalendarPage.jsx    # Monthly grid of all goal milestone due dates
-│   │   │   ├── HabitsPage.jsx      # Habit tracker with streaks & heatmaps
-│   │   │   ├── JournalPage.jsx     # Journaling with AI mood analysis
-│   │   │   ├── ChatPage.jsx        # AI assistant with file upload & voice
-│   │   │   ├── FocusPage.jsx       # Timer & ambient soundscapes
-│   │   │   └── ProfilePage.jsx     # Settings, model selection & data export
-│   │   └── lib/                    # Axios instance, date helpers
-│   ├── public/                     # PWA icons, manifest
-│   └── vite.config.js              # Vite & PWA configuration
+│   │   ├── components/         # NotificationBell, GlobalSearch, Sidebar, Layout
+│   │   ├── pages/              # Goals, Habits, Journal, Chat, Focus, Profile
+│   │   ├── context/            # Auth, Theme
+│   │   └── lib/                # Axios, utils
+│   └── public/                 # PWA icons & manifest
 │
-├── server/                         # Express Backend
-│   ├── models/
-│   │   ├── User.js                 # User schema (auth, profile, preferences)
-│   │   ├── Goal.js                 # Goal + Milestone schema (with notes, dueDate)
-│   │   ├── Habit.js                # Habit schema (streaks, completedDates)
-│   │   ├── Journal.js              # Journal entry schema
-│   │   ├── ChatHistory.js          # Chat message schema
-│   │   ├── Conversation.js         # Conversation thread schema
-│   │   └── VectorChunk.js          # RAG chunk and embedding schema
-│   ├── routes/
-│   │   ├── auth.routes.js          # Register, login, verify email, forgot password, EXPORT
-│   │   ├── goal.routes.js          # Goals CRUD + AI milestone/goal generation
-│   │   ├── habit.routes.js         # Habits CRUD + streak logic
-│   │   ├── journal.routes.js       # Journal CRUD + AI analysis
-│   │   ├── chat.routes.js          # AI chat, True Vector RAG, tool execution
-│   │   └── search.routes.js        # Global search across all collections
-│   ├── middleware/
-│   │   ├── auth.middleware.js      # JWT verification
-│   │   ├── validate.middleware.js  # Joi schema validation
-│   │   ├── mongoSanitize.js        # NoSQL injection prevention
-│   │   ├── xssSanitize.js          # XSS attack prevention
-│   │   └── rateLimiter.js          # Express rate limiting
-│   ├── schemas/                    # Joi validation schemas
-│   ├── utils/                      
-│   │   ├── sendEmail.js            # Nodemailer utility
-│   │   └── vectorStore.js          # Local embedding and cosine similarity logic
-│   │   └── llmCache.js             # LLM orchestration and model handling
-│   └── index.js                    # Server entry point
+├── server/                     # Node.js Backend (Express)
+│   ├── models/                 # User, Goal, Habit, Journal, VectorChunk
+│   ├── routes/                 # Auth, Chat (Tool & RAG), Search, Goals, Habits
+│   ├── middleware/             # Auth, Security (XSS, RateLimit, Sanitize)
+│   ├── utils/                  # VectorStore, LLM Orchestration
+│   └── index.js                # Entry point
 │
-├── start_app.bat                   # One-click Windows startup
-└── README.md
+└── start_app.bat               # Automated startup script
 ```
 
 ---
 
 ## 📱 Mobile PWA Installation
 
-> Make sure your phone and computer are on the same Wi-Fi network.
+Navigate to your local IP (e.g., `http://192.168.1.5:5173`) on your mobile browser.
+- **Android:** "Install App" from the Chrome menu.
+- **iOS:** "Add to Home Screen" from the Safari share sheet.
 
-1. Find your computer's local IP: run `ipconfig` (Windows) → look for `IPv4 Address`
-2. Update `client/.env`:
-   ```env
-   VITE_API_URL=http://YOUR_LOCAL_IP:5000/api
-   ```
-3. Restart the client server
+---
 
-**Android (Chrome):** Navigate to `http://YOUR_IP:5173` → tap menu → **"Install App"**
+## ☁️ Deployment
 
-**iOS (Safari):** Navigate to `http://YOUR_IP:5173` → tap Share → **"Add to Home Screen"**
+This application is ready for production deployment:
+- **Frontend**: Deploy `client/` to **Vercel** or **Netlify**.
+- **Backend**: Deploy `server/` to **Render** or **Railway**. 
+- *Note: Ensure `ALLOWED_ORIGINS` in `server/index.js` includes your frontend URL.*
 
 ---
 
 ## 🔮 Roadmap
 
-- [x] AI Chat with habit tool execution
-- [x] Habit tracker with streaks & heatmaps
-- [x] Mood-aware journaling with AI analysis
-- [x] Focus mode with ambient soundscapes
-- [x] Goal tracking with AI milestone generation
-- [x] Activity logging per milestone
-- [x] Step-by-step timeline with due date tracking
-- [x] Global search (Semantic & Keyword)
-- [x] PWA — installable on mobile
-- [x] Security hardening (rate limiting, XSS, NoSQL injection)
-- [x] Smart Notification Bell for reminders
-- [x] Calendar view for goal milestones
-- [x] Advanced Data Export (Visual Date Slider, JSON/CSV)
+- [x] AI Chat with habit/goal tool execution
+- [x] True Vector RAG for document chat
 - [x] Multimodal Vision AI for image analysis
-- [x] Full-screen Image Lightbox
-- [x] Interactive Document File Cards
-- [x] True Vector RAG for Documents (Local Embeddings)
+- [x] Smart Notification Bell with local triggers
+- [x] Goal tracking with AI milestone generation
+- [x] Mobile PWA support
+- [x] Advanced Data Export (JSON/CSV)
 - [x] Voice Interface (STT & TTS)
-- [x] Granular AI Model Selection (Llama 3.3, DeepSeek, etc.)
+- [ ] Backend-driven Push Notifications (Web Push API)
+- [ ] Shared Goals & Collaboration features
+- [ ] Integration with External Calendars (Google/Outlook)
 
 ---
 
 ## 📄 License
 
-MIT — feel free to fork, modify, and self-host.
+MIT — feel free to fork and customize your own Life OS.
