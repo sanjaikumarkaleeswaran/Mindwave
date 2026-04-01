@@ -236,7 +236,8 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         // Ensure we use a vision model if an image is present
         let selectedModel = req.body.model || "llama-3.3-70b-versatile";
         if (imageBase64) {
-            selectedModel = "llama-3.2-11b-vision-preview"; // Valid, high-performance vision model on Groq
+            selectedModel = "meta-llama/llama-4-scout-17b-16e-instruct"; // Groq's current vision model (Llama 4 Scout)
+            console.log("DEBUG: Using Vision Model: " + selectedModel);
         }
 
         const chatCompletion = await getGroqCompletion({
