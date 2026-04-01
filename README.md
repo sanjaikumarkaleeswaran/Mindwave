@@ -8,7 +8,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 🤖 Intelligent AI Assistant
 - **Granular Model Selection** — toggle between **Llama 3.3 70B** (Smartest), **DeepSeek R1 70B** (Reasoning), **Llama 3 70B** (Fast), or **Gemma 2 9B** directly from the chat interface. Preferences are saved to your profile.
-- **Multimodal Vision AI** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to high-performance vision models (`llama-3.2-11b-vision-instant`) to analyze your data visually.
+- **Multimodal Vision AI** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to **Llama 4 Scout** (`meta-llama/llama-4-scout-17b-16e-instruct`) — Groq's latest multimodal vision model — to analyze your data visually.
 - **True Vector RAG (Document Intelligence)** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and retrieves relevant context using cosine similarity.
 - **Interactive Tool Execution** — control your Life OS via chat. Say *"I drank water"* or *"Add a running habit"* and the AI updates your tracker automatically. It can also create full structured goal plans.
 - **Voice Interface (STT & TTS)** — Tap the microphone icon for **Speech-to-Text** dictation. Toggle the speaker icon for **Text-to-Speech** responses with natural voice synthesis.
@@ -54,7 +54,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
 | **Database** | MongoDB via Mongoose 9 |
-| **AI Engine** | Groq SDK (Llama 3.3, DeepSeek R1, Llama 3.2 Vision) |
+| **AI Engine** | Groq SDK (Llama 3.3 70B, DeepSeek R1 70B, **Llama 4 Scout** Vision) |
 | **Vector RAG** | `@xenova/transformers` (Local Node.js embeddings), Cosine Similarity |
 | **Auth** | Custom JWT + Bcrypt + Nodemailer (for password resets) |
 | **Security** | Helmet, express-rate-limit, HPP, custom XSS & Mongo sanitizers |
@@ -149,6 +149,13 @@ This application is ready for production deployment:
 - [ ] Backend-driven Push Notifications (Web Push API)
 - [ ] Shared Goals & Collaboration features
 - [ ] Integration with External Calendars (Google/Outlook)
+
+---
+
+## 📋 Changelog
+
+### April 2026
+- 🔄 **Vision Model Upgraded** — migrated from deprecated `llama-3.2-11b-vision-instant` to `meta-llama/llama-4-scout-17b-16e-instruct` (Llama 4 Scout), Groq's current multimodal vision model with 128K context and up to 5 images per request.
 
 ---
 
