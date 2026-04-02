@@ -267,7 +267,7 @@ export default function FocusPage() {
     const currentSoundUrl = FOCUS_SOUNDS.find(s => s.id === selectedSound)?.url;
 
     return (
-        <div className="min-h-[80dvh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-[80dvh] flex flex-col items-center justify-center p-4 relative overflow-hidden mobile-page-pad">
             <Helmet>
                 <title>Focus Mode | Life OS</title>
             </Helmet>

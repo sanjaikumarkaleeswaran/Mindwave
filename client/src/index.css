@@ -19,6 +19,8 @@
 
     /* Bottom nav height for mobile */
     --bottom-nav-h: 4rem; /* 64px */
+    /* Top header height */
+    --header-h: 57px;
   }
 
   /* Prevent double-tap zoom on iOS */
@@ -149,5 +151,28 @@ body {
 @media (max-width: 767px) {
   input, textarea, select {
     font-size: 16px; /* Prevents iOS auto-zoom on focus */
+  }
+
+  /* Ensure modals/overlays don't get clipped */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+  }
+
+  /* Better tap target sizing */
+  button, a {
+    min-height: 36px;
+  }
+}
+
+/* Page content padding for mobile bottom nav */
+.mobile-page-pad {
+  padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+@media (min-width: 768px) {
+  .mobile-page-pad {
+    padding-bottom: 0;
   }
 }

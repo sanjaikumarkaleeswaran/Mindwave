@@ -104,8 +104,8 @@ export default function Layout() {
                     </div>
                 </header>
 
-                {/* Page content — extra bottom padding on mobile to clear the bottom nav */}
-                <main className={`flex-1 ${isChat ? 'pb-0' : 'pb-16 md:pb-0'}`}>
+                {/* Page content */}
+                <main className="flex-1">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={location.pathname}
@@ -122,14 +122,17 @@ export default function Layout() {
             </div>
 
             {/* ── Mobile Bottom Navigation Bar ── */}
-            <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/95 backdrop-blur-xl border-t border-white/8 bottom-nav flex items-start justify-around px-2 pt-2">
+            <nav
+                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/95 backdrop-blur-xl border-t border-white/8 flex items-start justify-around px-2 pt-2"
+                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)' }}
+            >
                 {BOTTOM_NAV.map(({ icon: Icon, label, path, end }) => (
                     <NavLink
                         key={path}
                         to={path}
                         end={end}
                         className={({ isActive }) => clsx(
-                            'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all min-w-0 flex-1',
+                            'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all min-w-0 flex-1 relative',
                             isActive
                                 ? 'text-indigo-400'
                                 : 'text-zinc-500 hover:text-zinc-300'
@@ -138,6 +141,13 @@ export default function Layout() {
                     >
                         {({ isActive }) => (
                             <>
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="bottomNavIndicator"
+                                        className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-indigo-500 rounded-full"
+                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                                    />
+                                )}
                                 <div className={clsx(
                                     'p-1.5 rounded-xl transition-all',
                                     isActive ? 'bg-indigo-500/15' : ''
@@ -147,13 +157,6 @@ export default function Layout() {
                                 <span className={clsx('text-[10px] font-medium leading-none', isActive ? 'text-indigo-400' : 'text-zinc-600')}>
                                     {label}
                                 </span>
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="bottomNavIndicator"
-                                        className="absolute top-0 h-0.5 w-8 bg-indigo-500 rounded-full"
-                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                    />
-                                )}
                             </>
                         )}
                     </NavLink>

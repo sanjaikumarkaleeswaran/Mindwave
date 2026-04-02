@@ -309,7 +309,7 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="p-6 md:p-12 max-w-6xl mx-auto space-y-10">
+        <div className="p-4 md:p-8 lg:p-12 max-w-6xl mx-auto space-y-8 md:space-y-10 mobile-page-pad">
             <Helmet>
                 <title>Profile | Life OS</title>
             </Helmet>
