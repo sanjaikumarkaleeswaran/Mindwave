@@ -114,19 +114,15 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
 export default function HabitsPage() {
     const queryClient = useQueryClient();
     const [newHabit, setNewHabit] = useState('');
-    const [viewMode, setViewMode] = useState(() => window.innerWidth < 768 ? 'grid' : 'table');
+    const [viewMode, setViewMode] = useState('table');
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarDate, setCalendarDate] = useState(new Date());
     const [currentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
 
-    // Update viewMode on window resize
-    useEffect(() => {
-        const onResize = () => setViewMode(window.innerWidth < 768 ? 'grid' : 'table');
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
+    // Update viewMode on window resize — keep table unless user explicitly changes it
+    // (no auto-switch on resize, user controls it)
 
     const { data: habits = [] } = useQuery({
         queryKey: ['habits'],
@@ -332,7 +328,7 @@ export default function HabitsPage() {
     const tableDates = getLast7Days();
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad overflow-x-hidden">
             <Helmet>
                 <title>Habit Tracker | Life OS</title>
             </Helmet>

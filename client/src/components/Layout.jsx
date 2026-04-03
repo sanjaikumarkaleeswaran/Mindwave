@@ -123,8 +123,8 @@ export default function Layout() {
 
             {/* ── Mobile Bottom Navigation Bar ── */}
             <nav
-                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/95 backdrop-blur-xl border-t border-white/8 flex items-start justify-around px-2 pt-2"
-                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)' }}
+                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/95 backdrop-blur-xl border-t border-white/8 flex items-stretch justify-around"
+                style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
             >
                 {BOTTOM_NAV.map(({ icon: Icon, label, path, end }) => (
                     <NavLink
@@ -132,7 +132,7 @@ export default function Layout() {
                         to={path}
                         end={end}
                         className={({ isActive }) => clsx(
-                            'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all min-w-0 flex-1 relative',
+                            'flex flex-col items-center justify-start pt-2 pb-2 px-1 min-w-0 flex-1 relative transition-all',
                             isActive
                                 ? 'text-indigo-400'
                                 : 'text-zinc-500 hover:text-zinc-300'
@@ -144,7 +144,7 @@ export default function Layout() {
                                 {isActive && (
                                     <motion.div
                                         layoutId="bottomNavIndicator"
-                                        className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-indigo-500 rounded-full"
+                                        className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-8 bg-indigo-500 rounded-full"
                                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                                     />
                                 )}

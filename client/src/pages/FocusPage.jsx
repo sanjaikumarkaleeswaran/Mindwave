@@ -185,8 +185,19 @@ export default function FocusPage() {
             }, 1000);
         } else if (timeLeft === 0) {
             setIsActive(false);
+            // Use ServiceWorker notification on mobile (direct Notification() constructor is not allowed)
             if (Notification.permission === 'granted') {
-                new Notification("Focus Session Complete!");
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification('Focus Session Complete!', {
+                            body: 'Great work! Your focus session has ended.',
+                            icon: '/icons/icon-192.png',
+                        });
+                    }).catch(() => {});
+                } else {
+                    // Desktop fallback
+                    try { new Notification('Focus Session Complete!'); } catch (e) { console.warn('Notification error:', e); }
+                }
             }
         }
         return () => clearInterval(interval);
