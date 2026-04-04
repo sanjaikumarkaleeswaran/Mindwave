@@ -328,7 +328,7 @@ export default function HabitsPage() {
     const tableDates = getLast7Days();
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad overflow-x-hidden pb-24 md:pb-8">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad pb-24 md:pb-8">
             <Helmet>
                 <title>Habit Tracker | Life OS</title>
             </Helmet>
