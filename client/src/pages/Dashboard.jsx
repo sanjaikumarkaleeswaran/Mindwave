@@ -99,7 +99,7 @@ export default function Dashboard() {
     const isChartEmpty = chartData.every(d => d.value === 0);
 
     return (
-        <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto mobile-page-pad">
+        <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto mobile-page-pad pb-24 md:pb-8">
             <Helmet>
                 <title>Dashboard | Life OS</title>
             </Helmet>
