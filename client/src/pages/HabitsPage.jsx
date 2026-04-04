@@ -394,107 +394,108 @@ export default function HabitsPage() {
             {
                 showCalendar && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in" onClick={() => setShowCalendar(false)}>
-                        <div className="bg-zinc-900 border border-zinc-700/50 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="flex items-center gap-4">
-                                    <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
-                                        <div className="p-2 bg-indigo-500/10 rounded-lg">
-                                            <Calendar className="w-5 h-5 text-indigo-400" />
-                                        </div>
+                        <div className="bg-zinc-900 border border-zinc-700/50 rounded-2xl p-3 md:p-6 max-w-4xl w-full max-h-[92dvh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between mb-3 md:mb-6">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="p-1.5 bg-indigo-500/10 rounded-lg shrink-0">
+                                        <Calendar className="w-4 h-4 text-indigo-400" />
+                                    </div>
+                                    <h2 className="text-base md:text-2xl font-bold text-white truncate">
                                         {calendarDate.toLocaleDateString('default', { month: 'long', year: 'numeric' })}
                                     </h2>
-                                    <div className="flex bg-zinc-800 rounded-lg p-0.5 border border-zinc-700">
-                                        <button 
+                                    <div className="flex bg-zinc-800 rounded-lg p-0.5 border border-zinc-700 shrink-0">
+                                        <button
                                             onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))}
-                                            className="p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
+                                            className="p-1 md:p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
                                         >
-                                            <ChevronLeft className="w-4 h-4 text-zinc-400" />
+                                            <ChevronLeft className="w-3.5 h-3.5 md:w-4 md:h-4 text-zinc-400" />
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => setCalendarDate(new Date())}
-                                            className="px-2 py-1.5 hover:bg-zinc-700 rounded-md text-[10px] font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors border-x border-zinc-700"
+                                            className="px-2 py-1 hover:bg-zinc-700 rounded-md text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors border-x border-zinc-700"
                                         >
                                             Today
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1))}
-                                            className="p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
+                                            className="p-1 md:p-1.5 hover:bg-zinc-700 rounded-md transition-colors"
                                         >
-                                            <ChevronRight className="w-4 h-4 text-zinc-400" />
+                                            <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4 text-zinc-400" />
                                         </button>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowCalendar(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-zinc-400 hover:text-white">
-                                    <X className="w-5 h-5" />
+                                <button onClick={() => setShowCalendar(false)} className="ml-2 p-1.5 hover:bg-white/10 rounded-full transition-colors text-zinc-400 hover:text-white shrink-0">
+                                    <X className="w-4 h-4 md:w-5 md:h-5" />
                                 </button>
                             </div>
-                            
-                            <div className="grid grid-cols-7 gap-1 md:gap-3">
-                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                    <div key={day} className="text-center text-[10px] md:text-xs font-bold text-zinc-500 py-2 uppercase tracking-widest">{day}</div>
+
+                            {/* Day Grid */}
+                            <div className="grid grid-cols-7 gap-0.5 md:gap-2">
+                                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                                    <div key={idx} className="text-center text-[9px] md:text-xs font-bold text-zinc-500 py-1 uppercase">{day}</div>
                                 ))}
                                 {(() => {
                                     const year = calendarDate.getFullYear();
                                     const month = calendarDate.getMonth();
                                     const firstDay = new Date(year, month, 1).getDay();
                                     const daysInMonth = new Date(year, month + 1, 0).getDate();
-                                    
-                                    // Previous month days to fill early slots
                                     const prevMonthDays = new Date(year, month, 0).getDate();
                                     const slots = [];
-                                    
-                                    // Add slots from previous month
                                     for (let i = firstDay - 1; i >= 0; i--) {
                                         slots.push({ date: new Date(year, month - 1, prevMonthDays - i), currentMonth: false });
                                     }
-                                    
-                                    // Add current month days
                                     for (let i = 1; i <= daysInMonth; i++) {
                                         slots.push({ date: new Date(year, month, i), currentMonth: true });
                                     }
-                                    
-                                    // Buffer to complete the grid (up to 42 slots for 6 rows)
                                     const remaining = 42 - slots.length;
                                     for (let i = 1; i <= remaining; i++) {
                                         slots.push({ date: new Date(year, month + 1, i), currentMonth: false });
                                     }
-                                    
                                     return slots.map((slot, i) => {
                                         const isToday = isSameDay(slot.date, new Date());
                                         const completedHabits = habits.filter(h => h.completedDates.some(cd => isSameDay(cd, slot.date)));
                                         const intensity = habits.length > 0 ? completedHabits.length / habits.length : 0;
-                                        
                                         return (
-                                            <div 
-                                                key={i} 
-                                                className={`min-h-[80px] md:min-h-[100px] p-2 rounded-xl border transition-all flex flex-col gap-1.5 ${
-                                                    slot.currentMonth 
-                                                        ? isToday 
-                                                            ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
-                                                            : 'bg-zinc-800/40 border-zinc-700/50' 
-                                                        : 'bg-zinc-900/40 border-transparent opacity-40'
+                                            <div
+                                                key={i}
+                                                className={`min-h-[44px] md:min-h-[80px] p-1 md:p-2 rounded-lg md:rounded-xl border transition-all flex flex-col gap-0.5 ${
+                                                    slot.currentMonth
+                                                        ? isToday
+                                                            ? 'bg-indigo-500/10 border-indigo-500/50'
+                                                            : 'bg-zinc-800/40 border-zinc-700/50'
+                                                        : 'bg-zinc-900/40 border-transparent opacity-30'
                                                 }`}
                                             >
                                                 <div className="flex items-start justify-between">
-                                                    <span className={`text-[10px] md:text-xs font-bold tabular-nums ${isToday ? 'bg-indigo-500 text-white px-1.5 py-0.5 rounded' : slot.currentMonth ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                                                    <span className={`text-[9px] md:text-xs font-bold tabular-nums leading-none ${
+                                                        isToday ? 'bg-indigo-500 text-white px-1 py-0.5 rounded text-[8px]' : slot.currentMonth ? 'text-zinc-200' : 'text-zinc-600'
+                                                    }`}>
                                                         {slot.date.getDate()}
                                                     </span>
                                                     {completedHabits.length > 0 && (
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${intensity === 1 ? 'bg-indigo-400' : intensity > 0.5 ? 'bg-indigo-600' : 'bg-indigo-900'}`} />
+                                                        <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full mt-0.5 ${
+                                                            intensity === 1 ? 'bg-indigo-400' : intensity > 0.5 ? 'bg-indigo-600' : 'bg-indigo-900'
+                                                        }`} />
                                                     )}
                                                 </div>
-                                                <div className="flex-1 space-y-1 overflow-hidden custom-scrollbar">
-                                                    {completedHabits.slice(0, 3).map(h => (
-                                                        <div key={h._id} className="text-[8px] md:text-[10px] px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 truncate font-medium">
+                                                {/* On desktop show habit names, on mobile just dots */}
+                                                <div className="hidden md:flex flex-1 flex-col gap-1 overflow-hidden">
+                                                    {completedHabits.slice(0, 2).map(h => (
+                                                        <div key={h._id} className="text-[9px] px-1 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 truncate">
                                                             {h.name}
                                                         </div>
                                                     ))}
-                                                    {completedHabits.length > 3 && (
-                                                        <div className="text-[8px] text-zinc-600 pl-1">
-                                                            +{completedHabits.length - 3} more
-                                                        </div>
+                                                    {completedHabits.length > 2 && (
+                                                        <div className="text-[8px] text-zinc-600 pl-1">+{completedHabits.length - 2}</div>
                                                     )}
                                                 </div>
+                                                {/* Mobile: show count badge instead */}
+                                                {completedHabits.length > 0 && (
+                                                    <div className="md:hidden text-[8px] text-indigo-400 font-bold leading-none">
+                                                        {completedHabits.length}
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     });
