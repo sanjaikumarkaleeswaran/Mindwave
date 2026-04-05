@@ -175,6 +175,10 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### April 5, 2026 — Mobile Navigation and Layout Refinements
+- 📱 **Bottom Nav Indicator Framer Motion Glitch Fixed** — replaced the conditionally rendered `motion.div` indicator with an always-rendered `div` that toggles `opacity`. This prevents Framer Motion's `layoutId` from miscalculating the indicator's position after page navigation.
+- 🚫 **Habits Page Overflow Polish** — resolved horizontal scroll bleed issues on mobile by adding `overflow-x-hidden` to the root container, ensuring the flex header controls use `overflow-hidden`, and constraining the 60-day heatmap bars to a single scrollable line strictly within its card boundaries without `min-w-max` breaking the page layout.
+
 ### April 3, 2026 — Mobile UI Bug Fixes
 - 🔧 **Bottom Nav Indicator Aligned** — active tab indicator line now sits flush at the very top of the navigation bar (changed from `items-start pt-2` with gap to `items-stretch` + `justify-start` layout, `h-[2px]` indicator at `absolute top-0`).
 - 📊 **Habits Table View Default** — habit tracker now defaults to `table` view on all screen sizes (previously auto-switched to `grid` on mobile). User's view selection is preserved across resizes.
