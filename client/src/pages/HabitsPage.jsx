@@ -328,7 +328,7 @@ export default function HabitsPage() {
     const tableDates = getLast7Days();
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad pb-24 md:pb-8">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad pb-24 md:pb-8 overflow-x-hidden">
             <Helmet>
                 <title>Habit Tracker | Life OS</title>
             </Helmet>
@@ -345,7 +345,7 @@ export default function HabitsPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
+                <div className="flex flex-wrap items-center gap-2 w-full md:w-auto mt-2 md:mt-0 overflow-hidden">
                     <button
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
@@ -523,14 +523,14 @@ export default function HabitsPage() {
             </div>
 
             {/* Heatmap */}
-            <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl p-6">
+            <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <Calendar className="w-4 h-4 text-zinc-400" />
                     <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Last 60 Days Consistency</h2>
                 </div>
                 {/* overflow-x-auto so the 60 bars can scroll on narrow screens */}
-                <div className="overflow-x-auto -mx-2 px-2">
-                    <div className="flex gap-1 min-w-max">
+                <div className="overflow-x-auto w-full">
+                    <div className="flex gap-[3px] pb-1 min-w-max">
                         {heatmapData.map((d, i) => {
                             let bgClass = "bg-zinc-800/50";
                             if (d.intensity > 0) bgClass = "bg-indigo-900/60";
