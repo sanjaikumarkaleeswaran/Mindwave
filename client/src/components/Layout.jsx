@@ -142,14 +142,15 @@ export default function Layout() {
                     >
                         {({ isActive }) => (
                             <>
-                                {/* Indicator line — sits flush at top of nav */}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="bottomNavIndicator"
-                                        className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-8 bg-indigo-500 rounded-full"
-                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                    />
-                                )}
+                                {/* Indicator line — always rendered, invisible when inactive to prevent layout animation glitch */}
+                                <div
+                                    className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full transition-all duration-300"
+                                    style={{
+                                        background: 'rgb(99 102 241)',
+                                        opacity: isActive ? 1 : 0,
+                                        transform: 'translateX(-50%)',
+                                    }}
+                                />
                                 {/* Icon */}
                                 <div className={clsx(
                                     'p-1.5 rounded-xl transition-all',
