@@ -183,8 +183,27 @@ export default function FocusPage() {
             interval = setInterval(() => {
                 setTimeLeft((time) => time - 1);
             }, 1000);
-        } else if (timeLeft === 0) {
+        } else if (timeLeft === 0 && isActive) {
             setIsActive(false);
+            
+            // Stop music automatically when timer finishes
+            if (audioRef.current && isPlayingSound) {
+                audioRef.current.pause();
+                setIsPlayingSound(false);
+            }
+            
+            // 💡 IDEA for a custom notification sound:
+            // 1. Add your custom sound file to your public folder (e.g., /public/audio/chime.mp3)
+            // 2. Uncomment the following code to play it when focus time is up:
+            /*
+            try {
+                const notifAudio = new window.Audio('/audio/chime.mp3');
+                notifAudio.play().catch(e => console.warn('Custom notification audio blocked by browser:', e));
+            } catch (err) {
+                console.error(err);
+            }
+            */
+
             // Use ServiceWorker notification on mobile (direct Notification() constructor is not allowed)
             if (Notification.permission === 'granted') {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -213,6 +232,21 @@ export default function FocusPage() {
 
     const toggleTimer = () => {
         setIsActive(!isActive);
+        
+        // Auto-play or auto-pause background music along with the timer
+        if (!isActive) {
+            // Starting timer
+            if (selectedSound !== 'none' && audioRef.current && !isPlayingSound) {
+                audioRef.current.play().catch(e => console.error("Auto-play blocked:", e));
+                setIsPlayingSound(true);
+            }
+        } else {
+            // Pausing timer
+            if (audioRef.current && isPlayingSound) {
+                audioRef.current.pause();
+                setIsPlayingSound(false);
+            }
+        }
     };
 
     const toggleMusic = async () => {
@@ -247,6 +281,9 @@ export default function FocusPage() {
 
     const resetTimer = () => {
         setIsActive(false);
+        if (audioRef.current && isPlayingSound) {
+            audioRef.current.pause();
+        }
         setIsPlayingSound(false);
         setTimeLeft(initialTime);
     };
@@ -454,6 +491,24 @@ export default function FocusPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Easy Time Presets */}
+                {!isActive && (
+                    <div className="flex gap-3 justify-center w-full max-w-[260px] animate-in slide-in-from-bottom-2 fade-in duration-300">
+                        {[5, 15, 25, 50].map(mins => (
+                            <button
+                                key={mins}
+                                onClick={() => {
+                                    setInitialTime(mins * 60);
+                                    setTimeLeft(mins * 60);
+                                }}
+                                className="flex-1 py-1.5 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-400 hover:text-white text-xs rounded-full font-medium transition-all shadow-sm border border-zinc-700 hover:border-indigo-500 hover:shadow-md hover:shadow-indigo-500/10"
+                            >
+                                {mins}m
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {/* Controls */}
                 <div className="flex items-center gap-4">

@@ -38,9 +38,10 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
     const [editName, setEditName] = useState(habit.name);
 
     const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
+        transform: transform?.x || transform?.y ? CSS.Transform.toString(transform) : undefined,
+        transition: transform?.x || transform?.y || isDragging ? transition : undefined,
         opacity: isDragging ? 0.5 : 1,
+        ...(isDragging ? { position: 'relative', zIndex: 9999 } : {})
     };
 
     const saveEdit = () => {
@@ -57,7 +58,7 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
                     <GripVertical className="w-4 h-4 text-zinc-600 hover:text-zinc-400" />
                 </div>
             </td>
-            <td className="p-4 pl-2 w-1/3 min-w-[140px] sticky left-0 z-10 bg-zinc-900 md:bg-transparent border-r border-zinc-800 md:border-none shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">
+            <td className="p-4 pl-2 w-1/3 min-w-[140px] sticky left-0 z-10 bg-zinc-900 border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">
                 {isEditing ? (
                     <input
                         type="text"
@@ -568,16 +569,16 @@ export default function HabitsPage() {
                 {viewMode === 'table' ? (
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl overflow-hidden backdrop-blur-sm">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                            <th className="p-4 w-10 hidden md:table-cell"></th>
-                                            <th className="p-4 pl-2 font-medium text-zinc-400 w-1/3 min-w-[140px] sticky left-0 z-10 bg-zinc-900/95 backdrop-blur-sm md:bg-transparent md:static border-r border-zinc-800 md:border-none shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">Habit</th>
+                            <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
+                                <table className="w-full text-left border-collapse relative">
+                                    <thead className="sticky top-0 z-30">
+                                        <tr className="border-b border-zinc-800 bg-zinc-900 shadow-md">
+                                            <th className="p-4 w-10 hidden md:table-cell bg-zinc-900"></th>
+                                            <th className="p-4 pl-2 font-medium text-zinc-400 w-1/3 min-w-[140px] sticky left-0 z-40 bg-zinc-900 border-r border-zinc-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] md:shadow-none">Habit</th>
                                             {tableDates.map((date, i) => {
                                                 const isToday = isSameDay(date, new Date());
                                                 return (
-                                                    <th key={i} className={`p-2 md:p-4 font-medium text-center min-w-[3rem] ${isToday ? 'text-indigo-400' : 'text-zinc-400'}`}>
+                                                    <th key={i} className={`p-2 md:p-4 font-medium text-center min-w-[3rem] bg-zinc-900 ${isToday ? 'text-indigo-400' : 'text-zinc-400'}`}>
                                                         <div className="flex flex-col items-center">
                                                             <span className="text-[10px] uppercase tracking-wider">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]}</span>
                                                             <span className="text-xs">{date.getDate()}</span>
@@ -585,9 +586,9 @@ export default function HabitsPage() {
                                                     </th>
                                                 );
                                             })}
-                                            <th className="p-2 md:p-4 font-medium text-zinc-400 text-center">Streak</th>
-                                            <th className="p-4 font-medium text-zinc-400 hidden md:table-cell">Progress</th>
-                                            <th className="p-2 md:p-4"></th>
+                                            <th className="p-2 md:p-4 font-medium text-zinc-400 text-center bg-zinc-900">Streak</th>
+                                            <th className="p-4 font-medium text-zinc-400 hidden md:table-cell bg-zinc-900">Progress</th>
+                                            <th className="p-2 md:p-4 bg-zinc-900"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
