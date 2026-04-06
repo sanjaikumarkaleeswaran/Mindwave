@@ -111,6 +111,144 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
     );
 }
 
+// Premium Mobile Habit Card
+function MobileHabitCard({ habit, handleToggleDate, handleDelete, getWeeklyProgress }) {
+    const isDoneToday = habit.completedDates.some(d => isSameDay(d, new Date()));
+    const weeklyProgress = getWeeklyProgress(habit);
+
+    return (
+        <div 
+            onClick={() => handleToggleDate(habit._id, new Date())}
+            className={`relative overflow-hidden rounded-3xl p-5 mb-5 border transition-all duration-300 transform active:scale-[0.98] cursor-pointer shadow-xl ${
+                isDoneToday 
+                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600 border-indigo-400/50 shadow-indigo-500/25' 
+                    : 'bg-zinc-900/80 border-zinc-700/50 shadow-black/40 backdrop-blur-md'
+            }`}
+        >
+            {/* Background glowing effects when done */}
+            {isDoneToday && (
+                <>
+                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl pointer-events-none"></div>
+                </>
+            )}
+            
+            <div className="flex justify-between items-center mb-5 relative z-10">
+                <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-inner ${
+                        isDoneToday 
+                            ? 'bg-white/20 scale-110 shadow-white/30' 
+                            : 'bg-zinc-800 shadow-black/50'
+                    }`}>
+                        {isDoneToday ? <Check className="w-7 h-7 text-white" strokeWidth={3} /> : <div className="w-4 h-4 rounded-full bg-zinc-600"></div>}
+                    </div>
+                    <div>
+                        <h3 className={`font-bold text-xl leading-tight tracking-tight ${isDoneToday ? 'text-white' : 'text-zinc-100'}`}>
+                            {habit.name}
+                        </h3>
+                        <div className={`flex items-center gap-1.5 text-sm font-semibold mt-1.5 tracking-wide ${isDoneToday ? 'text-indigo-100' : 'text-zinc-500'}`}>
+                            <Flame className={`w-4 h-4 ${isDoneToday ? 'text-orange-300' : 'text-orange-500'}`} />
+                            {habit.streak} day streak
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 7-day mini tracker */}
+            <div className="flex justify-between items-center relative z-10 bg-black/10 rounded-2xl p-3 border border-white/5">
+                {[6, 5, 4, 3, 2, 1, 0].map(daysAgo => {
+                    const date = new Date();
+                    date.setDate(date.getDate() - daysAgo);
+                    const isDone = habit.completedDates.some(d => isSameDay(d, date));
+                    const isToday = daysAgo === 0;
+                    
+                    return (
+                        <div key={daysAgo} className="flex flex-col items-center gap-1.5">
+                            <span className={`text-[9px] font-bold uppercase tracking-widest ${
+                                isToday 
+                                    ? (isDoneToday ? 'text-white' : 'text-indigo-400') 
+                                    : (isDoneToday ? 'text-indigo-200/80' : 'text-zinc-500')
+                            }`}>
+                                {['S','M','T','W','T','F','S'][date.getDay()]}
+                            </span>
+                            <div className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                                isDone 
+                                    ? (isDoneToday ? 'bg-white text-indigo-600 shadow-sm' : 'bg-indigo-500/80 text-white') 
+                                    : (isDoneToday ? 'bg-black/10 text-transparent' : 'bg-zinc-800 text-transparent')
+                            }`}>
+                                {isDone && <Check className="w-4 h-4" strokeWidth={3} />}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            
+            <button 
+                onClick={(e) => { e.stopPropagation(); handleDelete(habit._id); }}
+                className={`absolute top-4 right-4 p-2.5 rounded-full opacity-70 hover:opacity-100 transition-all z-20 ${
+                    isDoneToday ? 'text-white/80 hover:bg-white/20' : 'text-zinc-500 hover:text-red-400 hover:bg-zinc-800'
+                }`}
+            >
+                <Trash2 className="w-5 h-5" />
+            </button>
+        </div>
+    );
+}
+
+function MobileHabitView({ habits, handleToggleDate, handleDelete, getWeeklyProgress, handleAdd, newHabit, setNewHabit }) {
+    const todayDone = habits.filter(h => h.completedDates.some(d => isSameDay(d, new Date()))).length;
+
+    return (
+        <div className="flex flex-col gap-2 pb-16">
+            <div className="bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 mb-6 sticky top-2 z-20 backdrop-blur-xl shadow-2xl shadow-black/50">
+                <form onSubmit={handleAdd} className="relative">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                        <Plus className="h-5 w-5 text-zinc-400" />
+                    </div>
+                    <input
+                        type="text"
+                        value={newHabit}
+                        onChange={(e) => setNewHabit(e.target.value)}
+                        placeholder="Create a new habit..."
+                        className="w-full bg-zinc-800/50 border-none text-white text-base font-medium rounded-2xl focus:ring-2 focus:ring-indigo-500 block pl-11 p-4 placeholder-zinc-500"
+                    />
+                </form>
+            </div>
+            
+            <div className="px-2">
+                <div className="flex justify-between items-end mb-6 px-1">
+                    <h2 className="text-2xl font-black text-white tracking-tight">Your Habits</h2>
+                    <div className="bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-lg">
+                        <span className="text-xs font-bold text-indigo-400 tracking-wider">
+                            {todayDone} / {habits.length} DONE
+                        </span>
+                    </div>
+                </div>
+                
+                {habits.map(habit => (
+                    <MobileHabitCard 
+                        key={habit._id} 
+                        habit={habit} 
+                        handleToggleDate={handleToggleDate} 
+                        handleDelete={handleDelete}
+                        getWeeklyProgress={getWeeklyProgress}
+                    />
+                ))}
+                
+                {habits.length === 0 && (
+                    <div className="text-center py-16 px-6 rounded-3xl border border-dashed border-zinc-700 mt-4 bg-zinc-900/30">
+                        <div className="w-20 h-20 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                            <Sparkles className="w-10 h-10 text-indigo-400" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2 tracking-tight">No habits yet</h3>
+                        <p className="text-zinc-500">Add a habit above to start tracking your daily progress and build epic streaks!</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 // Main Component
 export default function HabitsPage() {
     const queryClient = useQueryClient();
@@ -367,7 +505,7 @@ export default function HabitsPage() {
                         <span>Calendar</span>
                     </button>
 
-                    <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto">
+                    <div className="hidden md:flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto">
                         <button
                             onClick={() => setViewMode('table')}
                             className={`flex-1 md:flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all text-center ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
@@ -508,7 +646,7 @@ export default function HabitsPage() {
             }
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+            <div className="hidden md:grid grid-cols-3 gap-2 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <div className="text-center">
                     <div className="text-2xl md:text-3xl font-bold text-indigo-400">{getDailyProgress(new Date())}%</div>
                     <div className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-wider mt-1">Today</div>
@@ -524,7 +662,7 @@ export default function HabitsPage() {
             </div>
 
             {/* Heatmap */}
-            <div className="bg-zinc-900/30 border border-zinc-800 rounded-2xl p-4 md:p-6">
+            <div className="hidden md:block bg-zinc-900/30 border border-zinc-800 rounded-2xl p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <Calendar className="w-4 h-4 text-zinc-400" />
                     <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Last 60 Days Consistency</h2>
@@ -552,8 +690,21 @@ export default function HabitsPage() {
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="space-y-6">
+            {/* Mobile Native View */}
+            <div className="block md:hidden mt-2">
+                <MobileHabitView 
+                    habits={habits}
+                    handleToggleDate={handleToggleDate}
+                    handleDelete={handleDelete}
+                    getWeeklyProgress={getWeeklyProgress}
+                    handleAdd={handleAdd}
+                    newHabit={newHabit}
+                    setNewHabit={setNewHabit}
+                />
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block space-y-6">
                 {viewMode !== 'history' && (
                     <form onSubmit={handleAdd} className="relative max-w-xl mx-auto md:mx-0">
                         <input
@@ -708,7 +859,7 @@ export default function HabitsPage() {
             </div>
 
             {/* Yearly Overview */}
-            <div className="pt-8 border-t border-zinc-800">
+            <div className="hidden md:block pt-8 border-t border-zinc-800">
                 <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-zinc-400" />
                     Yearly Overview {new Date().getFullYear()}

@@ -43,6 +43,53 @@ const FOCUS_SOUNDS = [
 // However, you MUST keep the attribution credits visible in the UI (as shown at the bottom of this page).
 // Source: https://www.scottbuckley.com.au/library/
 
+const NOTIFICATION_SOUNDS = [
+    { id: 'system', name: 'System Default' },
+    { id: 'chime', name: 'Gentle Chime (Custom)' },
+    { id: 'beep', name: 'Digital Beep (Custom)' },
+    { id: 'double', name: 'Double Beep (Custom)' }
+];
+
+// Helper to play a Web Audio API beep without needing external files
+const playCustomNotification = (type) => {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        const playTone = (freq, typeStr, duration, startTime) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = typeStr;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            
+            // Envelope
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.5, startTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        };
+
+        const now = ctx.currentTime;
+        if (type === 'chime') {
+            playTone(523.25, 'sine', 1.5, now); // C5
+            playTone(659.25, 'sine', 1.5, now + 0.2); // E5
+            playTone(783.99, 'sine', 2.0, now + 0.4); // G5
+        } else if (type === 'beep') {
+            playTone(880, 'square', 0.4, now); // A5
+        } else if (type === 'double') {
+            playTone(880, 'square', 0.2, now);
+            playTone(880, 'square', 0.2, now + 0.3);
+        }
+    } catch (e) {
+        console.warn('Audio play blocked:', e);
+    }
+};
+
 // Helper for number inputs
 const NumberInput = ({ value, setter, max }) => (
     <div className="flex flex-col items-center">
@@ -161,6 +208,7 @@ export default function FocusPage() {
 
     // Audio State
     const [selectedSound, setSelectedSound] = useState('meditation5');
+    const [selectedNotification, setSelectedNotification] = useState('chime');
     const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [isPlayingSound, setIsPlayingSound] = useState(false);
@@ -192,17 +240,10 @@ export default function FocusPage() {
                 setIsPlayingSound(false);
             }
             
-            // 💡 IDEA for a custom notification sound:
-            // 1. Add your custom sound file to your public folder (e.g., /public/audio/chime.mp3)
-            // 2. Uncomment the following code to play it when focus time is up:
-            /*
-            try {
-                const notifAudio = new window.Audio('/audio/chime.mp3');
-                notifAudio.play().catch(e => console.warn('Custom notification audio blocked by browser:', e));
-            } catch (err) {
-                console.error(err);
+            // Play custom notification if not system
+            if (selectedNotification !== 'system') {
+                playCustomNotification(selectedNotification);
             }
-            */
 
             // Use ServiceWorker notification on mobile (direct Notification() constructor is not allowed)
             if (Notification.permission === 'granted') {
@@ -211,16 +252,17 @@ export default function FocusPage() {
                         reg.showNotification('Focus Session Complete!', {
                             body: 'Great work! Your focus session has ended.',
                             icon: '/icons/icon-192.png',
+                            silent: selectedNotification !== 'system' // Mute system sound if custom played
                         });
                     }).catch(() => {});
                 } else {
                     // Desktop fallback
-                    try { new Notification('Focus Session Complete!'); } catch (e) { console.warn('Notification error:', e); }
+                    try { new Notification('Focus Session Complete!', { silent: selectedNotification !== 'system' }); } catch (e) { console.warn('Notification error:', e); }
                 }
             }
         }
         return () => clearInterval(interval);
-    }, [isActive, timeLeft]);
+    }, [isActive, timeLeft, isPlayingSound, selectedNotification]);
 
     // Update audio volume when slider changes
     useEffect(() => {
@@ -418,45 +460,68 @@ export default function FocusPage() {
                     </select>
                 </div>
 
-                {/* Sound Selector Compact */}
-                <div className="w-full flex items-center gap-3 bg-zinc-900/30 border border-zinc-800 rounded-xl p-3">
-                    <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
-                        <Music className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
+                <div className="flex gap-3 w-full">
+                    {/* Background Music Selector */}
+                    <div className="flex-1 flex items-center gap-2 bg-zinc-900/30 border border-zinc-800 rounded-xl p-2.5">
+                        <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400 shrink-0">
+                            <Music className="w-4 h-4" />
+                        </div>
                         <select
                             value={selectedSound}
                             onChange={(e) => {
                                 setIsPlayingSound(false); // Stop music when changing sound
                                 setSelectedSound(e.target.value);
                             }}
-                            className="w-full bg-transparent text-sm text-zinc-300 focus:outline-none border-none cursor-pointer"
+                            className="w-full bg-transparent text-xs text-zinc-300 focus:outline-none border-none cursor-pointer truncate"
+                            title="Ambient Background Music"
                         >
                             {FOCUS_SOUNDS.map(s => (
                                 <option key={s.id} value={s.id} className="bg-zinc-900">{s.name}</option>
                             ))}
                         </select>
                     </div>
-                    <div className="flex items-center gap-2 border-l border-white/5 pl-3">
-                        <button
-                            onClick={() => setIsMuted(!isMuted)}
-                            className="text-zinc-400 hover:text-white transition-colors"
-                        >
-                            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                        </button>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.1"
-                            value={isMuted ? 0 : volume}
+
+                    {/* Notification Alert Selector */}
+                    <div className="flex-1 flex items-center gap-2 bg-zinc-900/30 border border-zinc-800 rounded-xl p-2.5">
+                        <div className="p-1.5 bg-purple-500/10 rounded-lg text-purple-400 shrink-0 cursor-pointer" onClick={() => playCustomNotification(selectedNotification)} title="Test Sound">
+                            <span className="text-sm leading-none">🔔</span>
+                        </div>
+                        <select
+                            value={selectedNotification}
                             onChange={(e) => {
-                                setVolume(parseFloat(e.target.value));
-                                setIsMuted(false);
+                                setSelectedNotification(e.target.value);
+                                if (e.target.value !== 'system') playCustomNotification(e.target.value);
                             }}
-                            className="w-20 accent-indigo-500 h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-                        />
+                            className="w-full bg-transparent text-xs text-zinc-300 focus:outline-none border-none cursor-pointer truncate"
+                            title="Completion Alert Sound"
+                        >
+                            {NOTIFICATION_SOUNDS.map(s => (
+                                <option key={s.id} value={s.id} className="bg-zinc-900">{s.name}</option>
+                            ))}
+                        </select>
                     </div>
+                </div>
+
+                {/* Volume Control */}
+                <div className="w-full flex justify-center items-center gap-3">
+                    <button
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                    >
+                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={isMuted ? 0 : volume}
+                        onChange={(e) => {
+                            setVolume(parseFloat(e.target.value));
+                            setIsMuted(false);
+                        }}
+                        className="w-32 accent-indigo-500 h-1 bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                    />
                 </div>
 
                 {/* Timer Display */}
