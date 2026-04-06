@@ -23,17 +23,18 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 ### 📅 Advanced Habit Tracker
 - **Streak & Consistency Tracking** — monitor daily progress with current/best streaks and weekly calendar heatmaps.
 - **AI Habit Insights** — ask for a performance report; the AI analyzes your data to provide qualitative feedback and actionable weekly challenges.
-- **Table View by Default** — the habit tracker defaults to a scrollable table with sticky habit names, showing the last 7 days at a glance on both mobile and desktop.
-- **Horizontal Scroll Isolation** — only the table scrolls horizontally; the rest of the page stays locked in place.
+- **Table View by Default** — the habit tracker defaults to a scrollable table with sticky habit names, showing the last 7 days at a glance on desktop.
+- **Premium Mobile Cards** — mobile users automatically receive a highly optimized native-app experience, where scrolling tables are replaced by beautiful touch-friendly cards featuring 7-day mini-heatmaps and glowing completion effects.
 
 ### ✍️ Intelligent Journaling
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
 ### 🧘 Focus & Zen
-- **Pomodoro-style Timer** — built-in countdown with custom hour/minute/second picker to help you stay in flow state.
-- **Ambient Soundscapes** — curated royalty-free audio tracks (Cosmic, New Beginnings, Golden Hour, Evening) to block distractions while you work.
-- **Mobile-Safe Completion Alerts** — timer completion uses `ServiceWorkerRegistration.showNotification()` on Android (avoids the `Notification` constructor restriction), with a graceful desktop fallback.
+- **Pomodoro-style Timer** — built-in countdown with quick-select presets (5m, 15m, 25m, 50m) and custom hour/minute/second picker to help you stay in flow state.
+- **Smart Ambient Soundscapes** — curated royalty-free audio tracks that automatically play when the timer starts and pause when it stops.
+- **Custom Native Notifications** — no external MP3s needed! Procedural chimes and beeps are generated directly using the browser's native Web Audio API for session completion alerts.
+- **Mobile-Safe Completion Alerts** — timer completion uses `ServiceWorkerRegistration.showNotification()` on Android (avoids the `Notification` constructor restriction) combined with the custom audio chimes.
 
 ### 🔔 Proactive Systems
 - **Smart Notification Bell** — real-time alerts for overdue milestones, habits at risk of losing streaks, and daily reminders.
@@ -174,6 +175,11 @@ This application is ready for production deployment:
 ---
 
 ## 📋 Changelog
+
+### April 6, 2026 — Premium Mobile Experiences & Focus Audio Updates
+- 📱 **Habit Tracker Mobile Redesign** — completely removed the horizontal-scrolling table on mobile devices in favor of a sleek, native-app style card list. Includes custom active tap states, glowing visual indicators when a habit is completed, and beautiful 7-day mini-heatmaps inside each card.
+- 🎵 **Smart Focus Timer & Presets** — added quick-select "Easy Time" preset buttons (5m, 15m, 25m, 50m). Ambient background music now automatically syncs with the timer state (auto-play on start, auto-pause on finish).
+- 🔔 **Web Audio API Notification Alerts** — built a custom sound engine that procedurally generates a "Gentle Chime" or "Digital Beeps" directly from the browser's audio context, resolving the need for downloading external MP3 files for timer completion alerts.
 
 ### April 5, 2026 — Mobile Navigation and Layout Refinements
 - 📱 **Bottom Nav Indicator Framer Motion Glitch Fixed** — replaced the conditionally rendered `motion.div` indicator with an always-rendered `div` that toggles `opacity`. This prevents Framer Motion's `layoutId` from miscalculating the indicator's position after page navigation.
