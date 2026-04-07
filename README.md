@@ -176,30 +176,28 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
-### April 6, 2026 — Premium Mobile Experiences & Focus Audio Updates
-- 📱 **Habit Tracker Mobile Redesign** — completely removed the horizontal-scrolling table on mobile devices in favor of a sleek, native-app style card list. Includes custom active tap states, glowing visual indicators when a habit is completed, and beautiful 7-day mini-heatmaps inside each card.
-- 🎵 **Smart Focus Timer & Presets** — added quick-select "Easy Time" preset buttons (5m, 15m, 25m, 50m). Ambient background music now automatically syncs with the timer state (auto-play on start, auto-pause on finish).
-- 🔔 **Web Audio API Notification Alerts** — built a custom sound engine that procedurally generates a "Gentle Chime" or "Digital Beeps" directly from the browser's audio context, resolving the need for downloading external MP3 files for timer completion alerts.
+### April 7, 2026 — Workspace Optimization & Repository Guide
+- 🧹 **Deep Workspace Cleanup** — performed a comprehensive removal of temporary debug logs (`log.txt`, `api_error.log`), crash reports (`*_crash.json`), and local test scripts (`test_*.js`). This ensures a distraction-free development environment focused strictly on core application logic.
+- 📂 **Standardized Repository Rules** — established a clear guideline for files to push vs. files to ignore. Documentation now includes explicit instructions on managing `.env` security and avoiding committing `node_modules` or local build artifacts.
+- 🚀 **Project Scenario Finalized** — the MindWave Life OS is now in a "Clean & Production-Ready" state, with all advanced features (RAG, Multimodal Vision, Web Audio Chimes) fully documented and verified.
 
-### April 5, 2026 — Mobile Navigation and Layout Refinements
-- 📱 **Bottom Nav Indicator Framer Motion Glitch Fixed** — replaced the conditionally rendered `motion.div` indicator with an always-rendered `div` that toggles `opacity`. This prevents Framer Motion's `layoutId` from miscalculating the indicator's position after page navigation.
-- 🚫 **Habits Page Overflow Polish** — resolved horizontal scroll bleed issues on mobile by adding `overflow-x-hidden` to the root container, ensuring the flex header controls use `overflow-hidden`, and constraining the 60-day heatmap bars to a single scrollable line strictly within its card boundaries without `min-w-max` breaking the page layout.
+---
 
-### April 3, 2026 — Mobile UI Bug Fixes
-- 🔧 **Bottom Nav Indicator Aligned** — active tab indicator line now sits flush at the very top of the navigation bar (changed from `items-start pt-2` with gap to `items-stretch` + `justify-start` layout, `h-[2px]` indicator at `absolute top-0`).
-- 📊 **Habits Table View Default** — habit tracker now defaults to `table` view on all screen sizes (previously auto-switched to `grid` on mobile). User's view selection is preserved across resizes.
-- 🚫 **Page Horizontal Scroll Fixed** — added `overflow-x-hidden` to the HabitsPage container so only the internal table scrolls left-right, not the entire page.
-- 🔔 **Timer Notification API Fixed** — replaced `new Notification()` (which throws `TypeError: Failed to construct 'Notification': Illegal constructor` on Android) with `ServiceWorkerRegistration.showNotification()` when a service worker is active, with a desktop fallback.
+## 🛠 Repository Management
 
-### April 2, 2026 — Mobile UI Overhaul
-- 📱 **Comprehensive Mobile Optimization** across all pages:
-  - Added `--header-h` and `--bottom-nav-h` CSS variables for dynamic layout calculations
-  - `mobile-page-pad` utility with `env(safe-area-inset-bottom)` support for notch devices
-  - ChatPage uses CSS-variable-driven positioning to fill screen between header and bottom nav
-  - Dashboard upgraded to 2-column card grid on mobile with scaled icons and typography
-  - Applied consistent mobile bottom padding to HabitsPage, JournalPage, ProfilePage, GoalsPage, FocusPage
-  - Chat welcome screen uses 2-column suggestion grid on mobile
-- 🔄 **Vision Model Upgraded** — migrated from deprecated `llama-3.2-11b-vision-instant` to `meta-llama/llama-4-scout-17b-16e-instruct` (Llama 4 Scout), Groq's current multimodal vision model with 128K context and up to 5 images per request.
+To keep the repository clean and secure, follow these guidelines:
+
+### ✅ Files to COMMIT
+*   **Source Code**: `client/src/`, `server/` (controllers, models, routes, etc.)
+*   **Project Icons & Assets**: `client/public/`
+*   **Configuration**: `package.json`, `package-lock.json`, `vite.config.js`, `tailwind.config.js`, `vercel.json`, `.gitignore`.
+*   **Documentation**: `README.md`, `RAG_IMPLEMENTATION.md`.
+
+### 🚫 Files to IGNORE
+*   **Sensitive Info**: `.env` (Never push API keys or Database URIs).
+*   **Dependencies**: `node_modules/` (Always re-install via `npm install`).
+*   **Build Artifacts**: `client/dist/`, `server/dist/`.
+*   **Logs & Temp**: `*.log`, `*.txt`, `*_crash.json`, `test_*.js`.
 
 ---
 
