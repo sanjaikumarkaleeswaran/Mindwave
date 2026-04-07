@@ -383,7 +383,7 @@ export default function ChatPage() {
                                     }
                                 }}
                                 placeholder="Message Life OS or upload a file..."
-                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-11 pr-14 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-11 pr-24 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
                                 style={{ maxHeight: '200px' }}
                             />
                             <button
@@ -532,7 +532,7 @@ export default function ChatPage() {
                                         }
                                     }}
                                     placeholder="Message Life OS or upload a file..."
-                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-11 pr-14 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-11 pr-24 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
                                     style={{ maxHeight: '200px' }}
                                 />
                                 <button
