@@ -67,28 +67,28 @@ export default function GoalsPage() {
                     <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Goals</h1>
                     <p className="text-zinc-500 mt-1">Set intentions, track milestones, achieve more.</p>
                 </div>
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="hidden md:flex gap-2 w-auto">
                     <button onClick={() => setShowChat(true)}
-                        className="flex-1 md:flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-white rounded-xl font-medium transition-all text-sm">
+                        className="flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-white rounded-xl font-medium transition-all text-sm">
                         <Bot className="w-4 h-4 text-indigo-400" />Ask AI
                     </button>
                     <button onClick={() => setShowCreate(true)}
-                        className="flex-1 md:flex-none justify-center flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold transition-all shadow-lg shadow-indigo-500/20">
+                        className="flex-none justify-center flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold transition-all shadow-lg shadow-indigo-500/20">
                         <Plus className="w-4 h-4" />New Goal
                     </button>
                 </div>
             </div>
 
-            {/* ── Stats ── */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+            {/* ── Stats (Swipeable on Mobile) ── */}
+            <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                 {[
                     { label: 'Active',      value: totalActive, color: 'text-emerald-400' },
                     { label: 'Completed',   value: totalDone,   color: 'text-indigo-400'  },
                     { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400' },
                 ].map((s, i) => (
-                    <div key={s.label} className={`bg-zinc-900/60 border border-white/5 rounded-2xl p-4 text-center ${i === 2 ? 'col-span-2 md:col-span-1' : ''}`}>
-                        <div className={`text-2xl md:text-3xl font-bold ${s.color}`}>{s.value}</div>
-                        <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">{s.label}</div>
+                    <div key={s.label} className="flex-none w-[75vw] sm:w-[50vw] md:w-auto md:flex-1 snap-center bg-zinc-900/60 border border-white/5 rounded-2xl p-5 text-center shadow-lg">
+                        <div className={`text-3xl md:text-3xl font-bold ${s.color}`}>{s.value}</div>
+                        <div className="text-sm text-zinc-500 uppercase tracking-widest mt-2 font-medium">{s.label}</div>
                     </div>
                 ))}
             </div>
@@ -134,6 +134,18 @@ export default function GoalsPage() {
                     </AnimatePresence>
                 </motion.div>
             )}
+
+            {/* ── Mobile Floating Action Buttons ── */}
+            <div className="md:hidden fixed z-40 right-4 flex flex-col gap-3 pointer-events-none" style={{ bottom: 'calc(var(--bottom-nav-h, 4rem) + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
+                <button onClick={() => setShowChat(true)}
+                    className="w-12 h-12 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-indigo-400 rounded-full flex items-center justify-center shadow-xl shadow-black/50 pointer-events-auto transition-transform active:scale-95">
+                    <Bot className="w-5 h-5" />
+                </button>
+                <button onClick={() => setShowCreate(true)}
+                    className="w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/40 pointer-events-auto transition-transform active:scale-95">
+                    <Plus className="w-6 h-6" />
+                </button>
+            </div>
 
             {/* ── Modals ── */}
             <AnimatePresence>

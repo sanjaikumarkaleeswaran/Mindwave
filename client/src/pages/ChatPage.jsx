@@ -335,16 +335,16 @@ export default function ChatPage() {
                             I can help you track your habits, analyze your progress, and answer your questions.
                         </p>
 
-                        {/* Suggestions */}
-                        <div className="grid grid-cols-2 gap-2 md:gap-3 w-full max-w-lg mb-6 md:mb-8">
+                        {/* Suggestions - Swipeable on mobile */}
+                        <div className="flex md:grid md:grid-cols-2 gap-2 md:gap-3 w-full max-w-[100vw] md:max-w-lg mb-6 md:mb-8 overflow-x-auto snap-x snap-mandatory px-4 md:px-0 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                             {suggestions.map((s, i) => (
                                 <button
                                     key={i}
                                     onClick={() => handleSuggestionClick(s.text)}
-                                    className="p-3 md:p-4 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-indigo-500/50 rounded-xl text-left transition-all group active:scale-95"
+                                    className="flex-none w-[70vw] md:w-auto p-4 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-indigo-500/50 rounded-2xl text-left transition-all snap-center group active:scale-95 shadow-md flex items-center md:items-start gap-3 md:block"
                                 >
-                                    <div className="text-base md:text-lg mb-1">{s.icon}</div>
-                                    <div className="text-xs md:text-sm text-zinc-300 group-hover:text-white font-medium">{s.text}</div>
+                                    <div className="text-2xl md:text-lg mb-0 md:mb-1 shrink-0">{s.icon}</div>
+                                    <div className="text-sm md:text-sm text-zinc-300 group-hover:text-white font-medium leading-tight">{s.text}</div>
                                 </button>
                             ))}
                         </div>

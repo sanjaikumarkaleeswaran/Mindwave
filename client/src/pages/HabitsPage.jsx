@@ -38,8 +38,8 @@ function SortableRow({ habit, tableDates, handleToggleDate, handleDelete, getMon
     const [editName, setEditName] = useState(habit.name);
 
     const style = {
-        transform: transform?.x || transform?.y ? CSS.Transform.toString(transform) : undefined,
-        transition: transform?.x || transform?.y || isDragging ? transition : undefined,
+        transform: transform && (transform.x !== 0 || transform.y !== 0) ? CSS.Transform.toString(transform) : undefined,
+        transition: transform && (transform.x !== 0 || transform.y !== 0) || isDragging ? transition : undefined,
         opacity: isDragging ? 0.5 : 1,
         ...(isDragging ? { position: 'relative', zIndex: 9999 } : {})
     };
@@ -505,7 +505,7 @@ export default function HabitsPage() {
                         <span>Calendar</span>
                     </button>
 
-                    <div className="hidden md:flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto">
+                    <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 w-full md:w-auto mt-2 md:mt-0">
                         <button
                             onClick={() => setViewMode('table')}
                             className={`flex-1 md:flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all text-center ${viewMode === 'table' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'}`}
