@@ -251,8 +251,8 @@ export default function Dashboard() {
                             return (
                                 <div key={key} className="flex-1 flex flex-col items-center gap-2">
                                     <span className="text-xs font-bold tabular-nums" style={{ color }}>{pct > 0 ? `${pct}%` : ''}</span>
-                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden relative" style={{ height: 60 }}>
-                                        <div className="w-full rounded-full transition-all duration-1000 absolute bottom-0 left-0" style={{ height: `${pct}%`, background: color }} />
+                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden" style={{ height: 60 }}>
+                                        <div className="rounded-full transition-all duration-1000 mt-auto" style={{ height: `${pct}%`, background: color, marginTop: `${100 - pct}%` }} />
                                     </div>
                                     <span className="text-lg">{label}</span>
                                 </div>

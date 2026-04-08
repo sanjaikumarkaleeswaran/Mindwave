@@ -202,7 +202,7 @@ export default function NotificationBell({ habits = [], journals = [], goals = [
                         <div className="max-h-96 overflow-y-auto">
                             {visible.length === 0 ? (
                                 <div className="p-8 text-center">
-                                    <CheckCircle2 className="w-8 h-8 text-zinc-700 mx-auto mb-2" />
+                                    <Check className="w-8 h-8 text-zinc-700 mx-auto mb-2" />
                                     <p className="text-zinc-500 text-sm">You're all caught up!</p>
                                     <p className="text-zinc-600 text-xs mt-1">No new notifications</p>
                                 </div>
