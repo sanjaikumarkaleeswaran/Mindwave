@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/axios';
+import NotificationBell from '../components/NotificationBell';
 
 const QUOTES = [
     "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-    "Do something today that your future self will thank you for."
+    "Do something today that your future self will thank you for.",
+    "The only way to do great work is to love what you do.",
+    "Productivity is being able to do things that you were never able to do before.",
+    "Your mind is for having ideas, not holding them."
 ];
 
 export default function Dashboard() {
@@ -17,15 +22,30 @@ export default function Dashboard() {
     const [chats, setChats] = useState([]);
     const [journals, setJournals] = useState([]);
     const [goals, setGoals] = useState([]);
-    const [quote, setQuote] = useState("");
+    const [quoteIdx, setQuoteIdx] = useState(0);
+    const [targetScore, setTargetScore] = useState(75);
     const [, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
 
+    const scrollRef = useRef(null);
+
+    const scroll = (dir) => {
+        if (scrollRef.current) {
+            const { scrollLeft, clientWidth } = scrollRef.current;
+            const target = dir === 'left' ? scrollLeft - clientWidth / 2 : scrollLeft + clientWidth / 2;
+            scrollRef.current.scrollTo({ left: target, behavior: 'smooth' });
+        }
+    };
+
     useEffect(() => {
-        // Set Greeting Phrase
-        // Set Quote based on day of year to be consistent for 24h
+        // Set Initial Quote based on day of year
         const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-        setQuote(QUOTES[dayOfYear % QUOTES.length]);
+        setQuoteIdx(dayOfYear % QUOTES.length);
+        
+        // Auto-cycle quotes every 10 seconds
+        const interval = setInterval(() => {
+            setQuoteIdx(prev => (prev + 1) % QUOTES.length);
+        }, 10000);
 
         const fetchData = async () => {
             try {
@@ -107,7 +127,17 @@ export default function Dashboard() {
                     </h1>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-[0.2em]">
                         <Sparkles className="w-2.5 h-2.5 text-indigo-400" />
-                        <span>{quote.split(':')[0].substring(0, 25)}…</span>
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={quoteIdx}
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                {QUOTES[quoteIdx].substring(0, 45)}…
+                            </motion.span>
+                        </AnimatePresence>
                     </div>
                 </div>
                 <div className="text-right hidden md:block">
@@ -116,67 +146,97 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-
-                {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
-                            <Sparkles className="w-6 h-6 text-indigo-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Ask AI</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Brainstorm ideas & plan.</p>
-                        </div>
+            {/* Quick Actions Slider */}
+            <div className="relative group/slider">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Quick Actions</span>
+                    <div className="hidden md:flex gap-2">
+                        <button onClick={() => scroll('left')} className="p-1.5 rounded-full bg-zinc-800/50 hover:bg-zinc-700 border border-white/5 transition-all">
+                            <ChevronLeft className="w-4 h-4 text-zinc-400" />
+                        </button>
+                        <button onClick={() => scroll('right')} className="p-1.5 rounded-full bg-zinc-800/50 hover:bg-zinc-700 border border-white/5 transition-all">
+                            <ChevronRight className="w-4 h-4 text-zinc-400" />
+                        </button>
                     </div>
-                    <Sparkles className="absolute -right-2 -bottom-2 w-20 h-20 text-indigo-500/5 opacity-20 transition-transform group-hover:scale-110" />
-                </Link>
-
-                {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
-                            <Zap className="w-6 h-6 text-purple-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Focus Mode</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Enter the deep flow state.</p>
-                        </div>
-                    </div>
-                    <Zap className="absolute -right-2 -bottom-2 w-20 h-20 text-purple-500/5 opacity-20 transition-transform group-hover:scale-110" />
-                </Link>
-
-                {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
-                            <Activity className="w-6 h-6 text-green-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Habits</h3>
-                            <div className="flex items-end gap-1 mt-0.5">
-                                <span className="text-xl font-black text-white">{completedToday}</span>
-                                <span className="text-zinc-500 font-bold text-[8px] mb-0.5 uppercase tracking-widest">/ {habits.length} done</span>
+                </div>
+                
+                <div 
+                    ref={scrollRef}
+                    className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
+                >
+                    {/* 1. Ask AI Card */}
+                    <Link to="/chat" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                        <div className="flex items-center gap-3 relative z-10 w-full">
+                            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
+                                <Sparkles className="w-6 h-6 text-indigo-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Ask AI</h3>
+                                <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Brainstorm ideas & plan.</p>
                             </div>
                         </div>
-                    </div>
-                    <Activity className="absolute -right-2 -bottom-2 w-20 h-20 text-green-500/5 opacity-20 transition-transform group-hover:scale-110" />
-                </Link>
+                        <Sparkles className="absolute -right-2 -bottom-2 w-20 h-20 text-indigo-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    </Link>
 
-                {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
-                            <Book className="w-6 h-6 text-pink-400" />
+                    {/* 2. Focus Mode Card */}
+                    <Link to="/focus" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                        <div className="flex items-center gap-3 relative z-10 w-full">
+                            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
+                                <Zap className="w-6 h-6 text-purple-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Focus Mode</h3>
+                                <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Enter the deep flow state.</p>
+                            </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Journal</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Reflect on your journey.</p>
-                        </div>
-                    </div>
-                    <Book className="absolute -right-1 -bottom-1 w-20 h-20 text-pink-500/5 opacity-20 transition-transform group-hover:scale-110" />
-                </Link>
+                        <Zap className="absolute -right-2 -bottom-2 w-20 h-20 text-purple-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    </Link>
 
+                    {/* 3. Habits Status Card */}
+                    <Link to="/habits" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                        <div className="flex items-center gap-3 relative z-10 w-full">
+                            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
+                                <Activity className="w-6 h-6 text-green-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Habits</h3>
+                                <div className="flex items-end gap-1 mt-0.5">
+                                    <span className="text-xl font-black text-white">{completedToday}</span>
+                                    <span className="text-zinc-500 font-bold text-[8px] mb-0.5 uppercase tracking-widest">/ {habits.length} done</span>
+                                </div>
+                            </div>
+                        </div>
+                        <Activity className="absolute -right-2 -bottom-2 w-20 h-20 text-green-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    </Link>
+
+                    {/* 4. Journal Card */}
+                    <Link to="/journal" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                        <div className="flex items-center gap-3 relative z-10 w-full">
+                            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
+                                <Book className="w-6 h-6 text-pink-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Journal</h3>
+                                <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Reflect on your journey.</p>
+                            </div>
+                        </div>
+                        <Book className="absolute -right-1 -bottom-1 w-20 h-20 text-pink-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    </Link>
+
+                    {/* 5. Vision Card */}
+                    <Link to="/chat" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                        <div className="flex items-center gap-3 relative z-10 w-full">
+                            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-white/20 transition-colors border border-white/10">
+                                <Brain className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Visionary</h3>
+                                <p className="text-zinc-300 text-[10px] font-medium mt-0.5 line-clamp-1">AI-powered long-term planning.</p>
+                            </div>
+                        </div>
+                        <Brain className="absolute -right-2 -bottom-2 w-20 h-20 text-white/5 opacity-20 transition-transform group-hover:scale-110" />
+                    </Link>
+                </div>
             </div>
 
             {/* ── Stats Panel ── */}
@@ -186,15 +246,30 @@ export default function Dashboard() {
                     <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
                         <div className="relative">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Brain className="w-3.5 h-3.5 text-indigo-400" />
-                                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                    <Brain className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
+                                </div>
+                                <span className="text-[10px] font-bold text-indigo-400">Target: {targetScore}</span>
                             </div>
-                            <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-base text-zinc-500">/100</span></div>
+                            <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-base text-zinc-500">/{targetScore}</span></div>
                             <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${stats.productivityScore}%` }} />
+                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.productivityScore / targetScore) * 100)}%` }} />
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1">Weekly score</p>
+                            
+                            <div className="mt-4 hidden md:block group/resizer">
+                                <input 
+                                    type="range" min="10" max="100" value={targetScore} 
+                                    onChange={(e) => setTargetScore(parseInt(e.target.value))}
+                                    className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 premium-slider"
+                                />
+                                <div className="flex justify-between mt-1 opacity-0 group-hover/resizer:opacity-100 transition-opacity">
+                                    <span className="text-[8px] text-zinc-600 font-bold uppercase">Lower Target</span>
+                                    <span className="text-[8px] text-zinc-600 font-bold uppercase">High Achiever</span>
+                                </div>
+                            </div>
+                            <p className="text-xs text-zinc-500 mt-1 md:hidden">Weekly score</p>
                         </div>
                     </div>
 
@@ -251,8 +326,8 @@ export default function Dashboard() {
                             return (
                                 <div key={key} className="flex-1 flex flex-col items-center gap-2">
                                     <span className="text-xs font-bold tabular-nums" style={{ color }}>{pct > 0 ? `${pct}%` : ''}</span>
-                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden" style={{ height: 60 }}>
-                                        <div className="rounded-full transition-all duration-1000 mt-auto" style={{ height: `${pct}%`, background: color, marginTop: `${100 - pct}%` }} />
+                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden relative" style={{ height: 60 }}>
+                                        <div className="w-full rounded-full transition-all duration-1000 absolute bottom-0 left-0" style={{ height: `${pct}%`, background: color }} />
                                     </div>
                                     <span className="text-lg">{label}</span>
                                 </div>
