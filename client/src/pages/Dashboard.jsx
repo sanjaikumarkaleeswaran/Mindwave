@@ -116,15 +116,15 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 hide-scrollbar -mx-1 px-1 pb-4 md:pb-0 snap-x">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                <Link to="/chat" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
                             <Sparkles className="w-6 h-6 text-indigo-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Ask AI</h3>
+                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Ask AI</h3>
                             <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Brainstorm ideas & plan.</p>
                         </div>
                     </div>
@@ -132,13 +132,13 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                <Link to="/focus" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
                             <Zap className="w-6 h-6 text-purple-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Focus Mode</h3>
+                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Focus Mode</h3>
                             <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Enter the deep flow state.</p>
                         </div>
                     </div>
@@ -146,13 +146,13 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                <Link to="/habits" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
                             <Activity className="w-6 h-6 text-green-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Habits</h3>
+                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Habits</h3>
                             <div className="flex items-end gap-1 mt-0.5">
                                 <span className="text-xl font-black text-white">{completedToday}</span>
                                 <span className="text-zinc-500 font-bold text-[8px] mb-0.5 uppercase tracking-widest">/ {habits.length} done</span>
@@ -163,13 +163,13 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                <Link to="/journal" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
                             <Book className="w-6 h-6 text-pink-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-base text-white tracking-tight leading-tight">Journal</h3>
+                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Journal</h3>
                             <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Reflect on your journey.</p>
                         </div>
                     </div>
