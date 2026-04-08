@@ -162,10 +162,10 @@ export default function Dashboard() {
                 
                 <div 
                     ref={scrollRef}
-                    className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
+                    className="flex gap-4 overflow-x-auto custom-scrollbar pb-6 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
                 >
                     {/* 1. Ask AI Card */}
-                    <Link to="/chat" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                    <Link to="/chat" className="relative h-[110px] min-w-[280px] flex-none overflow-hidden rounded-[2rem] p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
                         <div className="flex items-center gap-3 relative z-10 w-full">
                             <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
                                 <Sparkles className="w-6 h-6 text-indigo-400" />
@@ -179,7 +179,7 @@ export default function Dashboard() {
                     </Link>
 
                     {/* 2. Focus Mode Card */}
-                    <Link to="/focus" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                    <Link to="/focus" className="relative h-[110px] min-w-[280px] flex-none overflow-hidden rounded-[2rem] p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
                         <div className="flex items-center gap-3 relative z-10 w-full">
                             <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
                                 <Zap className="w-6 h-6 text-purple-400" />
@@ -193,16 +193,16 @@ export default function Dashboard() {
                     </Link>
 
                     {/* 3. Habits Status Card */}
-                    <Link to="/habits" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                    <Link to="/habits" className="relative h-[110px] min-w-[280px] flex-none overflow-hidden rounded-[2rem] p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
                         <div className="flex items-center gap-3 relative z-10 w-full">
-                            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
-                                <Activity className="w-6 h-6 text-green-400" />
+                            <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
+                                <Activity className="w-7 h-7 text-green-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-base text-white tracking-tight leading-tight">Habits</h3>
-                                <div className="flex items-end gap-1 mt-0.5">
-                                    <span className="text-xl font-black text-white">{completedToday}</span>
-                                    <span className="text-zinc-500 font-bold text-[8px] mb-0.5 uppercase tracking-widest">/ {habits.length} done</span>
+                                <h3 className="font-bold text-lg text-white tracking-tight leading-tight">Habits</h3>
+                                <div className="flex items-end gap-1 mt-1">
+                                    <span className="text-2xl font-black text-white">{completedToday}</span>
+                                    <span className="text-zinc-500 font-bold text-[10px] mb-1 uppercase tracking-widest">/ {habits.length} done</span>
                                 </div>
                             </div>
                         </div>
@@ -210,7 +210,7 @@ export default function Dashboard() {
                     </Link>
 
                     {/* 4. Journal Card */}
-                    <Link to="/journal" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                    <Link to="/journal" className="relative h-[110px] min-w-[280px] flex-none overflow-hidden rounded-[2rem] p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
                         <div className="flex items-center gap-3 relative z-10 w-full">
                             <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
                                 <Book className="w-6 h-6 text-pink-400" />
@@ -224,7 +224,7 @@ export default function Dashboard() {
                     </Link>
 
                     {/* 5. Vision Card */}
-                    <Link to="/chat" className="relative h-[100px] min-w-[200px] flex-1 md:flex-none md:w-64 overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
+                    <Link to="/chat" className="relative h-[110px] min-w-[280px] flex-none overflow-hidden rounded-[2rem] p-5 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center snap-start">
                         <div className="flex items-center gap-3 relative z-10 w-full">
                             <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-white/20 transition-colors border border-white/10">
                                 <Brain className="w-6 h-6 text-white" />
@@ -257,19 +257,19 @@ export default function Dashboard() {
                             <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                                 <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.productivityScore / targetScore) * 100)}%` }} />
                             </div>
-                            
-                            <div className="mt-4 hidden md:block group/resizer">
+                                                {/* Goal Slider */}
+                            <div className="mt-4 group/resizer">
                                 <input 
                                     type="range" min="10" max="100" value={targetScore} 
                                     onChange={(e) => setTargetScore(parseInt(e.target.value))}
                                     className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 premium-slider"
                                 />
-                                <div className="flex justify-between mt-1 opacity-0 group-hover/resizer:opacity-100 transition-opacity">
+                                <div className="flex justify-between mt-1 opacity-60 group-hover/resizer:opacity-100 transition-opacity">
                                     <span className="text-[8px] text-zinc-600 font-bold uppercase">Lower Target</span>
                                     <span className="text-[8px] text-zinc-600 font-bold uppercase">High Achiever</span>
                                 </div>
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1 md:hidden">Weekly score</p>
+                            <p className="text-xs text-zinc-500 mt-2">Personal Weekly Target</p>
                         </div>
                     </div>
 
