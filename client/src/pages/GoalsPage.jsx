@@ -64,8 +64,8 @@ export default function GoalsPage() {
             {/* ── Page header ── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl md:text-4xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">Goals</h1>
-                    <p className="text-zinc-500 text-sm md:text-base mt-1">Set intentions, track milestones, achieve more.</p>
+                    <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">Goals</h1>
+                    <p className="text-zinc-500 text-[11px] md:text-base mt-0.5">Set intentions & track milestones.</p>
                 </div>
                 <div className="hidden md:flex gap-2 w-auto">
                     <button onClick={() => setShowChat(true)}
@@ -79,31 +79,26 @@ export default function GoalsPage() {
                 </div>
             </div>
 
-            {/* ── Stats (Vertical Stack on Mobile) ── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* ── Stats (3-Column Grid on Mobile) ── */}
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
                 {[
                     { label: 'Active',      value: totalActive, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                    { label: 'Completed',   value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-                    { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                    { label: 'Done',        value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+                    { label: 'Prog',        value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
                 ].map((s, i) => (
-                    <div key={s.label} className="premium-card p-4 flex items-center justify-between md:flex-col md:justify-center relative overflow-hidden group">
-                        <div className="relative z-10 flex flex-col md:items-center">
-                            <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold md:mb-1">{s.label}</div>
-                            <div className={`text-2xl md:text-3xl font-black ${s.color}`}>{s.value}</div>
-                        </div>
-                        <div className={`p-2 rounded-xl ${s.bg} border border-white/5 md:hidden`}>
-                            <Target className={`w-5 h-5 ${s.color}`} />
-                        </div>
+                    <div key={s.label} className="premium-card p-3 flex flex-col items-center justify-center relative overflow-hidden text-center">
+                        <div className="text-[9px] text-zinc-600 uppercase font-black mb-1">{s.label}</div>
+                        <div className={`text-xl font-black ${s.color}`}>{s.value}</div>
                     </div>
                 ))}
             </div>
 
             {/* ── Filter pills ── */}
-            <div className="sticky top-[--header-h] z-20 bg-black/50 backdrop-blur-md -mx-4 px-4 py-2 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:border-none">
-                <div className="flex gap-1.5 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
+            <div className="sticky top-[--header-h] z-20 bg-black/80 backdrop-blur-xl -mx-4 px-4 py-3 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:border-none">
+                <div className="flex gap-2 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
                     {FILTERS.map(f => (
                         <button key={f.value} onClick={() => setFilter(f.value)}
-                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500' : 'text-zinc-600 hover:text-zinc-600 bg-zinc-900/50 border-zinc-800'}`}>
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20' : 'text-zinc-500 hover:text-zinc-300 bg-zinc-900/40 border-zinc-800'}`}>
                             {f.label}
                         </button>
                     ))}

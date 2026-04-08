@@ -114,36 +114,30 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
 
                 {/* 1. Quick Chat / AI Card */}
-                <Link to="/chat" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
-                    <div className="bg-indigo-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                <Link to="/chat" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
+                    <div className="bg-indigo-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
                         <Sparkles className="w-5 md:w-6 h-5 md:h-6 text-indigo-400" />
                     </div>
                     <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Ask AI</h3>
-                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Draft emails or brainstorm ideas.</p>
-                        <div className="mt-2 hidden md:flex items-center gap-2 text-indigo-400 text-xs font-medium">
-                            <span className="truncate">Start Chat</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 group-hover:translate-x-1 transition-transform shrink-0" />
-                        </div>
+                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Ask AI</h3>
+                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Start a conversation with AI.</p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
+                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
-                    <div className="bg-purple-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                <Link to="/focus" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
+                    <div className="bg-purple-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
                         <Zap className="w-5 md:w-6 h-5 md:h-6 text-purple-400" />
                     </div>
                     <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Focus Mode</h3>
-                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Enter the deep work flow state.</p>
-                        <div className="mt-2 hidden md:flex items-center gap-2 text-purple-400 text-xs font-medium">
-                            <span className="truncate">Start Session</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 shrink-0" />
-                        </div>
+                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Focus Mode</h3>
+                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Enter deep work state.</p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
+                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
                 {/* 3. Habits Status Card */}
@@ -189,15 +183,15 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
-                    <div className="bg-pink-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                <Link to="/journal" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
+                    <div className="bg-pink-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
                         <Book className="w-5 md:w-6 h-5 md:h-6 text-pink-400" />
                     </div>
                     <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Journal</h3>
-                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Reflect on your day.</p>
+                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Journal</h3>
+                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Daily reflection.</p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
+                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
             </div>
