@@ -116,11 +116,10 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-
+            <div className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 hide-scrollbar -mx-1 px-1 pb-4 md:pb-0 snap-x">
                 {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
+                <Link to="/chat" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                    <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
                             <Sparkles className="w-6 h-6 text-indigo-400" />
                         </div>
@@ -133,8 +132,8 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
+                <Link to="/focus" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                    <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
                             <Zap className="w-6 h-6 text-purple-400" />
                         </div>
@@ -147,8 +146,8 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
+                <Link to="/habits" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                    <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
                             <Activity className="w-6 h-6 text-green-400" />
                         </div>
@@ -164,8 +163,8 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[90px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
-                    <div className="flex items-center gap-3 relative z-10 w-full">
+                <Link to="/journal" className="relative h-[90px] min-w-[200px] md:min-w-0 overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center shrink-0 md:shrink snap-start">
+                    <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
                             <Book className="w-6 h-6 text-pink-400" />
                         </div>
@@ -176,7 +175,6 @@ export default function Dashboard() {
                     </div>
                     <Book className="absolute -right-1 -bottom-1 w-20 h-20 text-pink-500/5 opacity-20 transition-transform group-hover:scale-110" />
                 </Link>
-
             </div>
 
             {/* ── Stats Panel ── */}
@@ -251,8 +249,8 @@ export default function Dashboard() {
                             return (
                                 <div key={key} className="flex-1 flex flex-col items-center gap-2">
                                     <span className="text-xs font-bold tabular-nums" style={{ color }}>{pct > 0 ? `${pct}%` : ''}</span>
-                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden" style={{ height: 60 }}>
-                                        <div className="rounded-full transition-all duration-1000 mt-auto" style={{ height: `${pct}%`, background: color, marginTop: `${100 - pct}%` }} />
+                                    <div className="w-full bg-zinc-800 rounded-full overflow-hidden relative" style={{ height: 60 }}>
+                                        <div className="w-full rounded-full transition-all duration-1000 absolute bottom-0 left-0" style={{ height: `${pct}%`, background: color }} />
                                     </div>
                                     <span className="text-lg">{label}</span>
                                 </div>
