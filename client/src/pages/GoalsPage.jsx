@@ -58,7 +58,7 @@ export default function GoalsPage() {
     ];
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 mobile-page-pad">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 mobile-page-pad pb-40 md:pb-12">
             <Helmet><title>Goals | Life OS</title></Helmet>
 
             {/* ── Page header ── */}
@@ -94,14 +94,16 @@ export default function GoalsPage() {
                     ))}
                 </div>
 
-            {/* ── Filter pills ── */}
-            <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
-                {FILTERS.map(f => (
-                    <button key={f.value} onClick={() => setFilter(f.value)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${filter === f.value ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'text-zinc-500 hover:text-zinc-300 bg-zinc-900/50 border border-zinc-800'}`}>
-                        {f.label}
-                    </button>
-                ))}
+            {/* ── Filter pills & Search ── */}
+            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+                <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+                    {FILTERS.map(f => (
+                        <button key={f.value} onClick={() => setFilter(f.value)}
+                            className={`px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20' : 'text-zinc-500 hover:text-zinc-300 bg-zinc-900/50 border-zinc-800'}`}>
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* ── Goal grid ── */}

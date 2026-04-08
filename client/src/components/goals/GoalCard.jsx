@@ -48,25 +48,25 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
                 <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: cat.color }} />
                 <div className={`absolute inset-0 bg-gradient-to-br ${cat.bg} opacity-40 pointer-events-none`} />
 
-                <div className="relative p-5 space-y-4">
+                <div className="relative p-4 md:p-6 space-y-4">
                     {/* Header */}
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="p-2 rounded-xl shrink-0" style={{ background: `${cat.color}20` }}>
-                                <CatIcon className="w-4 h-4" style={{ color: cat.color }} />
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="p-2.5 rounded-2xl shrink-0" style={{ background: `${cat.color}20` }}>
+                                <CatIcon className="w-5 h-5 md:w-4 md:h-4" style={{ color: cat.color }} />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-white text-base truncate">{goal.title}</h3>
-                                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${SC[goal.status]}`}>{goal.status}</span>
+                                <h3 className="font-bold text-white text-lg md:text-base truncate tracking-tight">{goal.title}</h3>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-md border ${SC[goal.status]}`}>{goal.status}</span>
                                     {tp && <TrackBadge t={tp.pct} a={goal.progress} />}
                                 </div>
                             </div>
                         </div>
-                        <div className="relative shrink-0">
-                            <ProgressRing pct={goal.progress} color={cat.color} size={56} />
+                        <div className="relative shrink-0 flex items-center justify-center">
+                            <ProgressRing pct={goal.progress} color={cat.color} size={window.innerWidth < 768 ? 48 : 56} stroke={window.innerWidth < 768 ? 4 : 5} />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-xs font-bold text-white">{goal.progress}%</span>
+                                <span className="text-[10px] md:text-xs font-black text-white">{goal.progress}%</span>
                             </div>
                         </div>
                     </div>
@@ -131,17 +131,17 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
                     )}
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 pt-1 border-t border-white/5">
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                         <button onClick={() => setExpanded(!expanded)}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all">
-                            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                            {expanded ? 'Hide' : 'Full timeline'}
+                            className="flex-1 flex items-center justify-center gap-2 py-3 md:py-1.5 text-xs font-bold uppercase tracking-wider text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 rounded-xl transition-all">
+                            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            {expanded ? 'Hide' : 'Progress'}
                         </button>
-                        <button onClick={() => onEdit(goal)} className="p-1.5 text-zinc-600 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-all">
-                            <Edit3 className="w-3.5 h-3.5" />
+                        <button onClick={() => onEdit(goal)} className="p-3 md:p-1.5 text-zinc-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-xl transition-all border border-zinc-800">
+                            <Edit3 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => onDelete(goal)} className="p-1.5 text-zinc-600 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all">
-                            <Trash2 className="w-3.5 h-3.5" />
+                        <button onClick={() => onDelete(goal)} className="p-3 md:p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all border border-zinc-800">
+                            <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
 
