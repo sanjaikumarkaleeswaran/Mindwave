@@ -101,12 +101,14 @@ export default function Dashboard() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-1">
-                        {greeting}, <span className="text-indigo-400">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
+                    <h1 className="text-4xl font-black text-white tracking-tighter leading-none">
+                        {greeting}, <br/>
+                        <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     </h1>
-                    <p className="text-zinc-500 text-[11px] md:text-lg max-w-2xl italic line-clamp-1">
-                        {quote}
-                    </p>
+                    <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 mt-3 uppercase tracking-[0.2em]">
+                        <Sparkles className="w-3 h-3 text-indigo-400" />
+                        <span>{quote.split(':')[0].substring(0, 30)}…</span>
+                    </div>
                 </div>
                 <div className="text-right hidden md:block">
                     <div className="text-zinc-500 text-sm font-mono">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
@@ -116,82 +118,80 @@ export default function Dashboard() {
             {/* Main Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
 
-                {/* 1. Quick Chat / AI Card */}
-                <Link to="/chat" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
-                    <div className="bg-indigo-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <Sparkles className="w-5 md:w-6 h-5 md:h-6 text-indigo-400" />
+                {/* 1. Ask AI Card */}
+                <Link to="/chat" className="relative overflow-hidden rounded-3xl p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group">
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
+                            <Sparkles className="w-7 h-7 text-indigo-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-xl text-white tracking-tight">Ask AI</h3>
+                            <p className="text-zinc-500 text-sm font-medium mt-1">Brainstorm ideas & plan.</p>
+                        </div>
                     </div>
-                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Ask AI</h3>
-                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Start a conversation with AI.</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
-                    <div className="bg-purple-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <Zap className="w-5 md:w-6 h-5 md:h-6 text-purple-400" />
+                <Link to="/focus" className="relative overflow-hidden rounded-3xl p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group">
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
+                            <Zap className="w-7 h-7 text-purple-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-xl text-white tracking-tight">Focus Mode</h3>
+                            <p className="text-zinc-500 text-sm font-medium mt-1">Enter the deep flow state.</p>
+                        </div>
                     </div>
-                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Focus Mode</h3>
-                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Enter deep work state.</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="group relative glass-card p-4 md:p-6 overflow-hidden flex flex-col">
-                    <div className="absolute top-0 right-0 p-6 md:p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Activity className="w-16 md:w-24 h-16 md:h-24 text-green-500" />
+                <Link to="/habits" className="relative overflow-hidden rounded-3xl p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group">
+                    <div className="flex items-center gap-4 relative z-10 mb-4">
+                        <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
+                            <Activity className="w-7 h-7 text-green-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-xl text-white tracking-tight">Habits</h3>
+                            <div className="flex items-end gap-1 mt-0.5">
+                                <span className="text-2xl font-black text-white">{completedToday}</span>
+                                <span className="text-zinc-500 font-bold text-[10px] mb-1 uppercase tracking-widest">/ {habits.length} DONE</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-green-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <Activity className="w-5 md:w-6 h-5 md:h-6 text-green-400" />
-                        </div>
-                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Daily Habits</h3>
-
-                        <div className="flex items-end gap-2 mb-2">
-                            <span className="text-2xl md:text-3xl font-bold text-white">{completedToday}</span>
-                            <span className="text-zinc-500 mb-1 text-xs">/ {habits.length} done</span>
+                    <div className="space-y-3 relative z-10">
+                        {/* Progress Bar */}
+                        <div className="w-full bg-black/20 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-green-500 h-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }} />
                         </div>
 
-                        {/* Mini Progress Bar */}
-                        <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden mb-3 md:mb-4">
-                            <div
-                                className="bg-green-500 h-full transition-all duration-1000 ease-out"
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-
-                        <div className="mt-auto space-y-1.5">
+                        <div className="space-y-1.5">
                             {habits.slice(0, 2).map(h => {
                                 const isDone = h.completedDates.some(d => new Date(d).toISOString().split('T')[0] === todayStr);
                                 return (
-                                    <div key={h._id} className="flex items-center gap-2 text-xs">
+                                    <div key={h._id} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wide">
                                         <div className={`w-3 h-3 rounded-full flex items-center justify-center border ${isDone ? 'bg-green-500 border-green-500' : 'border-zinc-700'}`}>
-                                            {isDone && <CheckCircle2 className="w-2.5 h-2.5 text-black" />}
+                                            {isDone && <Check className="w-2.5 h-2.5 text-black" strokeWidth={4} />}
                                         </div>
-                                        <span className={`truncate ${isDone ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>{h.name}</span>
+                                        <span className={`truncate ${isDone ? 'text-zinc-600 line-through' : 'text-zinc-400'}`}>{h.name}</span>
                                     </div>
                                 );
                             })}
-                            {habits.length > 2 && <div className="text-[10px] text-zinc-500 pl-5">+{habits.length - 2} more...</div>}
                         </div>
                     </div>
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4 min-h-[80px]">
-                    <div className="bg-pink-500/20 p-2.5 rounded-xl group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <Book className="w-5 md:w-6 h-5 md:h-6 text-pink-400" />
+                <Link to="/journal" className="relative overflow-hidden rounded-3xl p-5 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group">
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
+                            <Book className="w-7 h-7 text-pink-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-xl text-white tracking-tight">Journal</h3>
+                            <p className="text-zinc-500 text-sm font-medium mt-1">Reflect on your daily journey.</p>
+                        </div>
                     </div>
-                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
-                        <h3 className="text-sm md:text-xl font-bold text-white mb-0 md:mb-2">Journal</h3>
-                        <p className="text-zinc-500 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Daily reflection.</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-700 md:hidden shrink-0" />
                 </Link>
 
             </div>

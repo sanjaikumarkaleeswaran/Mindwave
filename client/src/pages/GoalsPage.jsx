@@ -62,21 +62,29 @@ export default function GoalsPage() {
             <Helmet><title>Goals | Life OS</title></Helmet>
 
             {/* ── Page header ── */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">Goals</h1>
-                    <p className="text-zinc-500 text-[11px] md:text-base mt-0.5">Set intentions & track milestones.</p>
+            <div>
+                <h1 className="text-4xl font-black text-white tracking-tighter leading-none">
+                    Mission <br/>
+                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Control</span>
+                </h1>
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 mt-3 uppercase tracking-[0.2em]">
+                    <Target className="w-3 h-3 text-indigo-400" />
+                    <span>Set intentions & track milestones.</span>
                 </div>
-                <div className="hidden md:flex gap-2 w-auto">
-                    <button onClick={() => setShowChat(true)}
-                        className="flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-indigo-500/50 text-zinc-300 hover:text-white rounded-xl font-medium transition-all text-sm">
-                        <Bot className="w-4 h-4 text-indigo-400" />Ask AI
-                    </button>
-                    <button onClick={() => setShowCreate(true)}
-                        className="flex-none justify-center flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold transition-all shadow-lg shadow-indigo-500/20">
-                        <Plus className="w-4 h-4" />New Goal
-                    </button>
-                </div>
+            </div>
+
+            {/* ── Action bar (Habit Style) ── */}
+            <div className="grid grid-cols-2 gap-3 bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 sticky top-2 z-30 backdrop-blur-xl shadow-2xl">
+                <button onClick={() => setShowChat(true)}
+                    className="flex items-center justify-center gap-2 p-4 bg-zinc-800/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
+                    <Bot className="h-4 w-4 text-indigo-400" />
+                    Ask AI
+                </button>
+                <button onClick={() => setShowCreate(true)}
+                    className="flex items-center justify-center gap-2 p-4 bg-indigo-500 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-500/20 transition-all">
+                    <Plus className="h-4 w-4" />
+                    New Goal
+                </button>
             </div>
 
             {/* ── Stats (3-Column Grid on Mobile) ── */}
@@ -94,11 +102,11 @@ export default function GoalsPage() {
             </div>
 
             {/* ── Filter pills ── */}
-            <div className="sticky top-[--header-h] z-20 bg-black/80 backdrop-blur-xl -mx-4 px-4 py-3 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:border-none">
+            <div className="sticky top-24 z-20 -mx-4 px-4 py-1 md:relative md:top-0 md:bg-transparent md:border-none overflow-hidden">
                 <div className="flex gap-2 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
                     {FILTERS.map(f => (
                         <button key={f.value} onClick={() => setFilter(f.value)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20' : 'text-zinc-500 hover:text-zinc-300 bg-zinc-900/40 border-zinc-800'}`}>
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${filter === f.value ? 'bg-zinc-800 text-white border-zinc-700 shadow-md' : 'text-zinc-600 hover:text-zinc-400 bg-transparent border-transparent'}`}>
                             {f.label}
                         </button>
                     ))}
@@ -137,17 +145,7 @@ export default function GoalsPage() {
                 </motion.div>
             )}
 
-            {/* ── Mobile Floating Action Buttons ── */}
-            <div className="md:hidden fixed z-40 right-4 flex flex-col gap-3 pointer-events-none" style={{ bottom: 'calc(var(--bottom-nav-h, 4rem) + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
-                <button onClick={() => setShowChat(true)}
-                    className="w-12 h-12 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-indigo-400 rounded-full flex items-center justify-center shadow-xl shadow-black/50 pointer-events-auto transition-transform active:scale-95">
-                    <Bot className="w-5 h-5" />
-                </button>
-                <button onClick={() => setShowCreate(true)}
-                    className="w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/40 pointer-events-auto transition-transform active:scale-95">
-                    <Plus className="w-6 h-6" />
-                </button>
-            </div>
+
 
             {/* ── Modals ── */}
             <AnimatePresence>
