@@ -6,14 +6,8 @@ import { Link } from 'react-router-dom';
 import api from '../lib/axios';
 
 const QUOTES = [
-    "The only way to do great work is to love what you do.",
-    "Your time is limited, so don't waste it living someone else's life.",
-    "Believe you can and you're halfway there.",
     "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-    "The future belongs to those who believe in the beauty of their dreams.",
-    "Do something today that your future self will thank you for.",
-    "Productivity is being able to do things that you were never able to do before.",
-    "Focus on being productive instead of busy."
+    "Do something today that your future self will thank you for."
 ];
 
 export default function Dashboard() {
@@ -107,11 +101,11 @@ export default function Dashboard() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">
+                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-1">
                         {greeting}, <span className="text-indigo-400">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     </h1>
-                    <p className="text-zinc-400 text-xs md:text-lg max-w-2xl italic">
-                        "{quote}"
+                    <p className="text-zinc-500 text-[11px] md:text-lg max-w-2xl italic line-clamp-1">
+                        {quote}
                     </p>
                 </div>
                 <div className="text-right hidden md:block">
@@ -123,53 +117,33 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
 
                 {/* 1. Quick Chat / AI Card */}
-                <Link to="/chat" className="group relative glass-card p-4 md:p-6 overflow-hidden flex flex-col">
-                    <div className="absolute top-0 right-0 p-6 md:p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Sparkles className="w-16 md:w-24 h-16 md:h-24 text-indigo-500" />
+                <Link to="/chat" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
+                    <div className="bg-indigo-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        <Sparkles className="w-5 md:w-6 h-5 md:h-6 text-indigo-400" />
                     </div>
-
-                    <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-indigo-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <Sparkles className="w-5 md:w-6 h-5 md:h-6 text-indigo-400" />
-                        </div>
-                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Ask AI</h3>
-                        <p className="text-zinc-400 text-sm md:text-sm mb-3 md:mb-4 flex-1">Draft emails, brainstorm ideas, or plan your schedule.</p>
-
-                        {/* Recent Chats Mini-List */}
-                        <div className="space-y-2 mb-3 md:mb-4 hidden sm:block">
-                            {chats.slice(0, 2).map(chat => (
-                                <div key={chat._id} className="text-xs text-zinc-500 truncate flex items-center gap-2">
-                                    <MessageSquare className="w-3 h-3 shrink-0" />
-                                    <span className="truncate">{chat.title || "New Conversation"}</span>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-auto flex items-center gap-2 text-indigo-400 text-[11px] sm:text-xs md:text-sm font-medium">
+                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
+                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Ask AI</h3>
+                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Draft emails or brainstorm ideas.</p>
+                        <div className="mt-2 hidden md:flex items-center gap-2 text-indigo-400 text-xs font-medium">
                             <span className="truncate">Start Chat</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 group-hover:translate-x-1 transition-transform shrink-0" />
                         </div>
                     </div>
+                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="group relative glass-card p-4 md:p-6 overflow-hidden flex flex-col">
-                    <div className="absolute -bottom-8 -right-8 p-6 md:p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Zap className="w-28 md:w-40 h-28 md:h-40 text-purple-500" />
+                <Link to="/focus" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
+                    <div className="bg-purple-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        <Zap className="w-5 md:w-6 h-5 md:h-6 text-purple-400" />
                     </div>
-
-                    <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-purple-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <Zap className="w-5 md:w-6 h-5 md:h-6 text-purple-400" />
-                        </div>
-                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Focus Mode</h3>
-                        <p className="text-zinc-400 text-sm md:text-sm mb-4 md:mb-6 flex-1">Block distractions and enter the flow state.</p>
-
-                        <div className="mt-auto flex">
-                            <div className="flex items-center gap-2 text-purple-400 text-[11px] sm:text-xs md:text-sm font-medium bg-purple-500/10 py-1.5 md:py-2 px-2.5 md:px-3 rounded-lg w-fit group-hover:bg-purple-500/20 transition-colors">
-                                <span className="truncate">Start Session</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 shrink-0" />
-                            </div>
+                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
+                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Focus Mode</h3>
+                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Enter the deep work flow state.</p>
+                        <div className="mt-2 hidden md:flex items-center gap-2 text-purple-400 text-xs font-medium">
+                            <span className="truncate">Start Session</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 shrink-0" />
                         </div>
                     </div>
+                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
                 </Link>
 
                 {/* 3. Habits Status Card */}
@@ -215,38 +189,15 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="group relative glass-card p-4 md:p-6 overflow-hidden flex flex-col">
-                    <div className="absolute top-0 right-0 p-6 md:p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Book className="w-16 md:w-24 h-16 md:h-24 text-pink-500" />
+                <Link to="/journal" className="group relative glass-card p-3 md:p-6 overflow-hidden flex flex-row md:flex-col items-center md:items-start gap-4">
+                    <div className="bg-pink-500/20 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        <Book className="w-5 md:w-6 h-5 md:h-6 text-pink-400" />
                     </div>
-
-                    <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-pink-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <Book className="w-5 md:w-6 h-5 md:h-6 text-pink-400" />
-                        </div>
-                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Journal</h3>
-
-                        {journals.length > 0 && new Date(journals[0].date).toDateString() === new Date().toDateString() ? (
-                            <>
-                                <p className="text-zinc-400 text-xs md:text-sm mb-2">Today's entry captured.</p>
-                                <div className="mt-auto">
-                                    <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50">
-                                        <div className="text-xs text-zinc-500 mb-1">Mood</div>
-                                        <div className="text-white font-medium capitalize text-sm">{journals[0].mood || 'Neutral'}</div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-zinc-400 text-xs md:text-sm mb-4 md:mb-6 flex-1">Reflect on your day and clear your mind.</p>
-                                <div className="mt-auto flex">
-                                    <div className="flex items-center gap-2 text-pink-400 text-[11px] sm:text-xs md:text-sm font-medium bg-pink-500/10 py-1.5 md:py-2 px-2.5 md:px-3 rounded-lg w-fit group-hover:bg-pink-500/20 transition-colors">
-                                        <span className="truncate">Write Entry</span> <ArrowRight className="w-3 md:w-4 h-3 md:h-4 shrink-0" />
-                                    </div>
-                                </div>
-                            </>
-                        )}
+                    <div className="relative z-10 flex flex-col flex-1 min-w-0">
+                        <h3 className="text-base md:text-xl font-semibold text-white mb-0.5 md:mb-2">Journal</h3>
+                        <p className="text-zinc-400 text-[11px] md:text-sm truncate md:whitespace-normal">Reflect on your day.</p>
                     </div>
+                    <ArrowRight className="w-4 h-4 text-zinc-600 md:hidden" />
                 </Link>
 
             </div>
@@ -258,11 +209,11 @@ export default function Dashboard() {
                     <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
                         <div className="relative">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Brain className="w-4 h-4 text-indigo-400" />
-                                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Productivity</span>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Brain className="w-3.5 h-3.5 text-indigo-400" />
+                                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
                             </div>
-                            <div className="text-4xl md:text-4xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-lg text-zinc-500">/100</span></div>
+                            <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-base text-zinc-500">/100</span></div>
                             <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                                 <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${stats.productivityScore}%` }} />
                             </div>
@@ -448,8 +399,8 @@ export default function Dashboard() {
 
                     {/* Chart body */}
                     {(() => {
-                        const BAR_H = 180;
-                        const gridLines = [100, 75, 50, 25];
+                        const BAR_H = 140; // Reduced height for mobile
+                        const gridLines = [100, 50]; // Simplified grid
 
                         return (
                             <div className="relative">

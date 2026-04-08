@@ -79,27 +79,31 @@ export default function GoalsPage() {
                 </div>
             </div>
 
-                {/* ── Stats (Swipeable on Mobile) ── */}
-                <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-4 overflow-x-auto pb-4 px-1 -mx-1 [&::-webkit-scrollbar]:hidden snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-                    {[
-                        { label: 'Active',      value: totalActive, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                        { label: 'Completed',   value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-                        { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                    ].map((s, i) => (
-                        <div key={s.label} className="flex-none w-[70vw] sm:w-[50vw] md:w-auto md:flex-1 snap-center premium-card p-6 flex flex-col items-center justify-center relative overflow-hidden group">
-                            <div className={`absolute -top-10 -right-10 w-24 h-24 ${s.bg} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700`} />
-                            <div className={`text-4xl md:text-3xl font-bold ${s.color} relative z-10`}>{s.value}</div>
-                            <div className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mt-3 font-bold relative z-10">{s.label}</div>
+            {/* ── Stats (Vertical Stack on Mobile) ── */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {[
+                    { label: 'Active',      value: totalActive, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                    { label: 'Completed',   value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+                    { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                ].map((s, i) => (
+                    <div key={s.label} className="premium-card p-4 flex items-center justify-between md:flex-col md:justify-center relative overflow-hidden group">
+                        <div className="relative z-10 flex flex-col md:items-center">
+                            <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold md:mb-1">{s.label}</div>
+                            <div className={`text-2xl md:text-3xl font-black ${s.color}`}>{s.value}</div>
                         </div>
-                    ))}
-                </div>
+                        <div className={`p-2 rounded-xl ${s.bg} border border-white/5 md:hidden`}>
+                            <Target className={`w-5 h-5 ${s.color}`} />
+                        </div>
+                    </div>
+                ))}
+            </div>
 
-            {/* ── Filter pills & Search ── */}
-            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-                <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+            {/* ── Filter pills ── */}
+            <div className="sticky top-[--header-h] z-20 bg-black/50 backdrop-blur-md -mx-4 px-4 py-2 border-b border-white/5 md:relative md:top-0 md:bg-transparent md:border-none">
+                <div className="flex gap-1.5 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
                     {FILTERS.map(f => (
                         <button key={f.value} onClick={() => setFilter(f.value)}
-                            className={`px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20' : 'text-zinc-500 hover:text-zinc-300 bg-zinc-900/50 border-zinc-800'}`}>
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${filter === f.value ? 'bg-indigo-500 text-white border-indigo-500' : 'text-zinc-600 hover:text-zinc-600 bg-zinc-900/50 border-zinc-800'}`}>
                             {f.label}
                         </button>
                     ))}
