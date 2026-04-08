@@ -107,10 +107,10 @@ export default function Dashboard() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-5xl font-bold text-white tracking-tight mb-2">
+                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">
                         {greeting}, <span className="text-indigo-400">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     </h1>
-                    <p className="text-zinc-400 text-sm md:text-lg max-w-2xl">
+                    <p className="text-zinc-400 text-xs md:text-lg max-w-2xl italic">
                         "{quote}"
                     </p>
                 </div>
@@ -120,7 +120,7 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
 
                 {/* 1. Quick Chat / AI Card */}
                 <Link to="/chat" className="group relative glass-card p-4 md:p-6 overflow-hidden flex flex-col">
@@ -129,11 +129,11 @@ export default function Dashboard() {
                     </div>
 
                     <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-indigo-500/20 w-fit p-2 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <div className="bg-indigo-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
                             <Sparkles className="w-5 md:w-6 h-5 md:h-6 text-indigo-400" />
                         </div>
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-1 md:mb-2">Ask AI</h3>
-                        <p className="text-zinc-400 text-xs md:text-sm mb-3 md:mb-4 flex-1">Draft emails, brainstorm ideas, or plan your schedule.</p>
+                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Ask AI</h3>
+                        <p className="text-zinc-400 text-sm md:text-sm mb-3 md:mb-4 flex-1">Draft emails, brainstorm ideas, or plan your schedule.</p>
 
                         {/* Recent Chats Mini-List */}
                         <div className="space-y-2 mb-3 md:mb-4 hidden sm:block">
@@ -158,11 +158,11 @@ export default function Dashboard() {
                     </div>
 
                     <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-purple-500/20 w-fit p-2 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <div className="bg-purple-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
                             <Zap className="w-5 md:w-6 h-5 md:h-6 text-purple-400" />
                         </div>
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-1 md:mb-2">Focus Mode</h3>
-                        <p className="text-zinc-400 text-xs md:text-sm mb-4 md:mb-6 flex-1">Block distractions and enter the flow state.</p>
+                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Focus Mode</h3>
+                        <p className="text-zinc-400 text-sm md:text-sm mb-4 md:mb-6 flex-1">Block distractions and enter the flow state.</p>
 
                         <div className="mt-auto flex">
                             <div className="flex items-center gap-2 text-purple-400 text-[11px] sm:text-xs md:text-sm font-medium bg-purple-500/10 py-1.5 md:py-2 px-2.5 md:px-3 rounded-lg w-fit group-hover:bg-purple-500/20 transition-colors">
@@ -179,10 +179,10 @@ export default function Dashboard() {
                     </div>
 
                     <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-green-500/20 w-fit p-2 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <div className="bg-green-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
                             <Activity className="w-5 md:w-6 h-5 md:h-6 text-green-400" />
                         </div>
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-1 md:mb-2">Daily Goals</h3>
+                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Daily Habits</h3>
 
                         <div className="flex items-end gap-2 mb-2">
                             <span className="text-2xl md:text-3xl font-bold text-white">{completedToday}</span>
@@ -221,10 +221,10 @@ export default function Dashboard() {
                     </div>
 
                     <div className="relative z-10 flex flex-col h-full">
-                        <div className="bg-pink-500/20 w-fit p-2 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <div className="bg-pink-500/20 w-fit p-2.5 md:p-3 rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
                             <Book className="w-5 md:w-6 h-5 md:h-6 text-pink-400" />
                         </div>
-                        <h3 className="text-base md:text-xl font-semibold text-white mb-1 md:mb-2">Journal</h3>
+                        <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2 text-glow">Journal</h3>
 
                         {journals.length > 0 && new Date(journals[0].date).toDateString() === new Date().toDateString() ? (
                             <>
@@ -253,7 +253,7 @@ export default function Dashboard() {
 
             {/* ── Stats Panel ── */}
             {stats && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Productivity Score */}
                     <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
@@ -262,7 +262,7 @@ export default function Dashboard() {
                                 <Brain className="w-4 h-4 text-indigo-400" />
                                 <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Productivity</span>
                             </div>
-                            <div className="text-4xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-lg text-zinc-500">/100</span></div>
+                            <div className="text-4xl md:text-4xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-lg text-zinc-500">/100</span></div>
                             <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                                 <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${stats.productivityScore}%` }} />
                             </div>
@@ -276,7 +276,7 @@ export default function Dashboard() {
                             <Award className="w-4 h-4 text-amber-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Best Streak</span>
                         </div>
-                        <div className="text-3xl font-bold text-amber-400 tabular-nums">{stats.habits?.bestStreak || 0}<span className="text-sm text-zinc-500"> days</span></div>
+                        <div className="text-3xl md:text-3xl font-bold text-amber-400 tabular-nums">{stats.habits?.bestStreak || 0}<span className="text-sm text-zinc-500"> days</span></div>
                         <p className="text-xs text-zinc-500 mt-1">{stats.habits?.totalCompletions || 0} total completions</p>
                     </div>
 
@@ -286,7 +286,7 @@ export default function Dashboard() {
                             <Book className="w-4 h-4 text-pink-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Journal Streak</span>
                         </div>
-                        <div className="text-3xl font-bold text-pink-400 tabular-nums">{stats.journal?.streak || 0}<span className="text-sm text-zinc-500"> days</span></div>
+                        <div className="text-3xl md:text-3xl font-bold text-pink-400 tabular-nums">{stats.journal?.streak || 0}<span className="text-sm text-zinc-500"> days</span></div>
                         <p className="text-xs text-zinc-500 mt-1">{stats.journal?.total || 0} total entries</p>
                     </div>
 
@@ -296,7 +296,7 @@ export default function Dashboard() {
                             <Target className="w-4 h-4 text-emerald-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Goals</span>
                         </div>
-                        <div className="text-3xl font-bold text-emerald-400 tabular-nums">{stats.goals?.avgProgress || 0}<span className="text-sm text-zinc-500">% avg</span></div>
+                        <div className="text-3xl md:text-3xl font-bold text-emerald-400 tabular-nums">{stats.goals?.avgProgress || 0}<span className="text-sm text-zinc-500">% avg</span></div>
                         <p className="text-xs text-zinc-500 mt-1">{stats.goals?.active || 0} active · {stats.goals?.completed || 0} done</p>
                     </Link>
                 </div>
@@ -468,7 +468,7 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Bars */}
-                                <div className="flex items-end justify-between gap-2 md:gap-3 pl-8" style={{ height: BAR_H + 28 }}>
+                                <div className="flex items-end justify-between gap-1.5 sm:gap-3 pl-6 sm:pl-8" style={{ height: BAR_H + 28 }}>
                                     {chartData.map((data, i) => {
                                         const fillPx = data.value > 0
                                             ? Math.max(Math.round((data.value / 100) * BAR_H), 8)

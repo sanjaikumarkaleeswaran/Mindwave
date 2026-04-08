@@ -64,8 +64,8 @@ export default function GoalsPage() {
             {/* ── Page header ── */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Goals</h1>
-                    <p className="text-zinc-500 mt-1">Set intentions, track milestones, achieve more.</p>
+                    <h1 className="text-4xl md:text-4xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">Goals</h1>
+                    <p className="text-zinc-500 text-sm md:text-base mt-1">Set intentions, track milestones, achieve more.</p>
                 </div>
                 <div className="hidden md:flex gap-2 w-auto">
                     <button onClick={() => setShowChat(true)}
@@ -79,19 +79,20 @@ export default function GoalsPage() {
                 </div>
             </div>
 
-            {/* ── Stats (Swipeable on Mobile) ── */}
-            <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-                {[
-                    { label: 'Active',      value: totalActive, color: 'text-emerald-400' },
-                    { label: 'Completed',   value: totalDone,   color: 'text-indigo-400'  },
-                    { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400' },
-                ].map((s, i) => (
-                    <div key={s.label} className="flex-none w-[75vw] sm:w-[50vw] md:w-auto md:flex-1 snap-center bg-zinc-900/60 border border-white/5 rounded-2xl p-5 text-center shadow-lg">
-                        <div className={`text-3xl md:text-3xl font-bold ${s.color}`}>{s.value}</div>
-                        <div className="text-sm text-zinc-500 uppercase tracking-widest mt-2 font-medium">{s.label}</div>
-                    </div>
-                ))}
-            </div>
+                {/* ── Stats (Swipeable on Mobile) ── */}
+                <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-4 overflow-x-auto pb-4 px-1 -mx-1 [&::-webkit-scrollbar]:hidden snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+                    {[
+                        { label: 'Active',      value: totalActive, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                        { label: 'Completed',   value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+                        { label: 'Avg Progress',value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                    ].map((s, i) => (
+                        <div key={s.label} className="flex-none w-[70vw] sm:w-[50vw] md:w-auto md:flex-1 snap-center premium-card p-6 flex flex-col items-center justify-center relative overflow-hidden group">
+                            <div className={`absolute -top-10 -right-10 w-24 h-24 ${s.bg} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700`} />
+                            <div className={`text-4xl md:text-3xl font-bold ${s.color} relative z-10`}>{s.value}</div>
+                            <div className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mt-3 font-bold relative z-10">{s.label}</div>
+                        </div>
+                    ))}
+                </div>
 
             {/* ── Filter pills ── */}
             <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
