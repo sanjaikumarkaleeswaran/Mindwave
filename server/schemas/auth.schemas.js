@@ -28,6 +28,7 @@ const updatePreferencesSchema = z.object({
         aiTone: z.string().optional(),
         voiceEnabled: z.boolean().optional(),
         selectedModel: z.string().optional(),
+        productivityTarget: z.number().min(0).max(100).optional(),
         lastNotificationCheck: z.string().datetime().optional(),
     }).strict(),
 });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
@@ -20,6 +20,27 @@ export default function Dashboard() {
     const [quote, setQuote] = useState("");
     const [, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
+    const { updatePreferences } = useAuth();
+    const [isSavingTarget, setIsSavingTarget] = useState(false);
+    const [localTarget, setLocalTarget] = useState(user?.preferences?.productivityTarget || 75);
+
+    useEffect(() => {
+        if (user?.preferences?.productivityTarget !== undefined) {
+            setLocalTarget(user.preferences.productivityTarget);
+        }
+    }, [user?.preferences?.productivityTarget]);
+
+    const handleTargetChange = async (newVal) => {
+        setLocalTarget(newVal);
+        setIsSavingTarget(true);
+        try {
+            await updatePreferences({ productivityTarget: newVal });
+        } catch (err) {
+            console.error("Failed to update target", err);
+        } finally {
+            setIsSavingTarget(false);
+        }
+    };
 
     useEffect(() => {
         // Set Greeting Phrase
@@ -115,6 +136,36 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Quick Actions Slider (Item #2) */}
+            <div className="relative group">
+                <div className="flex items-center gap-2 mb-3 px-1">
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Quick Actions</h2>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar -mx-1 px-1 snap-x scroll-smooth">
+                    {[
+                        { label: 'New Habit', icon: <Activity className="w-4 h-4" />, color: 'text-green-400', bg: 'bg-green-500/10', link: '/habits' },
+                        { label: 'Chat AI', icon: <MessageSquare className="w-4 h-4" />, color: 'text-indigo-400', bg: 'bg-indigo-500/10', link: '/chat' },
+                        { label: 'New Goal', icon: <Target className="w-4 h-4" />, color: 'text-emerald-400', bg: 'bg-emerald-500/10', link: '/goals' },
+                        { label: 'Journal', icon: <Book className="w-4 h-4" />, color: 'text-pink-400', bg: 'bg-pink-500/10', link: '/journal' },
+                        { label: 'Focus Timer', icon: <Timer className="w-4 h-4" />, color: 'text-purple-400', bg: 'bg-purple-500/10', link: '/focus' },
+                        { label: 'Log Water', icon: <Droplets className="w-4 h-4" />, color: 'text-blue-400', bg: 'bg-blue-500/10', link: '/habits' },
+                    ].map((action, i) => (
+                        <Link key={i} to={action.link} className="flex-none snap-start group/act">
+                            <div className="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-3 pr-5 transition-all active:scale-95">
+                                <div className={`w-10 h-10 rounded-xl ${action.bg} flex items-center justify-center ${action.color} group-hover/act:scale-110 transition-transform`}>
+                                    {action.icon}
+                                </div>
+                                <div className="space-y-0.5">
+                                    <p className="text-sm font-bold text-zinc-200 whitespace-nowrap">{action.label}</p>
+                                    <p className="text-[9px] text-zinc-600 font-medium">Quick tap</p>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+
             {/* Main Details Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {/* 1. Ask AI Card */}
@@ -181,18 +232,46 @@ export default function Dashboard() {
             {stats && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Productivity Score */}
-                    <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1">
+                    <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1 group/prod">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
                         <div className="relative">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Brain className="w-3.5 h-3.5 text-indigo-400" />
-                                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                    <Brain className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
+                                </div>
+                                <div className={`transition-opacity duration-300 ${isSavingTarget ? 'opacity-100' : 'opacity-0'}`}>
+                                    <Loader2 className="w-3 h-3 text-indigo-500 animate-spin" />
+                                </div>
                             </div>
-                            <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}<span className="text-base text-zinc-500">/100</span></div>
-                            <div className="mt-2 w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${stats.productivityScore}%` }} />
+                            
+                            <div className="flex items-baseline gap-1">
+                                <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}</div>
+                                <div className="text-xs font-bold text-zinc-500">of {localTarget} target</div>
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1">Weekly score</p>
+
+                            {/* Score Bar */}
+                            <div className="mt-3 w-full bg-zinc-800/50 h-1.5 rounded-full overflow-hidden">
+                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.productivityScore / localTarget) * 100)}%` }} />
+                            </div>
+
+                            {/* Target Slider (Item #1) */}
+                            <div className="mt-4 pt-4 border-t border-white/[0.03] space-y-2">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-zinc-500 uppercase">
+                                    <span>Set Target</span>
+                                    <span className="text-indigo-400">{localTarget}%</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    min="1" 
+                                    max="100" 
+                                    value={localTarget} 
+                                    onChange={(e) => setLocalTarget(parseInt(e.target.value))}
+                                    onMouseUp={(e) => handleTargetChange(parseInt(e.target.value))}
+                                    onTouchEnd={(e) => handleTargetChange(parseInt(e.target.value))}
+                                    className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                                />
+                            </div>
                         </div>
                     </div>
 

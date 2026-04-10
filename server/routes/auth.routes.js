@@ -178,7 +178,7 @@ router.put('/preferences', auth, validate(updatePreferencesSchema), async (req, 
         }
 
         // Update preferences sub-document
-        const prefKeys = ['theme', 'aiTone', 'voiceEnabled', 'selectedModel'];
+        const prefKeys = ['theme', 'aiTone', 'voiceEnabled', 'selectedModel', 'productivityTarget'];
         prefKeys.forEach(key => {
             if (req.body[key] !== undefined) {
                 user.preferences[key] = req.body[key];

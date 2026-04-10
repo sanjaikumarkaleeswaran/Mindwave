@@ -176,10 +176,13 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### April 10, 2026 — Productivity Logic & Dashboard UX
+- 📈 **Personalized Productivity Targets** — users can now set custom productivity targets (0–100%) directly from the dashboard via an interactive range slider. The productivity score now calculates progress relative to this personal target.
+- ⚡ **Dashboard Quick Actions** — added a horizontal action slider for one-tap navigation to core features like "New Habit", "Log Water", and "Focus Timer", significantly improving the mobile experience.
+- 🛠 **System Preferences Update** — expanded the User model and Auth API to support granular persistence of productivity targets across devices.
+- 🎨 **Mobile UI Unification** — finalized the migration of dashboard card layouts to a clean, utility-based CSS architecture.
+
 ### April 7, 2026 — Workspace Optimization & Repository Guide
-- 🧹 **Deep Workspace Cleanup** — performed a comprehensive removal of temporary debug logs (`log.txt`, `api_error.log`), crash reports (`*_crash.json`), and local test scripts (`test_*.js`). This ensures a distraction-free development environment focused strictly on core application logic.
-- 📂 **Standardized Repository Rules** — established a clear guideline for files to push vs. files to ignore. Documentation now includes explicit instructions on managing `.env` security and avoiding committing `node_modules` or local build artifacts.
-- 🚀 **Project Scenario Finalized** — the MindWave Life OS is now in a "Clean & Production-Ready" state, with all advanced features (RAG, Multimodal Vision, Web Audio Chimes) fully documented and verified.
 
 ---
 

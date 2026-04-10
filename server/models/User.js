@@ -9,7 +9,8 @@ const UserSchema = new mongoose.Schema({
     theme: { type: String, default: 'dark' },
     aiTone: { type: String, default: 'helpful' },
     voiceEnabled: { type: Boolean, default: false },
-    selectedModel: { type: String, default: 'llama-3.3-70b-versatile' }
+    selectedModel: { type: String, default: 'llama-3.3-70b-versatile' },
+    productivityTarget: { type: Number, default: 75 }
   },
   lastNotificationCheck: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
