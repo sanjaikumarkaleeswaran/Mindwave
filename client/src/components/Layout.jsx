@@ -70,33 +70,36 @@ export default function Layout() {
             {/* Main content area — shifts right on desktop to avoid sidebar overlap */}
             <div className="flex-1 flex flex-col min-h-screen min-h-[100dvh] md:ml-64 transition-all duration-300 relative">
                 {/* Sticky Top Header */}
-                <header className="flex items-center justify-between px-4 py-3 glass sticky top-0 z-30 border-b border-white/5">
+                <header 
+                    className="flex items-center justify-between px-4 glass sticky top-0 z-30 border-b border-white/5"
+                    style={{ height: 'var(--header-h)', paddingTop: 'env(safe-area-inset-top, 0px)' }}
+                >
                     {/* Left: Hamburger + brand (mobile only) */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                            className="md:hidden p-2 -ml-2 text-zinc-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors active:scale-90"
                             aria-label="Open menu"
                         >
-                            <Menu className="w-6 h-6" />
+                            <Menu className="w-5 h-5" />
                         </button>
-                        <span className="md:hidden font-semibold text-lg bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                        <span className="md:hidden font-black text-xl tracking-tighter bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                             MindWave
                         </span>
                     </div>
 
                     {/* Right: Search + Notifications */}
                     <div className="flex items-center gap-2">
-                        {/* Search button */}
+                        {/* Search icon-only on mobile to save space */}
                         <button
                             id="global-search-btn"
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center gap-2 px-3 py-2 bg-zinc-800/60 hover:bg-zinc-800 border border-zinc-700/50 rounded-xl text-zinc-500 hover:text-zinc-300 transition-all text-sm"
+                            className="flex items-center gap-2 p-2 md:px-3 md:py-2 bg-zinc-800/60 hover:bg-zinc-800 border border-zinc-700/50 rounded-xl text-zinc-500 hover:text-zinc-300 transition-all text-sm"
                             aria-label="Open search"
                         >
                             <Search className="w-4 h-4" />
                             <span className="hidden md:block text-xs">Search...</span>
-                            <kbd className="hidden md:block text-[10px] bg-zinc-700/50 border border-zinc-600/50 rounded px-1">⌘K</kbd>
+                            <kbd className="hidden md:block text-[10px] bg-zinc-700/50 border border-zinc-600/50 rounded px-1 ml-1 font-sans">⌘K</kbd>
                         </button>
 
                         {/* Notifications */}
@@ -105,14 +108,14 @@ export default function Layout() {
                 </header>
 
                 {/* Page content */}
-                <main className="flex-1">
+                <main className="flex-1 relative">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={location.pathname}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            transition={{ duration: 0.2 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
                             className="h-full"
                         >
                             <Outlet />
@@ -123,10 +126,10 @@ export default function Layout() {
 
             {/* ── Mobile Bottom Navigation Bar ── */}
             <nav
-                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/95 backdrop-blur-xl flex items-stretch justify-around"
+                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/90 backdrop-blur-2xl flex items-stretch justify-around border-t border-white/5"
                 style={{
                     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-                    boxShadow: '0 -1px 0 rgba(255,255,255,0.05)'
+                    height: 'calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px))'
                 }}
             >
                 {BOTTOM_NAV.map(({ icon: Icon, label, path, end }) => (
@@ -135,31 +138,29 @@ export default function Layout() {
                         to={path}
                         end={end}
                         className={({ isActive }) => clsx(
-                            'flex flex-col items-center justify-center gap-1 py-2 px-1 min-w-0 flex-1 relative transition-all',
+                            'flex flex-col items-center justify-center gap-1 py-1 px-1 min-w-0 flex-1 relative transition-all active:scale-90',
                             isActive ? 'text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'
                         )}
                         aria-label={label}
                     >
                         {({ isActive }) => (
                             <>
-                                {/* Indicator line — always rendered, invisible when inactive to prevent layout animation glitch */}
+                                {/* Indicator line */}
                                 <div
-                                    className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-full transition-all duration-300"
-                                    style={{
-                                        background: 'rgb(99 102 241)',
-                                        opacity: isActive ? 1 : 0,
-                                        transform: 'translateX(-50%)',
-                                    }}
+                                    className={clsx(
+                                        "absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(99,102,241,0.5)]",
+                                        isActive ? "bg-indigo-500 opacity-100" : "bg-transparent opacity-0"
+                                    )}
                                 />
                                 {/* Icon */}
                                 <div className={clsx(
                                     'p-1.5 rounded-xl transition-all',
-                                    isActive ? 'bg-indigo-500/15' : ''
+                                    isActive ? 'bg-indigo-500/10' : ''
                                 )}>
                                     <Icon className={clsx('w-5 h-5', isActive ? 'text-indigo-400' : 'text-zinc-500')} />
                                 </div>
                                 {/* Label */}
-                                <span className={clsx('text-[10px] font-medium leading-none', isActive ? 'text-indigo-400' : 'text-zinc-600')}>
+                                <span className={clsx('text-[10px] font-bold leading-none tracking-tight', isActive ? 'text-indigo-400' : 'text-zinc-500')}>
                                     {label}
                                 </span>
                             </>

@@ -121,14 +121,14 @@ export default function Dashboard() {
 
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-black text-white tracking-tighter leading-none">
+                <div className="space-y-1">
+                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-[0.9]">
                         {greeting}, <br/>
                         <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     </h1>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-[0.2em]">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 mt-3 uppercase tracking-[0.2em] bg-zinc-800/30 w-fit px-2 py-1 rounded-lg border border-white/5">
                         <Sparkles className="w-2.5 h-2.5 text-indigo-400" />
-                        <span>{quote.split(':')[0].substring(0, 25)}…</span>
+                        <span className="truncate max-w-[200px]">{quote.split(':')[0]}</span>
                     </div>
                 </div>
                 <div className="text-right hidden md:block">
@@ -142,7 +142,7 @@ export default function Dashboard() {
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                     <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Quick Actions</h2>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar -mx-1 px-1 snap-x scroll-smooth">
+                <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 snap-x scroll-smooth">
                     {[
                         { label: 'New Habit', icon: <Activity className="w-4 h-4" />, color: 'text-green-400', bg: 'bg-green-500/10', link: '/habits' },
                         { label: 'Chat AI', icon: <MessageSquare className="w-4 h-4" />, color: 'text-indigo-400', bg: 'bg-indigo-500/10', link: '/chat' },
@@ -152,13 +152,13 @@ export default function Dashboard() {
                         { label: 'Log Water', icon: <Droplets className="w-4 h-4" />, color: 'text-blue-400', bg: 'bg-blue-500/10', link: '/habits' },
                     ].map((action, i) => (
                         <Link key={i} to={action.link} className="flex-none snap-start group/act">
-                            <div className="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-3 pr-5 transition-all active:scale-95">
-                                <div className={`w-10 h-10 rounded-xl ${action.bg} flex items-center justify-center ${action.color} group-hover/act:scale-110 transition-transform`}>
+                            <div className="flex items-center gap-3 bg-zinc-900/60 backdrop-blur-md border border-white/5 hover:border-indigo-500/30 rounded-2xl p-3 pr-5 transition-all active:scale-95 shadow-xl">
+                                <div className={`w-10 h-10 rounded-xl ${action.bg} flex items-center justify-center ${action.color} group-hover/act:scale-110 transition-transform shadow-inner`}>
                                     {action.icon}
                                 </div>
                                 <div className="space-y-0.5">
                                     <p className="text-sm font-bold text-zinc-200 whitespace-nowrap">{action.label}</p>
-                                    <p className="text-[9px] text-zinc-600 font-medium">Quick tap</p>
+                                    <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-tighter">Instant access</p>
                                 </div>
                             </div>
                         </Link>
@@ -169,62 +169,62 @@ export default function Dashboard() {
             {/* Main Details Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/chat" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-colors">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-all group-hover:rotate-6">
                             <Sparkles className="w-6 h-6 text-indigo-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Ask AI</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Brainstorm ideas & plan.</p>
+                            <h3 className="font-black text-sm md:text-base text-white tracking-tight leading-tight">Ask AI</h3>
+                            <p className="text-zinc-500 text-[10px] font-bold mt-1 uppercase tracking-tighter leading-none">Brainstorming</p>
                         </div>
                     </div>
-                    <Sparkles className="absolute -right-2 -bottom-2 w-20 h-20 text-indigo-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    <Sparkles className="absolute -right-4 -bottom-4 w-24 h-24 text-indigo-500/5 opacity-10 transition-all group-hover:scale-125 group-hover:-rotate-12" />
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/focus" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-colors">
+                        <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-all group-hover:-rotate-6">
                             <Zap className="w-6 h-6 text-purple-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Focus Mode</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Enter the deep flow state.</p>
+                            <h3 className="font-black text-sm md:text-base text-white tracking-tight leading-tight">Focus</h3>
+                            <p className="text-zinc-500 text-[10px] font-bold mt-1 uppercase tracking-tighter leading-none">Deep Flow</p>
                         </div>
                     </div>
-                    <Zap className="absolute -right-2 -bottom-2 w-20 h-20 text-purple-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    <Zap className="absolute -right-4 -bottom-4 w-24 h-24 text-purple-500/5 opacity-10 transition-all group-hover:scale-125 group-hover:rotate-12" />
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/habits" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-colors">
+                        <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-all group-hover:scale-110">
                             <Activity className="w-6 h-6 text-green-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Habits</h3>
-                            <div className="flex items-end gap-1 mt-0.5">
+                            <h3 className="font-black text-sm md:text-base text-white tracking-tight leading-tight">Habits</h3>
+                            <div className="flex items-baseline gap-1 mt-1">
                                 <span className="text-xl font-black text-white">{completedToday}</span>
-                                <span className="text-zinc-500 font-bold text-[8px] mb-0.5 uppercase tracking-widest">/ {habits.length} done</span>
+                                <span className="text-zinc-500 font-bold text-[9px] uppercase tracking-widest">/ {habits.length}</span>
                             </div>
                         </div>
                     </div>
-                    <Activity className="absolute -right-2 -bottom-2 w-20 h-20 text-green-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    <Activity className="absolute -right-4 -bottom-4 w-24 h-24 text-green-500/5 opacity-10 transition-all group-hover:scale-125" />
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[100px] overflow-hidden rounded-2xl p-4 bg-zinc-900/80 border border-zinc-700/50 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/journal" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
-                        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-colors">
+                        <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-all group-hover:-rotate-3">
                             <Book className="w-6 h-6 text-pink-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm md:text-base text-white tracking-tight leading-tight">Journal</h3>
-                            <p className="text-zinc-500 text-[10px] font-medium mt-0.5 line-clamp-1">Reflect on your journey.</p>
+                            <h3 className="font-black text-sm md:text-base text-white tracking-tight leading-tight">Journal</h3>
+                            <p className="text-zinc-500 text-[10px] font-bold mt-1 uppercase tracking-tighter leading-none">Reflection</p>
                         </div>
                     </div>
-                    <Book className="absolute -right-1 -bottom-1 w-20 h-20 text-pink-500/5 opacity-20 transition-transform group-hover:scale-110" />
+                    <Book className="absolute -right-4 -bottom-4 w-24 h-24 text-pink-500/5 opacity-10 transition-all group-hover:scale-125" />
                 </Link>
             </div>
 
@@ -255,22 +255,25 @@ export default function Dashboard() {
                                 <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.productivityScore / localTarget) * 100)}%` }} />
                             </div>
 
-                            {/* Target Slider (Item #1) */}
-                            <div className="mt-4 pt-4 border-t border-white/[0.03] space-y-2">
-                                <div className="flex items-center justify-between text-[10px] font-bold text-zinc-500 uppercase">
-                                    <span>Set Target</span>
-                                    <span className="text-indigo-400">{localTarget}%</span>
+                             {/* Target Slider (Item #1) */}
+                            <div className="mt-4 pt-4 border-t border-white/[0.03] space-y-4">
+                                <div className="flex items-center justify-between text-[11px] font-black text-zinc-500 uppercase tracking-widest">
+                                    <span>Goal Target</span>
+                                    <span className="text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">{localTarget}%</span>
                                 </div>
-                                <input 
-                                    type="range" 
-                                    min="1" 
-                                    max="100" 
-                                    value={localTarget} 
-                                    onChange={(e) => setLocalTarget(parseInt(e.target.value))}
-                                    onMouseUp={(e) => handleTargetChange(parseInt(e.target.value))}
-                                    onTouchEnd={(e) => handleTargetChange(parseInt(e.target.value))}
-                                    className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                                />
+                                <div className="relative h-6 flex items-center group/slider">
+                                    <input 
+                                        type="range" 
+                                        min="1" 
+                                        max="100" 
+                                        value={localTarget} 
+                                        onChange={(e) => setLocalTarget(parseInt(e.target.value))}
+                                        onMouseUp={(e) => handleTargetChange(parseInt(e.target.value))}
+                                        onTouchEnd={(e) => handleTargetChange(parseInt(e.target.value))}
+                                        className="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-indigo-500"
+                                    />
+                                    {/* Subtle tooltips or markers could be added here if needed */}
+                                </div>
                             </div>
                         </div>
                     </div>
