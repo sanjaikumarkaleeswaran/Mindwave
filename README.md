@@ -40,6 +40,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Smart Notification Bell** — real-time alerts for overdue milestones, habits at risk of losing streaks, and daily reminders.
 - **Global Semantic Search** — one search bar to find anything across goals, habits, and journals. Includes **vector-search** for content *inside* your uploaded PDFs.
 
+### 📊 Personalized Productivity & Quick Actions
+- **Interactive Productivity Targets** — set your own daily/weekly goals (0–100%) via a high-performance range slider on the dashboard. The system automatically recalculates your progress rings relative to your personal baseline.
+- **Horizontal Quick Action Slider** — a touch-optimized scrolling strip for mobile that provides one-tap access to your most-used tools: *Log Habit, AI Chat, New Goal, Journal,* and *Focus Timer*.
+- **Dynamic 7-Day Activity Chart** — a glow-accented bar chart visualizing habit completion rates with live status indicators and historical averages.
+
 ### 📱 Mobile-First Experience
 - **Bottom Navigation Bar** — persistent mobile nav with smooth spring-animated active indicator that sits flush at the top of the bar.
 - **Safe Area Inset Support** — proper padding for iPhone notches, Dynamic Island, and home indicator bars.
@@ -168,6 +173,8 @@ This application is ready for production deployment:
 - [x] Voice Interface (STT & TTS)
 - [x] Full mobile UI optimization (safe area, bottom nav, responsive grids)
 - [x] Mobile-safe timer completion notifications (ServiceWorker API)
+- [x] Interactive Productivity Target Sliders
+- [x] Dashboard Quick Action Strip (Mobile UX)
 - [ ] Backend-driven Push Notifications (Web Push API)
 - [ ] Shared Goals & Collaboration features
 - [ ] Integration with External Calendars (Google/Outlook)
