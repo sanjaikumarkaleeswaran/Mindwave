@@ -96,7 +96,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Brand */}
-                <div className="p-6 flex items-center gap-3">
+                <div className="p-6 flex items-center gap-3" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
                         <Zap className="w-5 h-5 text-white" fill="currentColor" />
                     </div>

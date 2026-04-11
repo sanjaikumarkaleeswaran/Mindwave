@@ -74,7 +74,8 @@ export default function GoalsPage() {
             </div>
 
             {/* ── Action bar (Habit Style) ── */}
-            <div className="grid grid-cols-2 gap-3 bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 sticky top-2 z-30 backdrop-blur-xl shadow-2xl">
+            <div className="grid grid-cols-2 gap-3 bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 sticky z-30 backdrop-blur-xl shadow-2xl"
+                style={{ top: 'calc(var(--header-h) + 0.5rem)' }}>
                 <button onClick={() => setShowChat(true)}
                     className="flex items-center justify-center gap-2 p-4 bg-zinc-800/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
                     <Bot className="h-4 w-4 text-indigo-400" />

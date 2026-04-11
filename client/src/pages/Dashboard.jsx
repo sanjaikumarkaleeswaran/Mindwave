@@ -114,7 +114,7 @@ export default function Dashboard() {
     const isChartEmpty = chartData.every(d => d.value === 0);
 
     return (
-        <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto mobile-page-pad pb-24 md:pb-8 overflow-x-hidden">
+        <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
             <Helmet>
                 <title>Dashboard | Life OS</title>
             </Helmet>
@@ -122,11 +122,11 @@ export default function Dashboard() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-[0.9]">
+                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">
                         {greeting}, <br/>
                         <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
                     </h1>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 mt-3 uppercase tracking-[0.2em] bg-zinc-800/30 w-fit px-2 py-1 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 mt-3 uppercase tracking-[0.2em] bg-zinc-800/30 max-w-full w-fit px-2 py-1 rounded-lg border border-white/5">
                         <Sparkles className="w-2.5 h-2.5 text-indigo-400" />
                         <span className="truncate max-w-[200px]">{quote.split(':')[0]}</span>
                     </div>
@@ -169,7 +169,7 @@ export default function Dashboard() {
             {/* Main Details Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/chat" className="relative h-[110px] overflow-hidden glass-card p-4 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-all group-hover:rotate-6">
                             <Sparkles className="w-6 h-6 text-indigo-400" />
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/focus" className="relative h-[110px] overflow-hidden glass-card p-4 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-all group-hover:-rotate-6">
                             <Zap className="w-6 h-6 text-purple-400" />
@@ -197,7 +197,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/habits" className="relative h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-all group-hover:scale-110">
                             <Activity className="w-6 h-6 text-green-400" />
@@ -214,7 +214,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[110px] overflow-hidden rounded-[2rem] p-4 bg-zinc-900/80 border border-white/5 shadow-xl backdrop-blur-md transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/journal" className="relative h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-all group-hover:-rotate-3">
                             <Book className="w-6 h-6 text-pink-400" />
@@ -230,9 +230,9 @@ export default function Dashboard() {
 
             {/* ── Stats Panel ── */}
             {stats && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Productivity Score */}
-                    <div className="relative glass-card p-5 overflow-hidden col-span-2 md:col-span-1 group/prod">
+                    <div className="relative glass-card p-5 overflow-hidden group/prod">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
                         <div className="relative">
                             <div className="flex items-center justify-between mb-2">

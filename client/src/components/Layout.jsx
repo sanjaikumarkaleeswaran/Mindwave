@@ -72,7 +72,7 @@ export default function Layout() {
                 {/* Sticky Top Header */}
                 <header 
                     className="flex items-center justify-between px-4 glass sticky top-0 z-30 border-b border-white/5"
-                    style={{ height: 'var(--header-h)', paddingTop: 'env(safe-area-inset-top, 0px)' }}
+                    style={{ minHeight: 'var(--header-h)', paddingTop: 'env(safe-area-inset-top, 0px)' }}
                 >
                     {/* Left: Hamburger + brand (mobile only) */}
                     <div className="flex items-center gap-2">
