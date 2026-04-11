@@ -114,7 +114,7 @@ export default function Dashboard() {
     const isChartEmpty = chartData.every(d => d.value === 0);
 
     return (
-        <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
+        <div className="p-5 md:p-8 space-y-5 md:space-y-10 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
             <Helmet>
                 <title>Dashboard | Life OS</title>
             </Helmet>
@@ -136,8 +136,8 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Quick Actions Slider (Item #2) */}
-            <div className="relative group">
+            {/* Quick Actions Slider (Item #2) - Show only on mobile for quick access */}
+            <div className="relative group md:hidden">
                 <div className="flex items-center gap-2 mb-3 px-1">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                     <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Quick Actions</h2>
@@ -166,10 +166,10 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Main Details Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+            {/* Main Details Grid - Stacked on mobile like Habits page */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
                 {/* 1. Ask AI Card */}
-                <Link to="/chat" className="relative h-[110px] overflow-hidden glass-card p-4 transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/chat" className="relative min-h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-indigo-600/20 transition-all group-hover:rotate-6">
                             <Sparkles className="w-6 h-6 text-indigo-400" />
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 2. Focus Mode Card */}
-                <Link to="/focus" className="relative h-[110px] overflow-hidden glass-card p-4 transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/focus" className="relative min-h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-purple-600/20 transition-all group-hover:-rotate-6">
                             <Zap className="w-6 h-6 text-purple-400" />
@@ -197,7 +197,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 3. Habits Status Card */}
-                <Link to="/habits" className="relative h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/habits" className="relative min-h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-green-600/20 transition-all group-hover:scale-110">
                             <Activity className="w-6 h-6 text-green-400" />
@@ -214,7 +214,7 @@ export default function Dashboard() {
                 </Link>
 
                 {/* 4. Journal Card */}
-                <Link to="/journal" className="relative h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
+                <Link to="/journal" className="relative min-h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
                         <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center shadow-inner shrink-0 group-hover:bg-pink-600/20 transition-all group-hover:-rotate-3">
                             <Book className="w-6 h-6 text-pink-400" />
@@ -230,7 +230,7 @@ export default function Dashboard() {
 
             {/* ── Stats Panel ── */}
             {stats && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     {/* Productivity Score */}
                     <div className="relative glass-card p-5 overflow-hidden group/prod">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />

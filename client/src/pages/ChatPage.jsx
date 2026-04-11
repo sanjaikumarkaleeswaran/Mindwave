@@ -336,7 +336,7 @@ export default function ChatPage() {
                         </p>
 
                         {/* Suggestions - Swipeable on mobile */}
-                        <div className="flex md:grid md:grid-cols-2 gap-2 md:gap-3 w-full max-w-[100vw] md:max-w-lg mb-6 md:mb-8 overflow-x-auto snap-x snap-mandatory px-4 md:px-0 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                        <div className="flex md:grid md:grid-cols-2 gap-2 md:gap-3 w-full max-w-[100vw] md:max-w-lg mb-6 md:mb-8 overflow-x-auto snap-x snap-mandatory px-5 md:px-0 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                             {suggestions.map((s, i) => (
                                 <button
                                     key={i}

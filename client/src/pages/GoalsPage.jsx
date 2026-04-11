@@ -58,7 +58,7 @@ export default function GoalsPage() {
     ];
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 mobile-page-pad pb-40 md:pb-12">
+        <div className="p-5 md:p-8 space-y-5 md:space-y-10 max-w-7xl mx-auto mobile-page-pad pb-40 md:pb-12">
             <Helmet><title>Goals | Life OS</title></Helmet>
 
             {/* ── Page header ── */}
