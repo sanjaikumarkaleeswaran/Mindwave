@@ -5,6 +5,7 @@ const Habit = require('../models/Habit');
 const Journal = require('../models/Journal');
 const Conversation = require('../models/Conversation');
 const Goal = require('../models/Goal');
+const Expense = require('../models/Expense');
 const { searchSimilarChunks } = require('../utils/vectorStore');
 
 // GET /api/search?q=query
@@ -12,13 +13,13 @@ router.get('/', auth, async (req, res) => {
     try {
         const q = req.query.q || '';
         if (!q || q.trim().length < 2) {
-            return res.json({ habits: [], journals: [], conversations: [], goals: [] });
+            return res.json({ habits: [], journals: [], conversations: [], goals: [], expenses: [] });
         }
 
         const regex = { $regex: q, $options: 'i' };
         const userId = req.user.id;
 
-        const [habits, journals, conversations, goals, documents] = await Promise.all([
+        const [habits, journals, conversations, goals, expenses, documents] = await Promise.all([
             Habit.find({ userId, name: regex }).limit(5).lean(),
             Journal.find({ userId, $or: [{ title: regex }, { content: regex }, { tags: regex }] })
                 .limit(5)
@@ -26,10 +27,11 @@ router.get('/', auth, async (req, res) => {
                 .lean(),
             Conversation.find({ userId, title: regex }).limit(5).lean(),
             Goal.find({ userId, $or: [{ title: regex }, { description: regex }] }).limit(5).lean(),
+            Expense.find({ userId, $or: [{ category: regex }, { note: regex }] }).limit(5).lean(),
             searchSimilarChunks(userId, q, null, 3) // Global search (no convo filter)
         ]);
 
-        res.json({ habits, journals, conversations, goals, documents });
+        res.json({ habits, journals, conversations, goals, expenses, documents });
     } catch (err) {
         console.error('Search Error:', err);
         res.status(500).json({ msg: 'Server Error' });

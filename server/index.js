@@ -69,6 +69,7 @@ app.use('/api/habits', require('./routes/habit.routes'));
 app.use('/api/chat', require('./routes/chat.routes'));
 app.use('/api/journal', require('./routes/journal.routes'));
 app.use('/api/goals', require('./routes/goal.routes'));
+app.use('/api/expenses', require('./routes/expense.routes'));
 app.use('/api/search', require('./routes/search.routes'));
 
 console.log('All routes loaded.');

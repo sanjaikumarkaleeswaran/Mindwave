@@ -5,6 +5,8 @@ const ChatHistory = require('../models/ChatHistory');
 const Conversation = require('../models/Conversation');
 const Habit = require('../models/Habit');
 const Goal = require('../models/Goal');
+const Expense = require('../models/Expense');
+const Budget = require('../models/Budget');
 const { getGroqCompletion } = require('../utils/llmCache');
 const multer = require('multer');
 const fs = require('fs');
@@ -193,6 +195,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         
         USER CONTEXT:
         - Habits: ${habits.map(h => `${h.name} (ID: ${h._id}, Streak: ${h.streak})`).join(', ') || 'None'}
+        - Date: ${new Date().toDateString()}
         
         ${ragContext}
 
@@ -200,10 +203,16 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         1. CREATE_HABIT: Track a new habit.
         2. DELETE_HABIT: Remove a habit.
         3. MARK_HABIT_COMPLETE: Mark a habit as done for today.
-        4. CREATE_GOAL: Create a structured goal plan with title, description, category (health, career, learning, finance, relationships, personal, other), targetDate (YYYY-MM-DD), and milestones (array of strings).
+        4. CREATE_GOAL: Create a structured goal plan.
+        5. CREATE_EXPENSE: Track income or expense. Fields: type ("income" | "expense"), amount (number), category (Food, Travel, Bills, Shopping, Health, Salary, Others), note (string), date (YYYY-MM-DD).
+        6. GET_EXPENSE_SUMMARY: Get current month's financial summary (income, expense, balance).
 
         INSTRUCTIONS:
-        - If the user relies on a document, look at the RELEVANT DOCUMENT EXCERPTS.
+        - If the user says "I spent 50 on lunch", trigger CREATE_EXPENSE with type: "expense", amount: 50, category: "Food".
+        - If the user says "Got 5000 salary", trigger CREATE_EXPENSE with type: "income", amount: 5000, category: "Salary".
+        - To CREATE an expense, output ONLY this JSON: {"action": "CREATE_EXPENSE", "type": "...", "amount": ..., "category": "...", "note": "...", "date": "..."}
+        - To GET expense summary, output ONLY this JSON: {"action": "GET_EXPENSE_SUMMARY"}
+        - All amounts are in INR (₹).
         - To CREATE a habit, output ONLY this JSON: {"action": "CREATE_HABIT", "name": "...", "frequency": "daily"}
         - To DELETE a habit, output ONLY this JSON: {"action": "DELETE_HABIT", "habitId": "..."}
         - If they DID a habit, output ONLY this JSON: {"action": "MARK_HABIT_COMPLETE", "habitId": "..."}
@@ -335,6 +344,38 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
                             });
                             await newGoal.save();
                             successCount++;
+                        }
+                        else if (actionData.action === 'CREATE_EXPENSE') {
+                            const newExpense = new Expense({
+                                userId: req.user.id,
+                                type: actionData.type || 'expense',
+                                amount: Number(actionData.amount),
+                                category: actionData.category || 'Others',
+                                note: actionData.note || '',
+                                date: actionData.date ? new Date(actionData.date) : new Date()
+                            });
+                            await newExpense.save();
+                            successCount++;
+                        }
+                        else if (actionData.action === 'GET_EXPENSE_SUMMARY') {
+                            const today = new Date();
+                            const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                            const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                            
+                            const expenses = await Expense.find({
+                                userId: req.user.id,
+                                date: { $gte: start, $lte: end }
+                            });
+
+                            const sum = expenses.reduce((acc, curr) => {
+                                if (curr.type === 'income') acc.income += curr.amount;
+                                else acc.expense += curr.amount;
+                                return acc;
+                            }, { income: 0, expense: 0 });
+
+                            aiResponseContent = `Your summary for ${today.toLocaleString('default', { month: 'long' })}:\n- Income: ₹${sum.income.toLocaleString('en-IN')}\n- Expenses: ₹${sum.expense.toLocaleString('en-IN')}\n- Balance: ₹${(sum.income - sum.expense).toLocaleString('en-IN')}`;
+                            toolExecuted = true;
+                            successCount++; 
                         }
                     } catch (innerErr) {
                         console.error("Error executing action:", innerErr);

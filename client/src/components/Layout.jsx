@@ -4,7 +4,7 @@ import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
 
 import { useState, useEffect } from 'react';
-import { Menu, Search, Home, MessageSquare, Zap, CheckCircle, Target, CalendarDays, BookOpen } from 'lucide-react';
+import { Menu, Search, Home, MessageSquare, Zap, CheckCircle, Target, CalendarDays, BookOpen, Wallet } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../lib/axios';
 import clsx from 'clsx';
@@ -14,7 +14,7 @@ const BOTTOM_NAV = [
     { icon: Home,         label: 'Home',    path: '/',        end: true  },
     { icon: CheckCircle,  label: 'Habits',  path: '/habits',  end: false },
     { icon: MessageSquare,label: 'Chat',    path: '/chat',    end: false },
-    { icon: Target,       label: 'Goals',   path: '/goals',   end: false },
+    { icon: Wallet,       label: 'Money',   path: '/expenses', end: false },
     { icon: BookOpen,     label: 'Journal', path: '/journal', end: false },
 ];
 

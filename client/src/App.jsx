@@ -20,6 +20,7 @@ const ResetPasswordPage = React.lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = React.lazy(() => import('./pages/VerifyEmailPage'));
 const GoalsPage = React.lazy(() => import('./pages/GoalsPage'));
 const CalendarPage = React.lazy(() => import('./pages/CalendarPage'));
+const ExpensesPage = React.lazy(() => import('./pages/ExpensesPage'));
 
 
 
@@ -94,6 +95,11 @@ function App() {
             <Route path="calendar" element={
               <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Calendar...</div>}>
                 <CalendarPage />
+              </Suspense>
+            } />
+            <Route path="expenses" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Expenses...</div>}>
+                <ExpensesPage />
               </Suspense>
             } />
           </Route>
