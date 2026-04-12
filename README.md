@@ -30,6 +30,13 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
+### 💰 Financial OS (Expense Tracker)
+- **Bento Grid Dashboard** — a world-class financial command center featuring modular cards for balance tracking, spending analytics, and category distribution.
+- **Smart Categorization** — log expenses and income with localized **INR (₹)** support.
+- **Threshold Monitoring** — set monthly budget limits per category with real-time progress tracking and "safe vs. over-limit" visual alerts.
+- **Spending Analytics** — dynamic bar charts and donut charts visualizing your weekly and monthly financial health.
+- **Data Portability** — export your full transaction history to **CSV** for secondary analysis.
+
 ### 🧘 Focus & Zen
 - **Pomodoro-style Timer** — built-in countdown with quick-select presets (5m, 15m, 25m, 50m) and custom hour/minute/second picker to help you stay in flow state.
 - **Smart Ambient Soundscapes** — curated royalty-free audio tracks that automatically play when the timer starts and pause when it stops.
@@ -65,6 +72,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons |
+| **Charts** | Recharts (Bento-style analytics) |
 | **State / Routing** | React Context, React Router v7, React Query (TanStack) |
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
 | **Backend** | Node.js, Express 5 |
@@ -117,14 +125,14 @@ Mindwave/
 ├── client/                     # React Frontend (Vite)
 │   ├── src/
 │   │   ├── components/         # NotificationBell, GlobalSearch, Sidebar, Layout
-│   │   ├── pages/              # Goals, Habits, Journal, Chat, Focus, Profile
+│   │   ├── pages/              # Goals, Habits, Journal, Chat, Focus, Profile, Expenses
 │   │   ├── context/            # Auth, Theme
 │   │   └── lib/                # Axios, utils
 │   └── public/                 # PWA icons & manifest
 │
 ├── server/                     # Node.js Backend (Express)
-│   ├── models/                 # User, Goal, Habit, Journal, VectorChunk
-│   ├── routes/                 # Auth, Chat (Tool & RAG), Search, Goals, Habits
+│   ├── models/                 # User, Goal, Habit, Journal, VectorChunk, Expense, Budget
+│   ├── routes/                 # Auth, Chat (Tool & RAG), Search, Goals, Habits, Expenses
 │   ├── middleware/             # Auth, Security (XSS, RateLimit, Sanitize)
 │   ├── utils/                  # VectorStore, LLM Orchestration
 │   └── index.js                # Entry point
@@ -149,6 +157,7 @@ Navigate to your local IP (e.g., `http://192.168.1.5:5173`) on your mobile brows
 - Responsive 2-column grids on small screens
 - Touch-friendly tap targets across all interactive elements
 - Habit table defaults to visible with horizontal scroll (only table scrolls, not the page)
+- **Financial Bento Grid** adapts to a vertical stream with priority card stacks
 
 ---
 
@@ -175,6 +184,7 @@ This application is ready for production deployment:
 - [x] Mobile-safe timer completion notifications (ServiceWorker API)
 - [x] Interactive Productivity Target Sliders
 - [x] Dashboard Quick Action Strip (Mobile UX)
+- [x] **Financial OS (Bento Grid Expense Tracker)**
 - [ ] Backend-driven Push Notifications (Web Push API)
 - [ ] Shared Goals & Collaboration features
 - [ ] Integration with External Calendars (Google/Outlook)
@@ -183,13 +193,16 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
-### April 10, 2026 — Productivity Logic & Dashboard UX
-- 📈 **Personalized Productivity Targets** — users can now set custom productivity targets (0–100%) directly from the dashboard via an interactive range slider. The productivity score now calculates progress relative to this personal target.
-- ⚡ **Dashboard Quick Actions** — added a horizontal action slider for one-tap navigation to core features like "New Habit", "Log Water", and "Focus Timer", significantly improving the mobile experience.
-- 🛠 **System Preferences Update** — expanded the User model and Auth API to support granular persistence of productivity targets across devices.
-- 🎨 **Mobile UI Unification** — finalized the migration of dashboard card layouts to a clean, utility-based CSS architecture.
+### April 12, 2026 — Financial OS & Bento Grid Redesign
+- 💎 **Bento Grid Architecture** — completely redesigned the Expense Tracker module into a modular Bento Grid system for high-density financial overview.
+- 🇮🇳 **INR Localization** — standardized entire financial suite to **Indian Rupee (₹)** with `en-IN` formatting.
+- 📊 **Dynamic Analytics** — implemented new donut-style category distribution charts and surgical bar charts for spending history.
+- 🎯 **Budget Thresholds** — added category-specific budget limits with real-time progress indicators and over-limit visual alerts.
+- 💾 **CSV Export** — added full data portability to the financial module.
 
-### April 7, 2026 — Workspace Optimization & Repository Guide
+### April 10, 2026 — Productivity Logic & Dashboard UX
+- 📈 **Personalized Productivity Targets** — users can now set custom productivity targets (0–100%) directly from the dashboard via an interactive range slider.
+- ⚡ **Dashboard Quick Actions** — added a horizontal action slider for one-tap navigation to core features.
 
 ---
 
