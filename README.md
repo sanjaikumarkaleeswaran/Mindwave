@@ -32,9 +32,9 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 💰 Financial OS (Expense Tracker)
 - **Bento Grid Dashboard** — a world-class financial command center featuring modular cards for balance tracking, spending analytics, and category distribution.
-- **Smart Categorization** — log expenses and income with localized **INR (₹)** support.
+- **Smart Categorization** — dynamic, type-aware selection logic that filters categories based on Income vs. Expense; includes full localized **INR (₹)** support.
 - **Threshold Monitoring** — set monthly budget limits per category with real-time progress tracking and "safe vs. over-limit" visual alerts.
-- **Spending Analytics** — dynamic bar charts and donut charts visualizing your weekly and monthly financial health.
+- **Spending Analytics** — high-fidelity weekly and monthly trends visualization with adaptive bar charts and category distribution donut charts.
 - **Data Portability** — export your full transaction history to **CSV** for secondary analysis.
 
 ### 🧘 Focus & Zen
