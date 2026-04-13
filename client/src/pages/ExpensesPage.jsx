@@ -84,8 +84,8 @@ export default function ExpensesPage() {
     };
 
     const filteredExpenses = expenses.filter(exp => 
-        exp.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exp.note.toLowerCase().includes(searchQuery.toLowerCase())
+        (exp.category || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (exp.note || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const exportToCSV = () => {

@@ -3,7 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Wallet, Tag, Calendar, FileText, ChevronDown, Save, IndianRupee } from 'lucide-react';
 import api from '../../lib/axios';
 
-const CATEGORIES = ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Salary', 'Investment', 'Others'];
+const CATEGORIES = {
+    expense: ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Investment', 'Others'],
+    income: ['Salary', 'Investment', 'Gift', 'Others']
+};
 
 export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = null }) {
     const [formData, setFormData] = useState({
@@ -34,6 +37,14 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
             });
         }
     }, [editData, isOpen]);
+
+    const handleTypeChange = (type) => {
+        setFormData({ 
+            ...formData, 
+            type, 
+            category: CATEGORIES[type][0] 
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -82,7 +93,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                                     <div className="w-12 h-12 rounded-[1.25rem] bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
                                         <IndianRupee className="w-6 h-6 text-indigo-400" />
                                     </div>
-                                    {editData ? 'Edit Order' : 'Add Transaction'}
+                                    {editData ? 'Edit Transaction' : 'Add Transaction'}
                                 </h3>
                                 <button 
                                     onClick={onClose} 
@@ -97,14 +108,14 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                                 <div className="flex p-2 bg-black/40 rounded-[1.5rem] border border-white/5">
                                     <button
                                         type="button"
-                                        onClick={() => setFormData({ ...formData, type: 'expense' })}
+                                        onClick={() => handleTypeChange('expense')}
                                         className={`flex-1 py-4 rounded-2xl text-sm font-black transition-all duration-300 ${formData.type === 'expense' ? 'bg-zinc-800 text-white shadow-xl translate-z-0' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Expense
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setFormData({ ...formData, type: 'income' })}
+                                        onClick={() => handleTypeChange('income')}
                                         className={`flex-1 py-4 rounded-2xl text-sm font-black transition-all duration-300 ${formData.type === 'income' ? 'bg-indigo-600 text-white shadow-xl' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Income
@@ -136,11 +147,12 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                                         <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">Category</label>
                                         <div className="relative">
                                             <select
+                                                required
                                                 value={formData.category}
                                                 onChange={e => setFormData({ ...formData, category: e.target.value })}
                                                 className="w-full bg-black/40 border border-white/5 rounded-2xl h-16 pl-6 pr-4 text-white focus:outline-none focus:border-indigo-500/50 appearance-none transition-all text-sm font-bold"
                                             >
-                                                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                                {CATEGORIES[formData.type].map(c => <option key={c} value={c} className="bg-zinc-900">{c}</option>)}
                                             </select>
                                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
                                         </div>

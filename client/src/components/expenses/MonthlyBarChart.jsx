@@ -1,23 +1,32 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function MonthlyBarChart({ expenses }) {
-    // Group by day of week for a "Recent Activity" feel
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const data = days.map(day => ({ name: day, amount: 0 }));
+    // Group by weeks of the month for a true monthly overview
+    const data = [
+        { name: 'Week 1', amount: 0 },
+        { name: 'Week 2', amount: 0 },
+        { name: 'Week 3', amount: 0 },
+        { name: 'Week 4', amount: 0 },
+        { name: 'Week 5', amount: 0 },
+    ];
 
-    const today = new Date();
-    const last7Days = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
+    expenses.filter(e => e.type === 'expense').forEach(exp => {
+        const date = new Date(exp.date);
+        const day = date.getDate();
+        let weekIdx = 0;
+        if (day <= 7) weekIdx = 0;
+        else if (day <= 14) weekIdx = 1;
+        else if (day <= 21) weekIdx = 2;
+        else if (day <= 28) weekIdx = 3;
+        else weekIdx = 4;
 
-    expenses.filter(e => e.type === 'expense' && new Date(e.date) >= last7Days).forEach(exp => {
-        const dayName = days[new Date(exp.date).getDay()];
-        const dayObj = data.find(d => d.name === dayName);
-        if (dayObj) dayObj.amount += exp.amount;
+        data[weekIdx].amount += exp.amount;
     });
 
     return (
-        <div className="w-full h-full min-h-[200px]">
+        <div className="w-full h-full min-h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
+                <BarChart data={data} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                     <defs>
                         <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#6366f1" stopOpacity={1}/>
@@ -43,11 +52,12 @@ export default function MonthlyBarChart({ expenses }) {
                             fontWeight: 'black',
                             color: '#fff'
                         }}
+                        formatter={(value) => [`₹${value.toLocaleString()}`, 'Spent']}
                     />
                     <Bar 
                         dataKey="amount" 
-                        radius={[6, 6, 6, 6]} 
-                        barSize={32}
+                        radius={[8, 8, 8, 8]} 
+                        barSize={40}
                     >
                         {data.map((entry, index) => (
                             <Cell 
