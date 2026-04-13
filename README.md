@@ -193,6 +193,12 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### April 13, 2026 — Financial UI Refinement & Analytical Stability
+- 📈 **Weekly Spending Trends** — overhauled the bar chart logic to provide a consistent 5-week breakdown for any selected month, resolving issues where past monthly data was invisible.
+- 🏷️ **Smart Categorization UI** — implemented dynamic category filtering in the transaction modal; users now only see relevant categories based on whether they are logging Income or Expenses.
+- 🔍 **Safe Analytical Search** — hardened the global expense filtering with null-safe note searching to prevent UI crashes on incomplete historical records.
+- 💎 **UX Polish** — standardized transaction editing nomenclature and refined modal interaction states for a more tactile financial experience.
+
 ### April 12, 2026 — Financial OS & Bento Grid Redesign
 - 💎 **Bento Grid Architecture** — completely redesigned the Expense Tracker module into a modular Bento Grid system for high-density financial overview.
 - 🇮🇳 **INR Localization** — standardized entire financial suite to **Indian Rupee (₹)** with `en-IN` formatting.
