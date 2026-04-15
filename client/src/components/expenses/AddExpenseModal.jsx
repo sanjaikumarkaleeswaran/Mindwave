@@ -183,14 +183,19 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                                 <button
                                     disabled={loading}
                                     type="submit"
-                                    className="w-full py-6 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white rounded-[1.75rem] font-black shadow-[0_20px_50px_rgba(99,102,241,0.3)] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3"
+                                    className="w-full py-6 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-[2rem] font-black shadow-[0_20px_50px_rgba(99,102,241,0.4)] active:scale-[0.98] transition-all mt-4 flex items-center justify-center gap-3 group relative overflow-hidden"
                                 >
+                                    {/* Shine Effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shine" />
+                                    
                                     {loading ? (
                                         <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
                                     ) : (
                                         <>
-                                            {editData ? <Save className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                                            {editData ? 'Update Transaction' : 'Save Transaction'}
+                                            {editData ? <Save className="w-5 h-5 group-hover:scale-110 transition-transform" /> : <Plus className="w-5 h-5 group-hover:scale-110 group-hover:rotate-90 transition-transform" />}
+                                            <span className="uppercase tracking-[0.2em] text-[10px] md:text-xs">
+                                                {editData ? 'Update Transaction' : 'Save Transaction'}
+                                            </span>
                                         </>
                                     )}
                                 </button>

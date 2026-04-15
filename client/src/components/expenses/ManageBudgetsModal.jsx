@@ -102,14 +102,14 @@ export default function ManageBudgetsModal({ isOpen, onClose, onUpdated, current
                                 <button
                                     disabled={loading}
                                     type="submit"
-                                    className="w-full py-5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black font-black rounded-3xl shadow-xl transition-all mt-4 flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black rounded-3xl shadow-[0_15px_30px_rgba(245,158,11,0.3)] transition-all mt-4 flex items-center justify-center gap-2 group active:scale-[0.98]"
                                 >
                                     {loading ? (
                                         <div className="w-6 h-6 border-3 border-black/30 border-t-black rounded-full animate-spin" />
                                     ) : (
                                         <>
-                                            <Save className="w-5 h-5" />
-                                            Update Budgets
+                                            <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                            <span className="uppercase tracking-[0.15em] text-xs">Update Budgets</span>
                                         </>
                                     )}
                                 </button>

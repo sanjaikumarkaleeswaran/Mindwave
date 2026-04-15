@@ -160,9 +160,11 @@ export default function ExpensesPage() {
                         </div>
                         <button 
                             onClick={() => { setEditData(null); setIsAddModalOpen(true); }}
-                            className="bg-white text-black h-12 px-8 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white h-12 px-4 md:px-8 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all active:scale-95 shadow-2xl shadow-indigo-500/20 flex items-center gap-2 group border border-indigo-400/20"
                         >
-                            Log Entry
+                            <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+                            <span className="hidden sm:inline">Log Entry</span>
+                            <span className="sm:hidden text-[8px]">New</span>
                         </button>
                     </div>
                 </header>
@@ -337,9 +339,9 @@ export default function ExpensesPage() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsAddModalOpen(true)}
-                className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-indigo-500 rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/40 z-50 text-white"
+                className="md:hidden fixed bottom-24 right-6 w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center shadow-[0_15px_40px_rgba(99,102,241,0.5)] z-50 text-white border border-white/20"
             >
-                <Plus className="w-6 h-6" />
+                <Plus className="w-8 h-8 drop-shadow-lg" />
             </motion.button>
         </div>
     );

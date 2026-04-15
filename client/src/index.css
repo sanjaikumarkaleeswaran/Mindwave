@@ -155,6 +155,15 @@ body {
   animation-delay: 4s;
 }
 
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.animate-shine {
+  animation: shine 3s infinite linear;
+}
+
 /* Mobile: Prevent inputs from causing layout jumps on focus */
 @media (max-width: 767px) {
   input, textarea, select {
