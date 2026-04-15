@@ -193,6 +193,11 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### April 15, 2026 — Premium Financial UI & Interaction Polish
+- 💎 **Premium Button Systems** — upgraded all primary action buttons in the Financial OS with a custom Indigo-vibe theme, consistent iconography, and glassmorphism-inspired "shine" animations for a high-end feel.
+- 📱 **Mobile FAB Optimization** — implemented a high-visibility, glow-enhanced Floating Action Button (FAB) for financial logging on mobile, providing a superior touch experience.
+- ✨ **Responsive Action States** — header primary actions now intelligently collapse on small screens into a compact "New" action, maintaining accessibility while optimizing screen real estate.
+
 ### April 13, 2026 — Financial UI Refinement & Analytical Stability
 - 📈 **Weekly Spending Trends** — overhauled the bar chart logic to provide a consistent 5-week breakdown for any selected month, resolving issues where past monthly data was invisible.
 - 🏷️ **Smart Categorization UI** — implemented dynamic category filtering in the transaction modal; users now only see relevant categories based on whether they are logging Income or Expenses.
