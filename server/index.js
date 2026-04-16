@@ -23,6 +23,10 @@ app.use(cors({
         // Allow requests with no origin (mobile apps, curl, Postman)
         if (!origin) return callback(null, true);
         if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        // Allow dynamic localhost ports (e.g. 5174, 5175 from Vite)
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+            return callback(null, true);
+        }
         callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true
