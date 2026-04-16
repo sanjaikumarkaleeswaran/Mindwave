@@ -193,6 +193,10 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### April 16, 2026 — Layout Resiliency & Local Dev Polish
+- 🛡️ **Scroll-Proof Modal Architecture** — completely refactored the Add Transaction modal layering on desktop to use strict flex-based centering, ensuring perfect responsiveness regardless of deep page scrolling or Framer Motion animation conflicts.
+- ⚙️ **Dynamic Port Binding** — updated backend CORS logic to intelligently whitelist wildcard local ports, resolving blocked requests during aggressive Vite dev-server auto-incrementing.
+
 ### April 15, 2026 — Premium Financial UI & Interaction Polish
 - 💎 **Premium Button Systems** — upgraded all primary action buttons in the Financial OS with a custom Indigo-vibe theme, consistent iconography, and glassmorphism-inspired "shine" animations for a high-end feel.
 - 📱 **Mobile FAB Optimization** — implemented a high-visibility, glow-enhanced Floating Action Button (FAB) for financial logging on mobile, providing a superior touch experience.
