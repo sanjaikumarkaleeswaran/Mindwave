@@ -120,31 +120,31 @@ export default function ExpensesPage() {
 
             <div className="max-w-[1600px] mx-auto relative z-10 space-y-8">
                 {/* Modern Header */}
-                <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[10px] font-black text-indigo-400 uppercase tracking-widest">
+                            <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1 min-h-[22px] flex items-center justify-center">
                                 Financial OS v2.0
                             </div>
                         </div>
-                        <h1 className="text-5xl font-black tracking-tighter text-white">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white leading-none">
                             Expense <span className="text-zinc-600">Tracker</span>
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center p-1 bg-zinc-900 border border-white/5 rounded-2xl">
+                    <div className="flex items-center gap-3 mt-4 md:mt-0">
+                        <div className="flex items-center p-1 bg-zinc-900 border border-white/5 rounded-2xl h-[46px]">
                             <button 
                                 onClick={() => {
                                     const date = new Date(currentMonth + '-01');
                                     date.setMonth(date.getMonth() - 1);
                                     setCurrentMonth(date.toISOString().slice(0, 7));
                                 }}
-                                className="p-3 hover:bg-white/5 rounded-xl text-zinc-400 transition-all active:scale-90"
+                                className="p-2 hover:bg-white/5 rounded-xl text-zinc-400 transition-all active:scale-90 flex items-center justify-center"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
-                            <span className="px-4 text-sm font-black uppercase tracking-widest text-zinc-300 min-w-[140px] text-center">
+                            <span className="px-3 md:px-4 text-[11px] md:text-sm font-black uppercase tracking-widest text-zinc-300 min-w-[120px] md:min-w-[140px] text-center whitespace-nowrap mt-0.5">
                                 {monthLabel}
                             </span>
                             <button 
@@ -153,24 +153,24 @@ export default function ExpensesPage() {
                                     date.setMonth(date.getMonth() + 1);
                                     setCurrentMonth(date.toISOString().slice(0, 7));
                                 }}
-                                className="p-3 hover:bg-white/5 rounded-xl text-zinc-400 transition-all active:scale-90"
+                                className="p-2 hover:bg-white/5 rounded-xl text-zinc-400 transition-all active:scale-90 flex items-center justify-center"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
                         <button 
                             onClick={() => { setEditData(null); setIsAddModalOpen(true); }}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white h-12 px-4 md:px-8 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all active:scale-95 shadow-2xl shadow-indigo-500/20 flex items-center gap-2 group border border-indigo-400/20"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white h-[46px] px-4 md:px-6 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all active:scale-95 shadow-2xl shadow-indigo-500/20 flex items-center justify-center gap-2 group border border-indigo-400/20"
                         >
                             <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
-                            <span className="hidden sm:inline">Log Entry</span>
-                            <span className="sm:hidden text-[8px]">New</span>
+                            <span className="hidden sm:inline mt-0.5">Log Entry</span>
+                            <span className="sm:hidden mt-0.5">New</span>
                         </button>
                     </div>
                 </header>
 
                 {/* Bento Grid Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[240px]">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:auto-rows-[240px]">
                     
                     {/* Main Balance Hero (Bento 4x2) */}
                     <motion.div 
@@ -214,9 +214,9 @@ export default function ExpensesPage() {
                                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
                                     <TrendingUp className="w-5 h-5" />
                                 </div>
-                                <h3 className="text-xl font-black tracking-tight">Spending Analytics</h3>
+                                <h3 className="text-xl font-black tracking-tight leading-none mt-1">Spending Analytics</h3>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
                                 <div className="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black text-zinc-500 uppercase tracking-widest">7 Days</div>
                                 <div className="px-3 py-1 bg-indigo-500/10 rounded-lg text-[10px] font-black text-indigo-400 uppercase tracking-widest border border-indigo-500/20 text-glow">30 Days</div>
                             </div>
@@ -237,7 +237,7 @@ export default function ExpensesPage() {
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
                                 <Tag className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-black tracking-tight">Distribution</h3>
+                            <h3 className="text-xl font-black tracking-tight leading-none mt-1">Distribution</h3>
                         </div>
                         <div className="flex-1 flex items-center justify-center">
                             <CategoryPieChart summary={summary} />
@@ -251,10 +251,10 @@ export default function ExpensesPage() {
                         transition={{ delay: 0.3 }}
                         className="md:col-span-8 md:row-span-4 bg-zinc-900/80 backdrop-blur-3xl border border-white/10 rounded-[3rem] flex flex-col shadow-2xl"
                     >
-                        <div className="p-10 border-b border-white/5 flex items-center justify-between">
+                        <div className="p-8 md:p-10 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h3 className="text-2xl font-black text-white tracking-tighter">Activity Feed</h3>
-                                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.2em] mt-1">Live Transaction Stream</p>
+                                <h3 className="text-2xl font-black text-white tracking-tighter leading-none mb-2">Activity Feed</h3>
+                                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.2em]">Live Transaction Stream</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="relative group">
@@ -296,7 +296,7 @@ export default function ExpensesPage() {
                                 <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 border border-rose-500/20">
                                     <AlertCircle className="w-5 h-5" />
                                 </div>
-                                <h3 className="text-xl font-black tracking-tight">Thresholds</h3>
+                                <h3 className="text-xl font-black tracking-tight leading-none mt-1">Thresholds</h3>
                             </div>
                             <button 
                                 onClick={() => setIsBudgetModalOpen(true)}

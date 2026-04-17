@@ -18,6 +18,12 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
     });
     const [loading, setLoading] = useState(false);
 
+    // Helper to get local date string YYYY-MM-DD
+    const getLocalDateString = (dateObj = new Date()) => {
+        const offsetMs = dateObj.getTimezoneOffset() * 60000;
+        return new Date(dateObj.getTime() - offsetMs).toISOString().split('T')[0];
+    };
+
     useEffect(() => {
         if (editData) {
             setFormData({
@@ -25,7 +31,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                 amount: editData.amount.toString(),
                 category: editData.category,
                 note: editData.note || '',
-                date: new Date(editData.date).toISOString().split('T')[0]
+                date: getLocalDateString(new Date(editData.date))
             });
         } else {
             setFormData({
@@ -33,7 +39,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                 amount: '',
                 category: 'Food',
                 note: '',
-                date: new Date().toISOString().split('T')[0]
+                date: getLocalDateString()
             });
         }
     }, [editData, isOpen]);
@@ -62,7 +68,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
     };
 
     // The shared form content (used in both mobile and desktop)
-    const FormContent = () => (
+    const formContentNode = (
         <div className="p-8 relative">
             {/* Decorative Background Glows */}
             <div className="absolute top-0 inset-x-0 h-64 overflow-hidden pointer-events-none rounded-t-[3rem] md:rounded-[3rem]">
@@ -133,23 +139,24 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                         </span>
                     </div>
                     <div className="relative group">
-                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-indigo-400 transition-colors">
-                            <span className="font-bold text-xl tracking-tighter">₹</span>
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-indigo-400 transition-colors pointer-events-none">
+                            <span className="font-mono text-3xl font-medium tracking-tighter">₹</span>
                         </div>
                         <input
                             required
                             type="number"
                             step="0.01"
+                            min="0.01"
                             placeholder="0.00"
                             value={formData.amount}
                             onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                            className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.75rem] py-6 pl-12 pr-6 text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all font-mono text-3xl tracking-tighter"
+                            className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.75rem] py-6 pl-[4.5rem] pr-6 text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all font-mono text-3xl tracking-tighter"
                         />
                     </div>
                 </div>
 
                 {/* Category & Date Grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1">Category</label>
                         <div className="relative group">
@@ -174,10 +181,11 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                                 <Calendar className="w-4 h-4" />
                             </div>
                             <input
+                                required
                                 type="date"
                                 value={formData.date}
                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
-                                className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] h-14 pl-10 pr-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all text-sm font-bold"
+                                className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] h-14 pl-10 pr-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all text-sm font-bold [color-scheme:dark]"
                             />
                         </div>
                     </div>
@@ -253,7 +261,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                         transition={{ type: "spring", damping: 28, stiffness: 280 }}
                         className="fixed inset-x-0 bottom-0 bg-[#0c0c0e] border-t border-white/10 rounded-t-[3rem] z-[70] max-h-[95dvh] overflow-y-auto hide-scrollbar md:hidden"
                     >
-                        <FormContent />
+                        {formContentNode}
                     </motion.div>
 
                     {/* ── Desktop: scroll-proof centered modal ── */}
@@ -271,7 +279,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                             transition={{ type: "spring", damping: 26, stiffness: 300 }}
                             className="w-full max-w-lg bg-[#0c0c0e] border border-white/10 rounded-[3rem] shadow-[0_32px_80px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto hide-scrollbar pointer-events-auto"
                         >
-                            <FormContent />
+                            {formContentNode}
                         </motion.div>
                     </div>
                 </>

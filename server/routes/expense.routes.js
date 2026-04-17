@@ -71,12 +71,57 @@ router.post('/', auth, validate(createExpenseSchema), async (req, res) => {
 // PUT update expense
 router.put('/:id', auth, validate(updateExpenseSchema), async (req, res) => {
     try {
+        const { type, amount, category, date, note } = req.body;
+        
+        // Find existing to know the month if date isn't provided
+        const existingExpense = await Expense.findOne({ _id: req.params.id, userId: req.user.id });
+        if (!existingExpense) return res.status(404).json({ msg: 'Expense not found' });
+
+        const checkDate = date ? new Date(date) : existingExpense.date;
+        const checkCategory = category || existingExpense.category;
+        const checkType = type || existingExpense.type;
+        const checkAmount = amount !== undefined ? amount : existingExpense.amount;
+
+        if (checkType === 'expense') {
+            const start = new Date(checkDate.getFullYear(), checkDate.getMonth(), 1);
+            const end = new Date(checkDate.getFullYear(), checkDate.getMonth() + 1, 0);
+            const monthStr = checkDate.toISOString().slice(0, 7);
+
+            const budget = await Budget.findOne({ userId: req.user.id, category: checkCategory, month: monthStr });
+            if (budget) {
+                // Get all matching expenses EXCEPT the currently edited one to avoid double counting
+                const totalSpent = await Expense.aggregate([
+                    { $match: { 
+                        userId: req.user.id, 
+                        category: checkCategory, 
+                        date: { $gte: start, $lte: end }, 
+                        type: 'expense',
+                        _id: { $ne: existingExpense._id } // exclude current
+                    } },
+                    { $group: { _id: null, total: { $sum: '$amount' } } }
+                ]);
+                
+                const currentTotal = totalSpent.length > 0 ? totalSpent[0].total : 0;
+                if (currentTotal + checkAmount > budget.limit) {
+                    // We still update it, but return a warning flag like in POST
+                    const updated = await Expense.findOneAndUpdate(
+                        { _id: req.params.id, userId: req.user.id },
+                        { $set: req.body },
+                        { new: true }
+                    );
+                    return res.json({ 
+                        expense: updated, 
+                        warning: `Budget exceeded for ${checkCategory}! Limit: ₹${budget.limit.toLocaleString('en-IN')}, Spent: ₹${(currentTotal + checkAmount).toLocaleString('en-IN')}` 
+                    });
+                }
+            }
+        }
+
         const expense = await Expense.findOneAndUpdate(
             { _id: req.params.id, userId: req.user.id },
             { $set: req.body },
             { new: true }
         );
-        if (!expense) return res.status(404).json({ msg: 'Expense not found' });
         res.json(expense);
     } catch (err) {
         res.status(500).json({ msg: 'Server Error', error: err.message });
