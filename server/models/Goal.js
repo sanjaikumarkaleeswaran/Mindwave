@@ -10,6 +10,7 @@ const MilestoneSchema = new mongoose.Schema({
 
 const GoalSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    sharedWith: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     title: { type: String, required: true },
     description: { type: String, default: '' },
     category: {

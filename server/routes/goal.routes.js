@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const Goal = require('../models/Goal');
+const User = require('../models/User');
 const { getGroqCompletion } = require('../utils/llmCache');
 const validate = require('../middleware/validate.middleware');
 const {
@@ -32,7 +33,9 @@ function parseMilestones(arr) {
 // GET all goals
 router.get('/', auth, async (req, res) => {
     try {
-        const goals = await Goal.find({ userId: req.user.id }).sort({ createdAt: -1 });
+        const goals = await Goal.find({ 
+            $or: [{ userId: req.user.id }, { sharedWith: req.user.id }]
+        }).populate('sharedWith', 'name email avatar').sort({ createdAt: -1 });
         res.json(goals);
     } catch (err) {
         console.error('GET /goals error:', err.message);
@@ -182,7 +185,10 @@ Rules:
 // PUT update goal
 router.put('/:id', auth, validate(updateGoalSchema), async (req, res) => {
     try {
-        const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+        const goal = await Goal.findOne({ 
+            _id: req.params.id, 
+            $or: [{ userId: req.user.id }, { sharedWith: req.user.id }]
+        });
         if (!goal) return res.status(404).json({ msg: 'Goal not found' });
 
         const allowed = ['title', 'description', 'category', 'targetDate', 'progress', 'status', 'color'];
@@ -212,7 +218,10 @@ router.patch('/:id/milestone/:milestoneId', auth, async (req, res) => {
             return res.status(400).json({ msg: 'Invalid milestone ID' });
         }
 
-        const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+        const goal = await Goal.findOne({ 
+            _id: req.params.id, 
+            $or: [{ userId: req.user.id }, { sharedWith: req.user.id }]
+        });
         if (!goal) return res.status(404).json({ msg: 'Goal not found' });
 
         const milestone = goal.milestones.id(milestoneId);
@@ -238,7 +247,10 @@ router.patch('/:id/milestone/:milestoneId', auth, async (req, res) => {
 // PATCH add milestone
 router.patch('/:id/milestone', auth, async (req, res) => {
     try {
-        const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+        const goal = await Goal.findOne({ 
+            _id: req.params.id, 
+            $or: [{ userId: req.user.id }, { sharedWith: req.user.id }]
+        });
         if (!goal) return res.status(404).json({ msg: 'Goal not found' });
         if (!req.body.text) return res.status(400).json({ msg: 'text required' });
         goal.milestones.push({ text: req.body.text, completed: false, dueDate: req.body.dueDate || undefined });
@@ -256,6 +268,37 @@ router.delete('/:id', auth, async (req, res) => {
         res.json({ msg: 'Goal deleted' });
     } catch (err) {
         res.status(500).json({ msg: 'Server Error' });
+    }
+});
+
+// POST share goal
+router.post('/:id/share', auth, async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ msg: 'Email is required' });
+
+        const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+        if (!goal) return res.status(404).json({ msg: 'Goal not found or you are not the owner' });
+
+        const userToShare = await User.findOne({ email: email.toLowerCase() });
+        if (!userToShare) return res.status(404).json({ msg: 'User with that email not found' });
+
+        if (userToShare._id.toString() === req.user.id) {
+            return res.status(400).json({ msg: 'Cannot share with yourself' });
+        }
+
+        if (goal.sharedWith.includes(userToShare._id)) {
+            return res.status(400).json({ msg: 'Already shared with this user' });
+        }
+
+        goal.sharedWith.push(userToShare._id);
+        await goal.save();
+        await goal.populate('sharedWith', 'name email avatar');
+        
+        res.json(goal);
+    } catch (err) {
+        console.error('POST /goals/:id/share error:', err.message);
+        res.status(500).json({ msg: 'Server Error', error: err.message });
     }
 });
 

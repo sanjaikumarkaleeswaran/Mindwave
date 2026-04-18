@@ -3,15 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Edit3, Trash2, ChevronDown, ChevronUp,
     CheckCircle2, Circle, Clock, Calendar,
-    Zap, Plus,
+    Zap, Plus, Users
 } from 'lucide-react';
 import api from '../../lib/axios';
 import ActivityModal from './ActivityModal';
+import ShareModal from './ShareModal';
+import { useAuth } from '../../context/AuthContext';
 import { getCat, timeProg, fmtDate, ProgressRing, Bar, TrackBadge } from './goalHelpers.jsx';
 
 export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
+    const { user } = useAuth();
     const [expanded,  setExpanded]  = useState(false);
     const [actMs,     setActMs]     = useState(null);
+    const [showShare, setShowShare] = useState(false);
     const [newMs,     setNewMs]     = useState('');
     const [newMsDate, setNewMsDate] = useState('');
     const [msLoad,    setMsLoad]    = useState(false);
@@ -41,6 +45,7 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
     const setProgress = async v => { try { const r = await api.put(`/goals/${goal._id}`, { progress: v }); onUpdate(r.data); } catch (e) { console.error(e); } };
 
     const isDone = goal.status === 'completed' || goal.progress === 100;
+    const isOwner = user && goal.userId === user._id;
 
     return (
         <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
@@ -123,6 +128,14 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
                             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                             {expanded ? 'Collapse' : 'Manage Goal'}
                         </button>
+                        {isOwner && (
+                            <button onClick={() => setShowShare(true)} className={`px-4 flex items-center justify-center gap-2 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg ${
+                                isDone ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20'
+                            }`}>
+                                <Users className="w-4 h-4" />
+                                Share
+                            </button>
+                        )}
                     </div>
 
                     {/* Expanded Detail View */}
@@ -165,9 +178,11 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
                                         <button onClick={() => onEdit(goal)} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-all ${isDone ? 'bg-white/10 border-white/20 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-indigo-400'}`}>
                                             <Edit3 className="w-3.5 h-3.5" /> Edit
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); onDelete(goal); }} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-all ${isDone ? 'bg-white/10 border-white/20 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-rose-400'}`}>
-                                            <Trash2 className="w-3.5 h-3.5" /> Delete
-                                        </button>
+                                        {isOwner && (
+                                            <button onClick={(e) => { e.stopPropagation(); onDelete(goal); }} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-all ${isDone ? 'bg-white/10 border-white/20 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-rose-400'}`}>
+                                                <Trash2 className="w-3.5 h-3.5" /> Delete
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>
@@ -181,6 +196,11 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
                     <ActivityModal milestone={actMs} goalId={goal._id} catColor={isDone ? '#6366f1' : cat.color}
                         onClose={() => setActMs(null)}
                         onSave={r => { onUpdate(r); setActMs(null); }} />
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {showShare && (
+                    <ShareModal goal={goal} onClose={() => setShowShare(false)} onUpdate={onUpdate} />
                 )}
             </AnimatePresence>
         </motion.div>
