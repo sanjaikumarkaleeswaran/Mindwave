@@ -185,13 +185,16 @@ This application is ready for production deployment:
 - [x] Interactive Productivity Target Sliders
 - [x] Dashboard Quick Action Strip (Mobile UX)
 - [x] **Financial OS (Bento Grid Expense Tracker)**
+- [x] Shared Goals & Collaboration features
 - [ ] Backend-driven Push Notifications (Web Push API)
-- [ ] Shared Goals & Collaboration features
 - [ ] Integration with External Calendars (Google/Outlook)
 
 ---
 
 ## 📋 Changelog
+
+### April 18, 2026 — Shared Goals & Collaboration
+- 🤝 **Collaborative Goal Tracking** — Added the ability to share goals with colleagues and friends via email. Goal owners can invite collaborators, and all participants can update milestones, track progress, and log activities in real-time.
 
 ### April 16, 2026 — Layout Resiliency & Local Dev Polish
 - 🛡️ **Scroll-Proof Modal Architecture** — completely refactored the Add Transaction modal layering on desktop to use strict flex-based centering, ensuring perfect responsiveness regardless of deep page scrolling or Framer Motion animation conflicts.
