@@ -151,6 +151,7 @@ Navigate to your local IP (e.g., `http://192.168.1.5:5173`) on your mobile brows
 - **iOS:** "Add to Home Screen" from the Safari share sheet.
 
 **Mobile UX highlights:**
+- Unified Mobile Navigation: All core app modules are instantly accessible via a horizontally scrollable bottom nav bar
 - Bottom tab navigation with active state animations flush to the top edge of the bar
 - Safe-area padding for notch/home-bar devices (iPhone X+)
 - Full-screen chat view between header and bottom nav
@@ -192,6 +193,10 @@ This application is ready for production deployment:
 ---
 
 ## 📋 Changelog
+
+### April 20, 2026 — Unified Mobile Navigation
+- 📱 **Scrollable Bottom Nav** — upgraded the mobile bottom navigation bar into a horizontally scrollable strip, allowing instant access to all core modules (Focus, Goals, Calendar, etc.) without relying solely on the hamburger menu.
+- 📐 **Safe Area Pad Refinement** — improved dynamic padding on mobile to ensure the new scrollable navigation strip never overlaps bottom-page content.
 
 ### April 18, 2026 — Shared Goals & Collaboration
 - 🤝 **Collaborative Goal Tracking** — Added the ability to share goals with colleagues and friends via email. Goal owners can invite collaborators, and all participants can update milestones, track progress, and log activities in real-time.
