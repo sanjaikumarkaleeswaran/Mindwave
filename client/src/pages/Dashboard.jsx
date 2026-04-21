@@ -114,25 +114,30 @@ export default function Dashboard() {
     const isChartEmpty = chartData.every(d => d.value === 0);
 
     return (
-        <div className="p-5 md:p-8 space-y-5 md:space-y-10 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
+        <div className="p-4 md:p-8 space-y-5 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
             <Helmet>
                 <title>Dashboard | Life OS</title>
             </Helmet>
 
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">
-                        {greeting}, <br/>
-                        <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
-                    </h1>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 mt-3 uppercase tracking-[0.2em] bg-zinc-800/30 max-w-full w-fit px-2 py-1 rounded-lg border border-white/5">
-                        <Sparkles className="w-2.5 h-2.5 text-indigo-400" />
-                        <span className="truncate max-w-[200px]">{quote.split(':')[0]}</span>
+            <div className="flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">
+                            {greeting},&nbsp;
+                            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{user?.name ? user.name.split(' ')[0] : 'User'}</span>
+                        </h1>
+                        <div className="text-zinc-500 text-xs font-mono mt-1 md:hidden">
+                            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                        </div>
+                    </div>
+                    <div className="text-right hidden md:block shrink-0">
+                        <div className="text-zinc-500 text-sm font-mono">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
                     </div>
                 </div>
-                <div className="text-right hidden md:block">
-                    <div className="text-zinc-500 text-sm font-mono">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] bg-zinc-800/30 w-fit px-2 py-1 rounded-lg border border-white/5">
+                    <Sparkles className="w-2.5 h-2.5 text-indigo-400 shrink-0" />
+                    <span className="truncate max-w-[240px]">{quote.split(':')[0]}</span>
                 </div>
             </div>
 

@@ -7,7 +7,7 @@ import { CATEGORIES, getCat, toInput } from './goalHelpers.jsx';
 
 export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData = null }) {
     const navigate = useNavigate();
-    const isEdit   = !!(initialData && initialData._id);
+    const isEdit = !!(initialData && initialData._id);
 
     const [form, setForm] = useState({
         title:       initialData?.title       || '',
@@ -57,21 +57,22 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
         finally { setLoading(false); }
     };
 
-    const contentNode = (
-        <div className="p-5 md:p-8 relative">
+    const content = (
+        <div className="p-5 md:p-8">
+            {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-black text-white flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-[1.25rem] bg-indigo-500/10 flex items-center justify-center border border-indigo-500/30">
-                        {isEdit ? <PenLine className="w-6 h-6 text-indigo-400" /> : <Target className="w-6 h-6 text-indigo-400" />}
+                    <div className="w-11 h-11 rounded-[1.25rem] bg-indigo-500/10 flex items-center justify-center border border-indigo-500/30">
+                        {isEdit ? <PenLine className="w-5 h-5 text-indigo-400" /> : <Target className="w-5 h-5 text-indigo-400" />}
                     </div>
                     <div>
                         <div className="leading-tight">{isEdit ? 'Edit Goal' : 'New Goal'}</div>
                         <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">Objective Setup</div>
                     </div>
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     <button type="button" onClick={() => { onClose(); onOpenChat ? onOpenChat() : navigate('/chat'); }}
-                        title="Open AI Goal Creator instead" className="p-2.5 hover:bg-white/5 rounded-2xl text-zinc-500 hover:text-indigo-400 transition-all active:scale-90">
+                        title="Open AI Goal Creator" className="p-2.5 hover:bg-white/5 rounded-2xl text-zinc-500 hover:text-indigo-400 transition-all active:scale-90">
                         <Sparkles className="w-5 h-5" />
                     </button>
                     <button type="button" onClick={onClose} className="p-2.5 hover:bg-white/5 rounded-2xl text-zinc-600 hover:text-white transition-all active:scale-90">
@@ -80,7 +81,7 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                 </div>
             </div>
 
-            <form onSubmit={submit} className="space-y-5">
+            <form onSubmit={submit} className="space-y-4">
                 {error && (
                     <div className="flex items-center gap-2 text-rose-400 text-xs bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3">
                         <AlertCircle className="w-4 h-4 shrink-0" />{error}
@@ -88,14 +89,14 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                 )}
 
                 <div>
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-2">Title *</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-1.5">Title *</label>
                     <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                         placeholder="e.g. Run a 5K marathon"
-                        className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] px-4 py-3.5 text-white text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all" />
+                        className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] px-4 py-3.5 text-white text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-zinc-600" />
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-2">Description</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-1.5">Description</label>
                     <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2}
                         placeholder="What does success look like?"
                         className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] px-4 py-3.5 text-white text-sm font-medium focus:outline-none focus:border-indigo-500/50 transition-all resize-none placeholder:text-zinc-600" />
@@ -108,8 +109,8 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                             const I = cat.icon;
                             return (
                                 <button key={cat.value} type="button" onClick={() => setForm({ ...form, category: cat.value })}
-                                    className={`flex flex-col items-center gap-1 p-3 rounded-[1rem] border transition-all text-xs font-bold active:scale-95 ${form.category === cat.value ? 'border-indigo-500/50 bg-indigo-500/15 text-white' : 'border-white/5 text-zinc-500 hover:border-white/10 hover:bg-white/5'}`}>
-                                    <I className="w-5 h-5 mb-1" style={{ color: form.category === cat.value ? cat.color : undefined }} />
+                                    className={`flex flex-col items-center gap-1 p-3 rounded-[1rem] border transition-all text-xs font-bold active:scale-95 ${form.category === cat.value ? 'border-indigo-500/50 bg-indigo-500/15 text-white' : 'border-white/5 text-zinc-500 hover:border-white/10'}`}>
+                                    <I className="w-4 h-4 mb-0.5" style={{ color: form.category === cat.value ? cat.color : undefined }} />
                                     {cat.label}
                                 </button>
                             );
@@ -118,13 +119,13 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-2">Target Date</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 block mb-1.5">Target Date</label>
                     <input type="date" value={form.targetDate} onChange={e => setForm({ ...form, targetDate: e.target.value })}
                         className="w-full bg-zinc-900/30 border border-white/5 rounded-[1.25rem] px-4 py-3.5 text-white text-sm font-bold focus:outline-none focus:border-indigo-500/50 transition-all [color-scheme:dark]" />
                 </div>
 
                 <div>
-                    <div className="flex items-center justify-between mb-3 px-1">
+                    <div className="flex items-center justify-between mb-2 px-1">
                         <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Steps / Milestones</label>
                         <button type="button" onClick={genAI} disabled={aiLoading}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-60 active:scale-95"
@@ -134,16 +135,17 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                                 : <><Sparkles className="w-3 h-3" />AI Plan</>}
                         </button>
                     </div>
-                    {aiError && <div className="text-amber-400 text-xs font-medium mb-3 px-1">{aiError}</div>}
-                    <div className="space-y-3">
+                    {aiError && <div className="text-amber-400 text-xs font-medium mb-2 px-1">{aiError}</div>}
+                    <div className="space-y-2">
                         {milestones.map((m, i) => (
-                            <motion.div key={i} layout initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 items-start bg-zinc-900/20 p-3 rounded-[1.25rem] border border-white/5">
-                                <span className="text-zinc-500 text-xs font-black shrink-0 text-center w-6 mt-3">{i + 1}.</span>
-                                <div className="flex-1 space-y-2">
+                            <motion.div key={i} layout initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                                className="flex gap-2 items-start bg-zinc-900/20 p-3 rounded-[1.25rem] border border-white/5">
+                                <span className="text-zinc-500 text-xs font-black shrink-0 w-5 mt-3 text-center">{i + 1}.</span>
+                                <div className="flex-1 space-y-1.5">
                                     <input value={m.text} onChange={e => upMs(i, 'text', e.target.value)} placeholder={`Step ${i + 1}…`}
                                         className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2.5 text-white text-sm font-medium focus:outline-none focus:border-indigo-500/50 transition-all placeholder:text-zinc-700" />
                                     <input type="date" value={m.dueDate} onChange={e => upMs(i, 'dueDate', e.target.value)}
-                                        className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2.5 text-zinc-300 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all [color-scheme:dark]" />
+                                        className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2 text-zinc-300 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all [color-scheme:dark]" />
                                 </div>
                                 {milestones.length > 1 && (
                                     <button type="button" onClick={() => setMilestones(milestones.filter((_, j) => j !== i))}
@@ -154,21 +156,19 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                             </motion.div>
                         ))}
                         <button type="button" onClick={() => setMilestones([...milestones, { text: '', dueDate: '' }])}
-                            className="text-[11px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5 ml-2 mt-2 transition-colors active:scale-95">
+                            className="text-[11px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5 ml-2 mt-1 transition-colors active:scale-95">
                             <Plus className="w-3.5 h-3.5" />Add step
                         </button>
                     </div>
                 </div>
 
                 <button type="submit" disabled={loading}
-                    className="w-full py-4 mt-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black uppercase tracking-widest text-xs rounded-[1.25rem] shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98]">
+                    className="w-full py-4 mt-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black uppercase tracking-widest text-xs rounded-[1.25rem] shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.98]">
                     {loading
                         ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{isEdit ? 'Saving…' : 'Creating…'}</>
                         : isEdit ? 'Update Goal' : 'Create Goal'}
                 </button>
             </form>
-            
-            {/* Safe bottom space for mobile */}
             <div className="h-6 md:h-0" />
         </div>
     );
@@ -176,35 +176,30 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
     return (
         <AnimatePresence>
             <>
+                {/* Backdrop */}
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     onClick={onClose}
                     className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[60]"
                 />
 
-                {/* ── Mobile: bottom sheet ── */}
+                {/* Mobile: bottom sheet */}
                 <motion.div
-                    initial={{ y: '100%' }}
-                    animate={{ y: 0 }}
-                    exit={{ y: '100%' }}
-                    transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                    initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                    transition={{ type: 'spring', damping: 28, stiffness: 280 }}
                     className="fixed inset-x-0 bottom-0 bg-[#0c0c0e] border-t border-white/10 rounded-t-[3rem] z-[70] max-h-[95dvh] overflow-y-auto hide-scrollbar md:hidden"
                 >
-                    {contentNode}
+                    {content}
                 </motion.div>
 
-                {/* ── Desktop: scroll-proof centered modal ── */}
+                {/* Desktop: centered modal */}
                 <div className="fixed inset-0 z-[70] hidden md:flex items-center justify-center pointer-events-none px-4 py-8">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.93 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.93 }}
-                        transition={{ type: "spring", damping: 26, stiffness: 300 }}
+                        initial={{ opacity: 0, scale: 0.93 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.93 }}
+                        transition={{ type: 'spring', damping: 26, stiffness: 300 }}
                         className="w-full max-w-lg bg-[#0c0c0e] border border-white/10 rounded-[3rem] shadow-[0_32px_80px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto hide-scrollbar pointer-events-auto"
                     >
-                        {contentNode}
+                        {content}
                     </motion.div>
                 </div>
             </>
