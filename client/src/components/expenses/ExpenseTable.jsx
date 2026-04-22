@@ -81,10 +81,10 @@ export default function ExpenseTable({ expenses, onDelete, onEdit }) {
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${exp.type === 'income' ? 'bg-green-500/10 text-green-400' : 'bg-rose-500/10 text-rose-400'}`}>
                                 {exp.type === 'income' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
                                     <span className="font-bold text-zinc-200 truncate">{exp.category}</span>
-                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">{new Date(exp.date).toLocaleDateString()}</span>
+                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight shrink-0">{new Date(exp.date).toLocaleDateString()}</span>
                                 </div>
                                 <span className="text-xs text-zinc-500 truncate block">{exp.note || 'No note'}</span>
                             </div>

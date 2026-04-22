@@ -57,7 +57,7 @@ export default function MonthlyBarChart({ expenses }) {
                     <Bar 
                         dataKey="amount" 
                         radius={[8, 8, 8, 8]} 
-                        barSize={40}
+                        maxBarSize={40}
                     >
                         {data.map((entry, index) => (
                             <Cell 

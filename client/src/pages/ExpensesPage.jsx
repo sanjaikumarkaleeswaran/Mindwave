@@ -78,14 +78,14 @@ export default function ExpensesPage() {
     const monthLabel = new Date(currentMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-4 md:p-8 mobile-page-pad relative overflow-hidden">
+        <div className="p-4 md:p-8 space-y-5 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden relative">
             <Helmet><title>Expenses | Life OS</title></Helmet>
 
             {/* Ambient BG */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-500/[0.03] blur-[150px] rounded-full -mr-80 -mt-80 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/[0.03] blur-[150px] rounded-full -ml-64 -mb-64 pointer-events-none" />
+            <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-indigo-500/[0.03] blur-[150px] rounded-full -mr-80 -mt-80 pointer-events-none z-0" />
+            <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/[0.03] blur-[150px] rounded-full -ml-64 -mb-64 pointer-events-none z-0" />
 
-            <div className="max-w-[1600px] mx-auto relative z-10 space-y-5 md:space-y-6">
+            <div className="relative z-10 space-y-5 md:space-y-8">
                 {/* ── Header ── */}
                 <div className="flex flex-col gap-4">
                     <div>
@@ -98,7 +98,7 @@ export default function ExpensesPage() {
                     </div>
 
                     {/* Controls row */}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         {/* Month nav */}
                         <div className="flex items-center p-1 bg-zinc-900 border border-white/5 rounded-2xl h-11 flex-1 min-w-0">
                             <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400 transition-all active:scale-90 flex-shrink-0">
@@ -113,22 +113,24 @@ export default function ExpensesPage() {
                         </div>
 
                         {/* Add + Export */}
-                        <button onClick={() => { setEditData(null); setIsAddModalOpen(true); }}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white h-11 px-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 flex-shrink-0 shadow-lg shadow-indigo-500/20">
-                            <Plus className="w-4 h-4" />
-                            <span className="hidden sm:inline">Log Entry</span>
-                            <span className="sm:hidden">New</span>
-                        </button>
-                        <button onClick={exportToCSV}
-                            className="h-11 px-3 bg-zinc-800 border border-white/5 rounded-2xl text-zinc-400 hover:text-white transition-all active:scale-90 flex-shrink-0">
-                            <Download className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => { setEditData(null); setIsAddModalOpen(true); }}
+                                className="hidden md:flex bg-indigo-600 hover:bg-indigo-500 text-white h-11 px-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 items-center gap-2 flex-shrink-0 shadow-lg shadow-indigo-500/20">
+                                <Plus className="w-4 h-4" />
+                                <span>Log Entry</span>
+                            </button>
+                            <button onClick={exportToCSV}
+                                className="h-11 px-3 bg-zinc-800 border border-white/5 rounded-2xl text-zinc-400 hover:text-white transition-all active:scale-90 flex-shrink-0 flex-1 md:flex-none flex items-center justify-center gap-2">
+                                <Download className="w-4 h-4" />
+                                <span className="md:hidden text-xs font-black uppercase tracking-widest text-zinc-400">Export</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* ── Balance Hero Card ── */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden shadow-2xl">
+                    className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32 pointer-events-none" />
                     <div className="flex items-start justify-between mb-5">
                         <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
@@ -154,10 +156,10 @@ export default function ExpensesPage() {
                 </motion.div>
 
                 {/* ── Charts Row ── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                     {/* Spending Analytics */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-6 shadow-xl flex flex-col">
+                        className="glass-card p-6 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
                                 <TrendingUp className="w-5 h-5" />
@@ -171,7 +173,7 @@ export default function ExpensesPage() {
 
                     {/* Category Distribution */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                        className="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-6 shadow-xl flex flex-col">
+                        className="glass-card p-6 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-5">
                             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
                                 <Tag className="w-5 h-5" />
@@ -185,10 +187,10 @@ export default function ExpensesPage() {
                 </div>
 
                 {/* ── Transactions + Budgets ── */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">
                     {/* Activity Feed */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                        className="lg:col-span-2 bg-zinc-900/80 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] flex flex-col shadow-xl overflow-hidden">
+                        className="lg:col-span-2 glass-card flex flex-col overflow-hidden">
                         <div className="p-5 md:p-6 border-b border-white/5">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                 <div>
@@ -216,7 +218,7 @@ export default function ExpensesPage() {
 
                     {/* Budget Thresholds */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                        className="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-6 shadow-xl flex flex-col">
+                        className="glass-card p-6 flex flex-col h-full">
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 border border-rose-500/20">
