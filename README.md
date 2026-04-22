@@ -36,6 +36,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Threshold Monitoring** — set monthly budget limits per category with real-time progress tracking and "safe vs. over-limit" visual alerts.
 - **Spending Analytics** — high-fidelity weekly and monthly trends visualization with adaptive bar charts and category distribution donut charts.
 - **Data Portability** — export your full transaction history to **CSV** for secondary analysis.
+- **Mobile-Optimized Layout** — all Expense cards use the global `glass-card` system with `max-w-7xl` layout; charts use responsive `maxBarSize`; transaction list cards correctly truncate long content; FAB replaces header button on mobile.
 
 ### 🧘 Focus & Zen
 - **Pomodoro-style Timer** — built-in countdown with quick-select presets (5m, 15m, 25m, 50m) and custom hour/minute/second picker to help you stay in flow state.
@@ -58,6 +59,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Dynamic Chat Layout** — the chat page uses CSS variables (`--header-h`, `--bottom-nav-h`) to precisely fill the screen between the header and bottom nav on all devices.
 - **Responsive Dashboard** — 2-column card grid on mobile with scaled-down icons and typography, expanding to 4-column on large screens.
 - **iOS Input Zoom Prevention** — all inputs are set to `font-size: 16px` on mobile to prevent Safari's auto-zoom behavior.
+- **Expense Tracker Mobile Fix** — unified card radii via `glass-card`, hidden header action button replaced by FAB, responsive bar chart scaling, and correctly truncating transaction list items.
 
 ### 🛡️ Security & Privacy
 - **Self-Hosted** — you own your data, stored in your own MongoDB instance.
@@ -187,12 +189,21 @@ This application is ready for production deployment:
 - [x] Dashboard Quick Action Strip (Mobile UX)
 - [x] **Financial OS (Bento Grid Expense Tracker)**
 - [x] Shared Goals & Collaboration features
+- [x] **Expense Tracker Mobile View Fix** (glass-card system, FAB, responsive charts, truncation fix)
 - [ ] Backend-driven Push Notifications (Web Push API)
 - [ ] Integration with External Calendars (Google/Outlook)
 
 ---
 
 ## 📋 Changelog
+
+### April 22, 2026 — Expense Tracker Mobile View Overhaul
+- 📱 **Unified Glass-Card System** — replaced all custom `rounded-[2.5rem]` Expense cards with the global `glass-card` utility for consistent radii, glassmorphism, and hover effects across every device.
+- 🪟 **Constrained Layout** — swapped the unconstrained `max-w-[1600px]` wrapper for the standard `max-w-7xl` layout used by all other pages, preventing horizontal overflow on narrow viewports.
+- 📊 **Responsive Bar Chart** — switched `MonthlyBarChart` from a fixed `barSize={40}` to `maxBarSize={40}`, allowing the weekly spending bars to shrink gracefully on small screens.
+- ✂️ **Transaction Card Truncation** — added `flex-1` to the text container and `shrink-0` to the date label in mobile transaction cards, preventing layout-breaking wrapping on long category names.
+- 🔘 **FAB-First Action Pattern** — the "Log Entry" header button is now hidden on mobile (replaced by the floating FAB), while the Export button expands to full-width with a label for easier tapping.
+- 🌐 **Fixed Ambient Glows** — changed background glow `div`s from `absolute` to `fixed` positioning to prevent them from causing `overflow-hidden` clipping on scroll.
 
 ### April 20, 2026 — Unified Mobile Navigation
 - 📱 **Scrollable Bottom Nav** — upgraded the mobile bottom navigation bar into a horizontally scrollable strip, allowing instant access to all core modules (Focus, Goals, Calendar, etc.) without relying solely on the hamburger menu.
