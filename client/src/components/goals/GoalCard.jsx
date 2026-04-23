@@ -122,18 +122,18 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
 
                     {/* Action Bar */}
                     <div className="flex items-center gap-2 relative z-10">
-                        <button onClick={() => setExpanded(!expanded)} className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg ${
+                        <button onClick={() => setExpanded(!expanded)} className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg active:scale-[0.98] ${
                             isDone ? 'bg-white text-indigo-600 hover:bg-white/90' : 'bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700/50'
                         }`}>
                             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                            {expanded ? 'Collapse' : 'Manage Goal'}
+                            <span className="truncate">{expanded ? 'Collapse' : 'Manage Goal'}</span>
                         </button>
                         {isOwner && (
-                            <button onClick={() => setShowShare(true)} className={`px-4 flex items-center justify-center gap-2 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg ${
+                            <button onClick={() => setShowShare(true)} className={`shrink-0 px-3 sm:px-4 flex items-center justify-center gap-1.5 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg active:scale-[0.98] ${
                                 isDone ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20'
                             }`}>
-                                <Users className="w-4 h-4" />
-                                Share
+                                <Users className="w-4 h-4 shrink-0" />
+                                <span className="hidden xs:inline sm:inline">Share</span>
                             </button>
                         )}
                     </div>

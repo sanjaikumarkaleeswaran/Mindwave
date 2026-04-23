@@ -195,9 +195,14 @@ body {
   }
 }
 
-/* Prevent any element from causing horizontal scroll */
+/* Prevent block-level elements from causing horizontal scroll, but don't restrict flex/grid children */
 @media (max-width: 767px) {
-  * {
+  body, main, section, article, aside, header, footer, nav, div:not([class*="flex"]):not([class*="grid"]) {
+    max-width: 100%;
+  }
+  /* Specifically cap the root layout */
+  #root {
     max-width: 100vw;
+    overflow-x: hidden;
   }
 }

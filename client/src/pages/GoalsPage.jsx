@@ -75,7 +75,7 @@ export default function GoalsPage() {
 
             {/* ── Action bar (Habit Style) ── */}
             <div className="grid grid-cols-2 gap-3 bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 sticky z-30 backdrop-blur-xl shadow-2xl"
-                style={{ top: 'calc(var(--header-h) + 0.5rem)' }}>
+                style={{ top: 'calc(var(--header-h) + 0.75rem)' }}>
                 <button onClick={() => setShowChat(true)}
                     className="flex items-center justify-center gap-2 p-4 bg-zinc-800/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
                     <Bot className="h-4 w-4 text-indigo-400" />
@@ -103,7 +103,8 @@ export default function GoalsPage() {
             </div>
 
             {/* ── Filter pills ── */}
-            <div className="sticky top-24 z-20 -mx-4 px-4 py-1 md:relative md:top-0 md:bg-transparent md:border-none overflow-hidden">
+            <div className="sticky z-20 -mx-4 px-4 py-1 md:relative md:top-0 md:bg-transparent md:border-none overflow-hidden"
+                style={{ top: 'calc(var(--header-h) + 0.75rem)' }}>
                 <div className="flex gap-2 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
                     {FILTERS.map(f => (
                         <button key={f.value} onClick={() => setFilter(f.value)}

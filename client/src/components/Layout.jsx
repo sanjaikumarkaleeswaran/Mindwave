@@ -135,14 +135,14 @@ export default function Layout() {
                     height: 'calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px))'
                 }}
             >
-                <div className="flex items-stretch min-w-full h-full px-2">
+                <div className="flex items-stretch min-w-full h-full px-1">
                     {BOTTOM_NAV.map(({ icon: Icon, label, path, end }) => (
                         <NavLink
                             key={path}
                             to={path}
                             end={end}
                             className={({ isActive }) => clsx(
-                                'flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[64px] flex-1 relative transition-all active:scale-90 shrink-0',
+                                'flex flex-col items-center justify-center gap-0.5 py-1 px-1.5 min-w-[48px] flex-1 relative transition-all active:scale-90 shrink-0',
                                 isActive ? 'text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'
                             )}
                             aria-label={label}
@@ -152,19 +152,19 @@ export default function Layout() {
                                     {/* Indicator line */}
                                     <div
                                         className={clsx(
-                                            "absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(99,102,241,0.5)]",
+                                            "absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-6 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(99,102,241,0.5)]",
                                             isActive ? "bg-indigo-500 opacity-100" : "bg-transparent opacity-0"
                                         )}
                                     />
                                     {/* Icon */}
                                     <div className={clsx(
-                                        'p-1.5 rounded-xl transition-all',
+                                        'p-1 rounded-xl transition-all',
                                         isActive ? 'bg-indigo-500/10' : ''
                                     )}>
-                                        <Icon className={clsx('w-5 h-5', isActive ? 'text-indigo-400' : 'text-zinc-500')} />
+                                        <Icon className={clsx('w-4 h-4', isActive ? 'text-indigo-400' : 'text-zinc-500')} />
                                     </div>
                                     {/* Label */}
-                                    <span className={clsx('text-[10px] font-bold leading-none tracking-tight', isActive ? 'text-indigo-400' : 'text-zinc-500')}>
+                                    <span className={clsx('text-[9px] font-bold leading-none tracking-tight truncate w-full text-center', isActive ? 'text-indigo-400' : 'text-zinc-500')}>
                                         {label}
                                     </span>
                                 </>

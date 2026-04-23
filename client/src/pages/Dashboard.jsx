@@ -304,7 +304,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Goals */}
-                    <Link to="/goals" className="glass-card p-5 group hover:border-indigo-500/20 transition-colors col-span-2 md:col-span-1">
+                    <Link to="/goals" className="glass-card p-5 group hover:border-indigo-500/20 transition-colors">
                         <div className="flex items-center gap-2 mb-3">
                             <Target className="w-4 h-4 text-emerald-400" />
                             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Goals</span>
@@ -435,13 +435,13 @@ export default function Dashboard() {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-8">
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
                                 <div className="p-1.5 bg-indigo-500/15 rounded-lg">
                                     <Activity className="w-4 h-4 text-indigo-400" />
                                 </div>
                                 <h3 className="text-lg font-bold text-white tracking-tight">Weekly Activity</h3>
                                 {/* Live badge */}
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">
                                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse inline-block" />
                                     Live
                                 </span>

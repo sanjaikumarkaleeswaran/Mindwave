@@ -66,10 +66,11 @@ export default function AIChatModal({ onClose, onGenerated, initialGoal = null, 
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
             <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="bg-zinc-900 border border-zinc-700/50 rounded-t-2xl md:rounded-2xl w-full md:max-w-lg h-[85vh] md:h-[600px] flex flex-col shadow-2xl overflow-hidden"
+                className="bg-zinc-900 border border-zinc-700/50 rounded-t-[2.5rem] md:rounded-2xl w-full md:max-w-lg flex flex-col shadow-2xl overflow-hidden"
+                style={{ height: 'min(85dvh, 600px)', maxHeight: '85dvh' }}
                 onClick={e => e.stopPropagation()}>
 
                 {/* Header */}
@@ -137,7 +138,8 @@ export default function AIChatModal({ onClose, onGenerated, initialGoal = null, 
                 </div>
 
                 {/* Input */}
-                <div className="px-4 py-3 border-t border-zinc-800 shrink-0">
+                <div className="px-4 pt-3 pb-4 border-t border-zinc-800 shrink-0"
+                    style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}>
                     <div className="flex gap-2">
                         <textarea value={chatInput} onChange={e => setChatInput(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
@@ -145,7 +147,7 @@ export default function AIChatModal({ onClose, onGenerated, initialGoal = null, 
                             rows={2}
                             className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-all resize-none placeholder-zinc-600" />
                         <button onClick={send} disabled={loading || !chatInput.trim()}
-                            className="p-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl transition-all self-end">
+                            className="p-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl transition-all self-end active:scale-90">
                             <Send className="w-4 h-4" />
                         </button>
                     </div>
