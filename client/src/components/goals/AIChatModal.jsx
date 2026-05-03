@@ -66,10 +66,10 @@ export default function AIChatModal({ onClose, onGenerated, initialGoal = null, 
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
-            <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+            <motion.div initial={{ scale: 0.93, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.93, opacity: 0 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="bg-zinc-900 border border-zinc-700/50 rounded-t-[2.5rem] md:rounded-2xl w-full md:max-w-lg flex flex-col shadow-2xl overflow-hidden"
+                className="bg-zinc-900 border border-zinc-700/50 rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden"
                 style={{ height: 'min(85dvh, 600px)', maxHeight: '85dvh' }}
                 onClick={e => e.stopPropagation()}>
 

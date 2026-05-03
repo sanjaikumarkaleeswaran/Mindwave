@@ -183,21 +183,12 @@ export default function GoalFormModal({ onClose, onSave, onOpenChat, initialData
                     className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[60]"
                 />
 
-                {/* Mobile: bottom sheet */}
-                <motion.div
-                    initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                    transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-                    className="fixed inset-x-0 bottom-0 bg-[#0c0c0e] border-t border-white/10 rounded-t-[3rem] z-[70] max-h-[95dvh] overflow-y-auto hide-scrollbar md:hidden"
-                >
-                    {content}
-                </motion.div>
-
-                {/* Desktop: centered modal */}
-                <div className="fixed inset-0 z-[70] hidden md:flex items-center justify-center pointer-events-none px-4 py-8">
+                {/* Centered modal — all screen sizes */}
+                <div className="fixed inset-0 z-[70] flex items-center justify-center pointer-events-none px-4 py-8">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.93 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.93 }}
+                        initial={{ opacity: 0, scale: 0.93, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.93 }}
                         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-                        className="w-full max-w-lg bg-[#0c0c0e] border border-white/10 rounded-[3rem] shadow-[0_32px_80px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto hide-scrollbar pointer-events-auto"
+                        className="w-full max-w-lg bg-[#0c0c0e] border border-white/10 rounded-3xl shadow-[0_32px_80px_rgba(0,0,0,0.95)] max-h-[90dvh] overflow-y-auto hide-scrollbar pointer-events-auto"
                     >
                         {content}
                     </motion.div>

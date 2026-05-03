@@ -98,22 +98,8 @@ export default function ActivityModal({ milestone, goalId, catColor, onClose, on
                     className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[70]"
                 />
 
-                {/* Mobile: bottom sheet */}
-                <motion.div
-                    initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                    transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-                    className="fixed inset-x-0 bottom-0 bg-zinc-900 border-t border-zinc-700/50 rounded-t-[2.5rem] z-[80] max-h-[90dvh] overflow-y-auto hide-scrollbar md:hidden"
-                    onClick={e => e.stopPropagation()}
-                >
-                    {/* Drag handle */}
-                    <div className="flex justify-center pt-3 pb-1">
-                        <div className="w-10 h-1 rounded-full bg-zinc-700" />
-                    </div>
-                    {content}
-                </motion.div>
-
-                {/* Desktop: centered modal */}
-                <div className="fixed inset-0 z-[80] hidden md:flex items-center justify-center pointer-events-none px-4">
+                {/* Centered modal — all screen sizes */}
+                <div className="fixed inset-0 z-[80] flex items-center justify-center pointer-events-none px-4">
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 320 }}

@@ -45,7 +45,7 @@ export default function GoalsPage() {
         finally { setDelLoad(false); }
     };
 
-    const filtered   = filter === 'all' ? goals : goals.filter(g => g.status === filter);
+    const filtered    = filter === 'all' ? goals : goals.filter(g => g.status === filter);
     const totalActive = goals.filter(g => g.status === 'active').length;
     const totalDone   = goals.filter(g => g.status === 'completed').length;
     const avgProg     = goals.length > 0 ? Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length) : 0;
@@ -58,44 +58,43 @@ export default function GoalsPage() {
     ];
 
     return (
-        <div className="p-4 md:p-8 space-y-5 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
+        <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
             <Helmet><title>Goals | Life OS</title></Helmet>
 
             {/* ── Page header ── */}
-            <div>
-                <h1 className="text-4xl font-black text-white tracking-tighter leading-none">
-                    Mission <br/>
-                    <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Control</span>
-                </h1>
-                <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 mt-3 uppercase tracking-[0.2em]">
-                    <Target className="w-3 h-3 text-indigo-400" />
-                    <span>Set intentions & track milestones.</span>
+            <div className="flex items-start justify-between gap-3">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-tight">
+                        Mission{' '}
+                        <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Control</span>
+                    </h1>
+                    <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 mt-2 uppercase tracking-[0.2em]">
+                        <Target className="w-3 h-3 text-indigo-400" />
+                        <span>Set intentions &amp; track milestones.</span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <button onClick={() => setShowChat(true)}
+                        className="flex items-center gap-2 px-3 py-2.5 bg-zinc-800/80 border border-zinc-700/50 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition-all active:scale-95">
+                        <Bot className="h-4 w-4 text-indigo-400" />
+                        <span className="hidden sm:inline">Ask AI</span>
+                    </button>
+                    <button onClick={() => setShowCreate(true)}
+                        className="flex items-center gap-2 px-3 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+                        <Plus className="h-4 w-4" />
+                        <span className="hidden sm:inline">New Goal</span>
+                    </button>
                 </div>
             </div>
 
-            {/* ── Action bar (Habit Style) ── */}
-            <div className="grid grid-cols-2 gap-3 bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 sticky z-30 backdrop-blur-xl shadow-2xl"
-                style={{ top: 'calc(var(--header-h) + 0.75rem)' }}>
-                <button onClick={() => setShowChat(true)}
-                    className="flex items-center justify-center gap-2 p-4 bg-zinc-800/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
-                    <Bot className="h-4 w-4 text-indigo-400" />
-                    Ask AI
-                </button>
-                <button onClick={() => setShowCreate(true)}
-                    className="flex items-center justify-center gap-2 p-4 bg-indigo-500 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-500/20 transition-all">
-                    <Plus className="h-4 w-4" />
-                    New Goal
-                </button>
-            </div>
-
-            {/* ── Stats (3-Column Grid on Mobile) ── */}
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
+            {/* ── Stats (3-Column Grid) ── */}
+            <div className="grid grid-cols-3 gap-3">
                 {[
-                    { label: 'Active',      value: totalActive, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                    { label: 'Done',        value: totalDone,   color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-                    { label: 'Prog',        value: `${avgProg}%`, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                ].map((s, i) => (
-                    <div key={s.label} className="premium-card p-3 flex flex-col items-center justify-center relative overflow-hidden text-center">
+                    { label: 'Active', value: totalActive, color: 'text-emerald-400' },
+                    { label: 'Done',   value: totalDone,   color: 'text-indigo-400'  },
+                    { label: 'Avg',    value: `${avgProg}%`, color: 'text-purple-400' },
+                ].map((s) => (
+                    <div key={s.label} className="premium-card p-4 flex flex-col items-center justify-center text-center">
                         <div className="text-[9px] text-zinc-600 uppercase font-black mb-1">{s.label}</div>
                         <div className={`text-xl font-black ${s.color}`}>{s.value}</div>
                     </div>
@@ -103,16 +102,13 @@ export default function GoalsPage() {
             </div>
 
             {/* ── Filter pills ── */}
-            <div className="sticky z-20 -mx-4 px-4 py-1 md:relative md:top-0 md:bg-transparent md:border-none overflow-hidden"
-                style={{ top: 'calc(var(--header-h) + 0.75rem)' }}>
-                <div className="flex gap-2 overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
-                    {FILTERS.map(f => (
-                        <button key={f.value} onClick={() => setFilter(f.value)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${filter === f.value ? 'bg-zinc-800 text-white border-zinc-700 shadow-md' : 'text-zinc-600 hover:text-zinc-400 bg-transparent border-transparent'}`}>
-                            {f.label}
-                        </button>
-                    ))}
-                </div>
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4" style={{ scrollbarWidth: 'none' }}>
+                {FILTERS.map(f => (
+                    <button key={f.value} onClick={() => setFilter(f.value)}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${filter === f.value ? 'bg-zinc-800 text-white border-zinc-700 shadow-md' : 'text-zinc-600 hover:text-zinc-400 bg-transparent border-transparent'}`}>
+                        {f.label}
+                    </button>
+                ))}
             </div>
 
             {/* ── Goal grid ── */}
@@ -146,8 +142,6 @@ export default function GoalsPage() {
                     </AnimatePresence>
                 </motion.div>
             )}
-
-
 
             {/* ── Modals ── */}
             <AnimatePresence>
