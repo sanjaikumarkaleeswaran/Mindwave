@@ -1,6 +1,6 @@
 # 🧠 MindWave: Your AI-Powered Life OS
 
-A self-hosted, private **"digital brain"** that organizes your entire life. MindWave combines intelligent AI chat, habit tracking, smart goal planning, journaling, and focus tools into a single, cohesive operating system for your daily routine — fully optimized for both desktop and mobile.
+A self-hosted, private **"digital brain"** that organizes your entire life. MindWave combines intelligent AI chat, habit tracking, smart goal planning, journaling, focus tools, and a financial OS into a single, cohesive operating system for your daily routine — fully optimized for both desktop and mobile.
 
 ---
 
@@ -25,7 +25,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Streak & Consistency Tracking** — monitor daily progress with current/best streaks and weekly calendar heatmaps.
 - **AI Habit Insights** — ask for a performance report; the AI analyzes your data to provide qualitative feedback and actionable weekly challenges.
 - **Table View by Default** — the habit tracker defaults to a scrollable table with sticky habit names, showing the last 7 days at a glance on desktop.
-- **Premium Mobile Cards** — mobile users automatically receive a highly optimized native-app experience, where scrolling tables are replaced by beautiful touch-friendly cards featuring 7-day mini-heatmaps and glowing completion effects.
+- **Premium Mobile Cards** — mobile users automatically receive a highly optimized native-app experience with touch-friendly cards featuring 7-day mini-heatmaps and glowing completion effects.
 
 ### ✍️ Intelligent Journaling
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
@@ -37,36 +37,33 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Threshold Monitoring** — set monthly budget limits per category with real-time progress tracking and "safe vs. over-limit" visual alerts.
 - **Spending Analytics** — high-fidelity weekly and monthly trends visualization with adaptive bar charts and category distribution donut charts.
 - **Data Portability** — export your full transaction history to **CSV** for secondary analysis.
-- **Mobile-Optimized Layout** — all Expense cards use the global `glass-card` system with `max-w-7xl` layout; charts use responsive `maxBarSize`; transaction list cards correctly truncate long content; FAB replaces header button on mobile.
 
 ### 🧘 Focus & Zen
 - **Pomodoro-style Timer** — built-in countdown with quick-select presets (5m, 15m, 25m, 50m) and custom hour/minute/second picker to help you stay in flow state.
 - **Smart Ambient Soundscapes** — curated royalty-free audio tracks that automatically play when the timer starts and pause when it stops.
-- **Custom Native Notifications** — no external MP3s needed! Procedural chimes and beeps are generated directly using the browser's native Web Audio API for session completion alerts.
-- **Mobile-Safe Completion Alerts** — timer completion uses `ServiceWorkerRegistration.showNotification()` on Android (avoids the `Notification` constructor restriction) combined with the custom audio chimes.
+- **Custom Native Notifications** — procedural chimes and beeps are generated directly using the browser's native **Web Audio API** for session completion alerts.
+- **Mobile-Safe Completion Alerts** — timer completion uses `ServiceWorkerRegistration.showNotification()` on Android combined with custom audio chimes.
 
 ### 🔔 Proactive Systems
 - **Smart Notification Bell** — real-time alerts for overdue milestones, habits at risk of losing streaks, and daily reminders.
 - **Global Semantic Search** — one search bar to find anything across goals, habits, and journals. Includes **vector-search** for content *inside* your uploaded PDFs.
 
 ### 📊 Personalized Productivity & Quick Actions
-- **Interactive Productivity Targets** — set your own daily/weekly goals (0–100%) via a high-performance range slider on the dashboard. The system automatically recalculates your progress rings relative to your personal baseline.
-- **Horizontal Quick Action Slider** — a touch-optimized scrolling strip for mobile that provides one-tap access to your most-used tools: *Log Habit, AI Chat, New Goal, Journal,* and *Focus Timer*.
+- **Interactive Productivity Targets** — set your own daily/weekly goals (0–100%) via a high-performance range slider on the dashboard.
+- **Horizontal Quick Action Slider** — a touch-optimized scrolling strip for mobile that provides one-tap access to your most-used tools.
 - **Dynamic 7-Day Activity Chart** — a glow-accented bar chart visualizing habit completion rates with live status indicators and historical averages.
 
-### 📱 Mobile-First Experience
-- **Compact 8-Item Bottom Navigation** — all core modules accessible via a scrollable bottom nav bar with spring-animated active indicators. Icons and labels are precisely sized to fit even the narrowest phones without overflow.
-- **Universal Bottom-Sheet Modals** — every modal (Goals, Activity Log, Delete Confirm, AI Chat) slides up from the bottom on mobile with a drag handle for a native app feel.
+### 📱 Mobile Experience
+- **Compact 8-Item Bottom Navigation** — all core modules accessible via a scrollable bottom nav bar with spring-animated active indicators.
+- **Centered Modal System** — all modals (Goals, Activity Log, Delete Confirm, AI Chat) use a clean centered scale-in animation on all screen sizes.
 - **Safe Area Inset Support** — proper padding for iPhone notches, Dynamic Island, and home indicator bars using `env(safe-area-inset-*)`.
 - **Dynamic View Height** — modals and full-screen layouts use `dvh` units to correctly account for collapsible browser address bars on iOS/Android.
-- **Responsive Dashboard** — 2-column card grid on mobile with scaled-down icons and typography, expanding to 4-column on large screens.
-- **iOS Input Zoom Prevention** — all inputs are set to `font-size: 16px` on mobile to prevent Safari's auto-zoom behavior.
-- **CSS Variable–Driven Sticky Layout** — sticky headers and filter bars use `calc(var(--header-h) + …)` so they never clash with fixed UI chrome on any device.
-- **xs Breakpoint (360px)** — a custom Tailwind breakpoint to handle very small phones (Galaxy A series, older iPhones) with dedicated responsive rules.
+- **Responsive Dashboard** — 2-column card grid on mobile expanding to 4-column on large screens.
+- **iOS Input Zoom Prevention** — all inputs set to `font-size: 16px` on mobile to prevent Safari's auto-zoom behavior.
 
 ### 🛡️ Security & Privacy
 - **Self-Hosted** — you own your data, stored in your own MongoDB instance.
-- **Data Portability** — Export everything (Journals, Habits, Goals, Chat) as **JSON** or **CSV**. Features a visual date-range slider.
+- **Data Portability** — Export everything (Journals, Habits, Goals, Chat) as **JSON** or **CSV** with a visual date-range slider.
 - **Privacy Controls** — "Danger Zone" in settings to permanently wipe all data and account.
 - **Security Hardened** — Helmet, rate-limiting, XSS sanitization, and NoSQL injection prevention.
 
@@ -106,7 +103,7 @@ cd Mindwave
 
 # 2. Server setup
 cd server && npm install
-cp .env.example .env # create your .env
+cp .env.example .env # fill in your keys
 
 # 3. Client setup
 cd ../client && npm install
@@ -143,11 +140,12 @@ Mindwave/
 ├── server/                     # Node.js Backend (Express)
 │   ├── models/                 # User, Goal, Habit, Journal, VectorChunk, Expense, Budget
 │   ├── routes/                 # Auth, Chat (Tool & RAG), Search, Goals, Habits, Expenses
+│   ├── controllers/            # Business logic handlers
 │   ├── middleware/             # Auth, Security (XSS, RateLimit, Sanitize)
 │   ├── utils/                  # VectorStore, LLM Orchestration
 │   └── index.js                # Entry point
 │
-└── start_app.bat               # Automated startup script
+└── start_app.bat               # Automated startup script (Windows)
 ```
 
 ---
@@ -161,17 +159,13 @@ Navigate to your local IP (e.g., `http://192.168.1.5:5173`) on your mobile brows
 - **iOS:** "Add to Home Screen" from the Safari share sheet.
 
 **Mobile UX highlights:**
-- 8-item bottom nav bar — compact icon + label layout fits all phones, including small 360px screens
-- All modals use bottom-sheet slide-up pattern with drag handles (Goals, Activity, Delete, AI Chat)
+- 8-item bottom nav bar — compact icon + label layout fits all phones including 360px screens
+- Centered modal animations for Goals, Activity, Delete, and AI Chat
 - `dvh`-based heights for correct sizing with collapsible browser chrome on iOS/Android
 - Safe-area padding for notch/home-bar devices (iPhone X+)
-- Sticky headers driven by CSS `--header-h` variable — no hardcoded pixel offsets
-- Custom `xs: 360px` Tailwind breakpoint for very small phone layouts
-- Full-screen chat view between header and bottom nav
 - Responsive 2-column grids on small screens, expanding to 4 on desktop
 - Touch-friendly tap targets with `active:scale` haptic feedback
 - iOS input zoom prevention (16px base font on all inputs)
-- Financial Bento Grid adapts to a vertical stream with priority card stacks
 
 ---
 
@@ -194,16 +188,16 @@ This application is ready for production deployment:
 - [x] Mobile PWA support
 - [x] Advanced Data Export (JSON/CSV)
 - [x] Voice Interface (STT & TTS)
-- [x] Full mobile UI optimization (safe area, bottom nav, responsive grids)
+- [x] Mobile UI optimization (safe area, bottom nav, responsive grids)
 - [x] Mobile-safe timer completion notifications (ServiceWorker API)
 - [x] Interactive Productivity Target Sliders
 - [x] Dashboard Quick Action Strip (Mobile UX)
 - [x] **Financial OS (Bento Grid Expense Tracker)**
 - [x] Shared Goals & Collaboration features
-- [x] **Expense Tracker Mobile View Fix** (glass-card system, FAB, responsive charts)
-- [x] **Universal Bottom-Sheet Modals** (Goals, Activity, Delete, AI Chat)
-- [x] **Compact 8-item Bottom Nav** with xs breakpoint support
+- [x] **Expense Tracker Mobile View** (glass-card system, FAB, responsive charts)
+- [x] **Compact 8-item Bottom Nav** with scrollable strip
 - [x] **dvh-based modal heights** for iOS/Android browser chrome
+- [x] **Reverted to classic centered modal UX** for Goals, Activity, AI Chat
 - [ ] Backend-driven Push Notifications (Web Push API)
 - [ ] Integration with External Calendars (Google/Outlook)
 
@@ -211,55 +205,56 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### May 3, 2026 — Modal UX Revert (Classic Style)
+- 🔄 **GoalsPage Header** — restored the original inline header layout with title on the left and compact action buttons (Ask AI + New Goal) on the right. Removed the sticky full-width 2-column action bar grid.
+- 🪟 **GoalFormModal** — removed the mobile-only bottom-sheet slide-up pattern; now uses a single unified centered scale-in modal on all screen sizes.
+- 💬 **AIChatModal** — reverted from `items-end` bottom-sheet positioning to a centered `scale-in` animation on all screen sizes.
+- 📋 **ActivityModal** — removed the dual mobile/desktop modal split (bottom-sheet + drag handle on mobile, centered on desktop) and replaced with one consistent centered modal for all devices.
+- 🧹 **Filter Pills** — removed sticky positioning from the Goals page filter pills; they now scroll naturally with the page.
+
 ### April 23, 2026 — Full Mobile Responsiveness Overhaul
 - 📱 **Compact Bottom Navigation** — reduced icon/label sizing and min-width so all 8 navigation items fit on the narrowest phones (360px+) without any horizontal overflow or scrolling.
-- 🪟 **Universal Bottom-Sheet Modals** — converted `ActivityModal` and `DeleteModal` from plain centered overlays to the full bottom-sheet slide-up pattern with a drag handle, matching the existing `GoalFormModal`, `ShareModal`, and `AIChatModal` style.
+- 🪟 **Universal Bottom-Sheet Modals** — converted `ActivityModal` and `DeleteModal` from plain centered overlays to the bottom-sheet slide-up pattern with a drag handle.
 - 📐 **dvh Modal Heights** — replaced all `85vh` modal heights with `min(85dvh, 600px)` to correctly account for collapsible browser address bars on iOS and Android Chrome.
-- 🎯 **CSS Variable Sticky Bars** — replaced hardcoded `top-24` sticky offsets on the Goals page action bar and filter pills with `calc(var(--header-h) + 0.75rem)`, so they always sit correctly below the header on any device.
-- 🛡️ **Fixed max-width CSS Rule** — removed the `max-width: 100vw` on every `*` selector (which was silently breaking flex/grid child layouts) and replaced it with a scoped rule targeting block-level elements and `#root` only.
-- 🎨 **xs Breakpoint** — added a custom `xs: 360px` Tailwind breakpoint for targeted small-phone styles (e.g., icon-only Share button on very narrow screens).
-- 📊 **Dashboard Stat Grid Fix** — removed the erroneous `col-span-2` on the Goals stat card that caused an uneven layout at the `sm` breakpoint, and added `flex-wrap` + `whitespace-nowrap` to the Weekly Activity chart header.
-- 🔒 **z-index Stacking** — standardized modal z-indices: backdrop `z-[70]`, sheet/modal `z-[80]`, ensuring no bottom nav bleed-through.
+- 🎯 **CSS Variable Sticky Bars** — replaced hardcoded `top-24` sticky offsets on the Goals page with `calc(var(--header-h) + 0.75rem)`.
+- 🛡️ **Fixed max-width CSS Rule** — removed the `max-width: 100vw` on every `*` selector and replaced it with a scoped rule targeting block-level elements and `#root` only.
+- 🎨 **xs Breakpoint** — added a custom `xs: 360px` Tailwind breakpoint for targeted small-phone styles.
+- 📊 **Dashboard Stat Grid Fix** — removed erroneous `col-span-2` on the Goals stat card causing uneven layouts.
 
 ### April 22, 2026 — Expense Tracker Mobile View Overhaul
-- 📱 **Unified Glass-Card System** — replaced all custom `rounded-[2.5rem]` Expense cards with the global `glass-card` utility for consistent radii, glassmorphism, and hover effects across every device.
-- 🪟 **Constrained Layout** — swapped the unconstrained `max-w-[1600px]` wrapper for the standard `max-w-7xl` layout used by all other pages, preventing horizontal overflow on narrow viewports.
-- 📊 **Responsive Bar Chart** — switched `MonthlyBarChart` from a fixed `barSize={40}` to `maxBarSize={40}`, allowing the weekly spending bars to shrink gracefully on small screens.
-- ✂️ **Transaction Card Truncation** — added `flex-1` to the text container and `shrink-0` to the date label in mobile transaction cards, preventing layout-breaking wrapping on long category names.
-- 🔘 **FAB-First Action Pattern** — the "Log Entry" header button is now hidden on mobile (replaced by the floating FAB), while the Export button expands to full-width with a label for easier tapping.
-- 🌐 **Fixed Ambient Glows** — changed background glow `div`s from `absolute` to `fixed` positioning to prevent them from causing `overflow-hidden` clipping on scroll.
+- 📱 **Unified Glass-Card System** — replaced all custom Expense cards with the global `glass-card` utility for consistent radii and glassmorphism.
+- 🪟 **Constrained Layout** — swapped the unconstrained wrapper for the standard `max-w-7xl` layout.
+- 📊 **Responsive Bar Chart** — switched from `barSize={40}` to `maxBarSize={40}`, allowing spending bars to shrink gracefully on small screens.
+- 🔘 **FAB-First Action Pattern** — the "Log Entry" header button is hidden on mobile; replaced by the floating FAB.
 
 ### April 20, 2026 — Unified Mobile Navigation
-- 📱 **Scrollable Bottom Nav** — upgraded the mobile bottom navigation bar into a horizontally scrollable strip, allowing instant access to all core modules (Focus, Goals, Calendar, etc.) without relying solely on the hamburger menu.
-- 📐 **Safe Area Pad Refinement** — improved dynamic padding on mobile to ensure the new scrollable navigation strip never overlaps bottom-page content.
+- 📱 **Scrollable Bottom Nav** — upgraded the mobile bottom navigation bar into a horizontally scrollable strip with instant access to all core modules.
 
 ### April 18, 2026 — Shared Goals & Collaboration
-- 🤝 **Collaborative Goal Tracking** — Added the ability to share goals with colleagues and friends via email. Goal owners can invite collaborators, and all participants can update milestones, track progress, and log activities in real-time.
+- 🤝 **Collaborative Goal Tracking** — Added the ability to share goals with colleagues and friends via email with real-time milestone tracking.
 
 ### April 16, 2026 — Layout Resiliency & Local Dev Polish
-- 🛡️ **Scroll-Proof Modal Architecture** — completely refactored the Add Transaction modal layering on desktop to use strict flex-based centering, ensuring perfect responsiveness regardless of deep page scrolling or Framer Motion animation conflicts.
-- ⚙️ **Dynamic Port Binding** — updated backend CORS logic to intelligently whitelist wildcard local ports, resolving blocked requests during aggressive Vite dev-server auto-incrementing.
+- 🛡️ **Scroll-Proof Modal Architecture** — refactored the Add Transaction modal to use strict flex-based centering on desktop.
+- ⚙️ **Dynamic Port Binding** — updated backend CORS logic to intelligently whitelist wildcard local ports.
 
 ### April 15, 2026 — Premium Financial UI & Interaction Polish
-- 💎 **Premium Button Systems** — upgraded all primary action buttons in the Financial OS with a custom Indigo-vibe theme, consistent iconography, and glassmorphism-inspired "shine" animations for a high-end feel.
-- 📱 **Mobile FAB Optimization** — implemented a high-visibility, glow-enhanced Floating Action Button (FAB) for financial logging on mobile, providing a superior touch experience.
-- ✨ **Responsive Action States** — header primary actions now intelligently collapse on small screens into a compact "New" action, maintaining accessibility while optimizing screen real estate.
+- 💎 **Premium Button Systems** — upgraded all primary action buttons in the Financial OS with Indigo-vibe theme and glassmorphism shine animations.
+- 📱 **Mobile FAB Optimization** — implemented a high-visibility, glow-enhanced Floating Action Button for financial logging on mobile.
 
 ### April 13, 2026 — Financial UI Refinement & Analytical Stability
-- 📈 **Weekly Spending Trends** — overhauled the bar chart logic to provide a consistent 5-week breakdown for any selected month, resolving issues where past monthly data was invisible.
-- 🏷️ **Smart Categorization UI** — implemented dynamic category filtering in the transaction modal; users now only see relevant categories based on whether they are logging Income or Expenses.
-- 🔍 **Safe Analytical Search** — hardened the global expense filtering with null-safe note searching to prevent UI crashes on incomplete historical records.
-- 💎 **UX Polish** — standardized transaction editing nomenclature and refined modal interaction states for a more tactile financial experience.
+- 📈 **Weekly Spending Trends** — overhauled bar chart logic to provide a consistent 5-week breakdown for any selected month.
+- 🏷️ **Smart Categorization UI** — dynamic category filtering in the transaction modal based on Income vs. Expense type.
+- 🔍 **Safe Analytical Search** — hardened the global expense filtering with null-safe note searching.
 
 ### April 12, 2026 — Financial OS & Bento Grid Redesign
-- 💎 **Bento Grid Architecture** — completely redesigned the Expense Tracker module into a modular Bento Grid system for high-density financial overview.
+- 💎 **Bento Grid Architecture** — completely redesigned the Expense Tracker module into a modular Bento Grid system.
 - 🇮🇳 **INR Localization** — standardized entire financial suite to **Indian Rupee (₹)** with `en-IN` formatting.
-- 📊 **Dynamic Analytics** — implemented new donut-style category distribution charts and surgical bar charts for spending history.
-- 🎯 **Budget Thresholds** — added category-specific budget limits with real-time progress indicators and over-limit visual alerts.
+- 📊 **Dynamic Analytics** — implemented donut-style category distribution charts and surgical bar charts for spending history.
+- 🎯 **Budget Thresholds** — added category-specific budget limits with real-time progress indicators.
 - 💾 **CSV Export** — added full data portability to the financial module.
 
 ### April 10, 2026 — Productivity Logic & Dashboard UX
-- 📈 **Personalized Productivity Targets** — users can now set custom productivity targets (0–100%) directly from the dashboard via an interactive range slider.
+- 📈 **Personalized Productivity Targets** — users can now set custom productivity targets (0–100%) via an interactive range slider on the dashboard.
 - ⚡ **Dashboard Quick Actions** — added a horizontal action slider for one-tap navigation to core features.
 
 ---
@@ -269,16 +264,16 @@ This application is ready for production deployment:
 To keep the repository clean and secure, follow these guidelines:
 
 ### ✅ Files to COMMIT
-*   **Source Code**: `client/src/`, `server/` (controllers, models, routes, etc.)
-*   **Project Icons & Assets**: `client/public/`
-*   **Configuration**: `package.json`, `package-lock.json`, `vite.config.js`, `tailwind.config.js`, `vercel.json`, `.gitignore`.
-*   **Documentation**: `README.md`, `RAG_IMPLEMENTATION.md`.
+- **Source Code**: `client/src/`, `server/` (controllers, models, routes, etc.)
+- **Project Icons & Assets**: `client/public/`
+- **Configuration**: `package.json`, `package-lock.json`, `vite.config.js`, `tailwind.config.js`, `vercel.json`, `.gitignore`
+- **Documentation**: `README.md`, `RAG_IMPLEMENTATION.md`
 
 ### 🚫 Files to IGNORE
-*   **Sensitive Info**: `.env` (Never push API keys or Database URIs).
-*   **Dependencies**: `node_modules/` (Always re-install via `npm install`).
-*   **Build Artifacts**: `client/dist/`, `server/dist/`.
-*   **Logs & Temp**: `*.log`, `*.txt`, `*_crash.json`, `test_*.js`.
+- **Sensitive Info**: `.env` (Never push API keys or Database URIs)
+- **Dependencies**: `node_modules/` (Always re-install via `npm install`)
+- **Build Artifacts**: `client/dist/`, `server/dist/`
+- **Logs & Temp**: `*.log`, `*.txt`, `*_crash.json`, `test_*.js`
 
 ---
 
