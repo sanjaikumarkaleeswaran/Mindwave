@@ -51,7 +51,7 @@ export default function Layout() {
             } catch { /* silent */ }
         };
         fetchContext();
-    }, [location.pathname]);
+    }, []); // Fetch once on mount — no need to re-fetch on every route change
 
     // Global keyboard shortcut: Ctrl+K or Cmd+K to open search
     useEffect(() => {

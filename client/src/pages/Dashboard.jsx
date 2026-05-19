@@ -18,7 +18,8 @@ export default function Dashboard() {
     const [journals, setJournals] = useState([]);
     const [goals, setGoals] = useState([]);
     const [quote, setQuote] = useState("");
-    const [, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+
     const [stats, setStats] = useState(null);
     const { updatePreferences } = useAuth();
     const [isSavingTarget, setIsSavingTarget] = useState(false);
@@ -118,6 +119,13 @@ export default function Dashboard() {
             <Helmet>
                 <title>Dashboard | Life OS</title>
             </Helmet>
+
+            {/* Loading overlay */}
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none">
+                    <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+            )}
 
             {/* Header Section */}
             <div className="flex flex-col gap-3">

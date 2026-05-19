@@ -16,10 +16,6 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
     const [expanded,  setExpanded]  = useState(false);
     const [actMs,     setActMs]     = useState(null);
     const [showShare, setShowShare] = useState(false);
-    const [newMs,     setNewMs]     = useState('');
-    const [newMsDate, setNewMsDate] = useState('');
-    const [msLoad,    setMsLoad]    = useState(false);
-
     const cat     = getCat(goal.category);
     const CatIcon = cat.icon;
     const tp      = timeProg(goal.createdAt, goal.targetDate);
@@ -32,20 +28,14 @@ export default function GoalCard({ goal, onDelete, onUpdate, onEdit }) {
         archived:  'text-zinc-400 bg-zinc-400/10 border-zinc-500/30',
     };
 
-    const toggleMs    = async id => {
+    const toggleMs = async id => {
         if (!id || id === 'undefined') return;
         try { const r = await api.patch(`/goals/${goal._id}/milestone/${id}`); onUpdate(r.data); } catch (e) { console.error(e); }
     };
-    const addMs       = async () => {
-        if (!newMs.trim()) return; setMsLoad(true);
-        try { const r = await api.patch(`/goals/${goal._id}/milestone`, { text: newMs, dueDate: newMsDate || undefined }); onUpdate(r.data); setNewMs(''); setNewMsDate(''); }
-        catch (e) { console.error(e); } finally { setMsLoad(false); }
-    };
-    const setStatus   = async s => { try { const r = await api.put(`/goals/${goal._id}`, { status: s });   onUpdate(r.data); } catch (e) { console.error(e); } };
-    const setProgress = async v => { try { const r = await api.put(`/goals/${goal._id}`, { progress: v }); onUpdate(r.data); } catch (e) { console.error(e); } };
 
     const isDone = goal.status === 'completed' || goal.progress === 100;
-    const isOwner = user && goal.userId === user._id;
+    // Fix: compare as strings — Mongoose ObjectIds are objects and === always returns false
+    const isOwner = user && goal.userId?.toString() === user._id?.toString();
 
     return (
         <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>

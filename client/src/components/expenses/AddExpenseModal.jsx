@@ -220,7 +220,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdded, editData = n
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
                     {loading ? (
-                        <div className={`w-5 h-5 border-3 border-t-transparent rounded-full animate-spin ${formData.type === 'expense' ? 'border-zinc-400 border-t-black' : 'border-indigo-300 border-t-white'}`} />
+                        <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${formData.type === 'expense' ? 'border-zinc-400 border-t-black' : 'border-indigo-300 border-t-white'}`} />
                     ) : (
                         <>
                             {editData

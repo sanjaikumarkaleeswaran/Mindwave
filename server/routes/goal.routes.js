@@ -182,6 +182,24 @@ Rules:
     }
 });
 
+// GET /api/goals/search  ← MUST be before /:id routes to prevent Express matching 'search' as an ObjectId
+router.get('/search', auth, async (req, res) => {
+    try {
+        const q = req.query.q || '';
+        const goals = await Goal.find({
+            userId: req.user.id,
+            $or: [
+                { title: { $regex: q, $options: 'i' } },
+                { description: { $regex: q, $options: 'i' } },
+                { category: { $regex: q, $options: 'i' } },
+            ]
+        }).limit(10);
+        res.json(goals);
+    } catch (err) {
+        res.status(500).json({ msg: 'Server Error' });
+    }
+});
+
 // PUT update goal
 router.put('/:id', auth, validate(updateGoalSchema), async (req, res) => {
     try {
@@ -302,22 +320,5 @@ router.post('/:id/share', auth, async (req, res) => {
     }
 });
 
-// GET /api/goals/search
-router.get('/search', auth, async (req, res) => {
-    try {
-        const q = req.query.q || '';
-        const goals = await Goal.find({
-            userId: req.user.id,
-            $or: [
-                { title: { $regex: q, $options: 'i' } },
-                { description: { $regex: q, $options: 'i' } },
-                { category: { $regex: q, $options: 'i' } },
-            ]
-        }).limit(10);
-        res.json(goals);
-    } catch (err) {
-        res.status(500).json({ msg: 'Server Error' });
-    }
-});
-
 module.exports = router;
+
