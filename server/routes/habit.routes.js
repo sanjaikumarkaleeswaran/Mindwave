@@ -30,7 +30,7 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/', auth, validate(createHabitSchema), async (req, res) => {
     try {
-        const { name, frequency } = req.body;
+        const { name, frequency, category, color, icon, description, reminderTime, targetDaysPerWeek } = req.body;
         // Get max order to append vertically
         const lastHabit = await Habit.findOne({ userId: req.user.id }).sort({ order: -1 });
         const order = lastHabit ? lastHabit.order + 1 : 0;
@@ -39,6 +39,12 @@ router.post('/', auth, validate(createHabitSchema), async (req, res) => {
             userId: req.user.id,
             name,
             frequency,
+            category,
+            color,
+            icon,
+            description,
+            reminderTime,
+            targetDaysPerWeek,
             order
         });
         const habit = await newHabit.save();
@@ -184,12 +190,20 @@ router.put('/:id/toggle', auth, validate(toggleHabitSchema), async (req, res) =>
 
 router.put('/:id', auth, validate(updateHabitSchema), async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, frequency, category, color, icon, description, reminderTime, targetDaysPerWeek } = req.body;
         let habit = await Habit.findById(req.params.id);
         if (!habit) return res.status(404).json({ msg: 'Not found' });
         if (habit.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
 
-        habit.name = name || habit.name;
+        if (name !== undefined)               habit.name = name;
+        if (frequency !== undefined)          habit.frequency = frequency;
+        if (category !== undefined)           habit.category = category;
+        if (color !== undefined)              habit.color = color;
+        if (icon !== undefined)               habit.icon = icon;
+        if (description !== undefined)        habit.description = description;
+        if (reminderTime !== undefined)       habit.reminderTime = reminderTime;
+        if (targetDaysPerWeek !== undefined)  habit.targetDaysPerWeek = targetDaysPerWeek;
+
         await habit.save();
         res.json(habit);
     } catch (err) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2 } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2, Bot } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
@@ -19,6 +19,8 @@ export default function Dashboard() {
     const [goals, setGoals] = useState([]);
     const [quote, setQuote] = useState("");
     const [loading, setLoading] = useState(true);
+    const [dailyBrief, setDailyBrief] = useState(null);
+    const [briefLoading, setBriefLoading] = useState(true);
 
     const [stats, setStats] = useState(null);
     const { updatePreferences } = useAuth();
@@ -44,7 +46,6 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
-        // Set Greeting Phrase
         // Set Quote based on day of year to be consistent for 24h
         const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
         setQuote(QUOTES[dayOfYear % QUOTES.length]);
@@ -69,7 +70,21 @@ export default function Dashboard() {
                 setLoading(false);
             }
         };
+
+        // Fetch AI brief separately so it doesn't block main dashboard
+        const fetchBrief = async () => {
+            try {
+                const res = await api.get('/ai/daily-brief');
+                setDailyBrief(res.data);
+            } catch (err) {
+                console.error("Brief fetch error", err);
+            } finally {
+                setBriefLoading(false);
+            }
+        };
+
         fetchData();
+        fetchBrief();
     }, []);
 
     // Helper for Local Date String (YYYY-MM-DD)
@@ -146,6 +161,52 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] bg-zinc-800/30 w-fit px-2 py-1 rounded-lg border border-white/5">
                     <Sparkles className="w-2.5 h-2.5 text-indigo-400 shrink-0" />
                     <span className="truncate max-w-[240px]">{quote.split(':')[0]}</span>
+                </div>
+            </div>
+
+            {/* AI Daily Brief Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/60 via-zinc-900/80 to-purple-950/40 p-5 md:p-6">
+                {/* Ambient glows */}
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                        <Bot className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">AI Daily Brief</span>
+                            {briefLoading && <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse inline-block" />}
+                        </div>
+                        {briefLoading ? (
+                            <div className="space-y-2">
+                                <div className="h-3 bg-zinc-800 rounded-full animate-pulse w-full" />
+                                <div className="h-3 bg-zinc-800 rounded-full animate-pulse w-4/5" />
+                                <div className="h-3 bg-zinc-800 rounded-full animate-pulse w-3/5" />
+                            </div>
+                        ) : (
+                            <p className="text-sm text-zinc-300 leading-relaxed">{dailyBrief?.brief}</p>
+                        )}
+                        {dailyBrief?.data && (
+                            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-white/5">
+                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">
+                                    🔥 {dailyBrief.data.topStreak}d streak
+                                </span>
+                                <span className="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-lg">
+                                    ✅ {dailyBrief.data.habitsCompleted}/{dailyBrief.data.habitsDue} habits
+                                </span>
+                                <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded-lg">
+                                    🎯 {dailyBrief.data.activeGoals} goals active
+                                </span>
+                                {dailyBrief.data.monthlyBalance !== null && (
+                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${dailyBrief.data.monthlyBalance >= 0 ? 'text-green-400 bg-green-500/10' : 'text-rose-400 bg-rose-500/10'}`}>
+                                        ₹{Math.abs(dailyBrief.data.monthlyBalance).toLocaleString('en-IN')} {dailyBrief.data.monthlyBalance >= 0 ? 'saved' : 'deficit'}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

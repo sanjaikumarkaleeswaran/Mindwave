@@ -2,22 +2,32 @@ const { z } = require('zod');
 
 const createExpenseSchema = z.object({
     body: z.object({
-        type: z.enum(['income', 'expense']),
-        amount: z.number().positive(),
+        type:     z.enum(['income', 'expense']),
+        amount:   z.number().positive(),
         category: z.string().min(1),
-        note: z.string().max(500).optional(),
-        date: z.string().optional(),
-    }).strict()
+        note:     z.string().max(500).optional(),
+        date:     z.string().optional(),
+        currency: z.string().max(10).optional(),
+        tags:     z.array(z.string().max(50)).max(10).optional(),
+        attachmentUrl:     z.string().url().optional().or(z.literal('')),
+        recurringInterval: z.enum(['none','daily','weekly','monthly','yearly']).optional(),
+        paymentMethod:     z.enum(['cash','card','upi','netbanking','other']).optional(),
+    })
 });
 
 const updateExpenseSchema = z.object({
     body: z.object({
-        type: z.enum(['income', 'expense']).optional(),
-        amount: z.number().positive().optional(),
+        type:     z.enum(['income', 'expense']).optional(),
+        amount:   z.number().positive().optional(),
         category: z.string().min(1).optional(),
-        note: z.string().max(500).optional(),
-        date: z.string().optional(),
-    }).strict()
+        note:     z.string().max(500).optional(),
+        date:     z.string().optional(),
+        currency: z.string().max(10).optional(),
+        tags:     z.array(z.string().max(50)).max(10).optional(),
+        attachmentUrl:     z.string().url().optional().or(z.literal('')),
+        recurringInterval: z.enum(['none','daily','weekly','monthly','yearly']).optional(),
+        paymentMethod:     z.enum(['cash','card','upi','netbanking','other']).optional(),
+    })
 });
 
 const setBudgetSchema = z.object({

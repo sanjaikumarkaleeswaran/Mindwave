@@ -2,15 +2,28 @@ const { z } = require('zod');
 
 const createHabitSchema = z.object({
     body: z.object({
-        name: z.string().min(1, 'Habit name is required').max(100, 'Habit name must be less than 100 characters'),
+        name:      z.string().min(1, 'Habit name is required').max(100),
         frequency: z.enum(['daily', 'weekly']).optional(),
-    }).strict(),
+        category:  z.enum(['health','fitness','learning','mindfulness','productivity','social','finance','other']).optional(),
+        color:     z.string().max(20).optional(),
+        icon:      z.string().max(10).optional(),
+        description:   z.string().max(300).optional(),
+        reminderTime:  z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional().or(z.literal('')),
+        targetDaysPerWeek: z.number().int().min(1).max(7).optional(),
+    }),
 });
 
 const updateHabitSchema = z.object({
     body: z.object({
-        name: z.string().min(1).max(100).optional(),
-    }).strict(),
+        name:      z.string().min(1).max(100).optional(),
+        frequency: z.enum(['daily', 'weekly']).optional(),
+        category:  z.enum(['health','fitness','learning','mindfulness','productivity','social','finance','other']).optional(),
+        color:     z.string().max(20).optional(),
+        icon:      z.string().max(10).optional(),
+        description:   z.string().max(300).optional(),
+        reminderTime:  z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional().or(z.literal('')),
+        targetDaysPerWeek: z.number().int().min(1).max(7).optional(),
+    }),
     params: z.object({
         id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Habit ID'),
     }),
