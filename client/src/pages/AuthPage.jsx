@@ -34,13 +34,16 @@ export default function AuthPage() {
     const labelClass = "block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1 mb-1.5";
 
     return (
-        <div className="min-h-screen min-h-[100dvh] flex flex-col items-center justify-center bg-zinc-950 p-4 relative overflow-hidden">
+        <div className="min-h-[100dvh] flex flex-col bg-zinc-950 relative overflow-hidden">
             {/* Ambient glows */}
             <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
 
-            {/* Brand */}
-            <div className="relative z-10 mb-8 text-center">
+            {/* Scrollable Container */}
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 z-10 overflow-y-auto">
+                <div className="w-full max-w-md py-6 my-auto">
+                    {/* Brand */}
+                    <div className="mb-8 text-center">
                 <div className="inline-flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.3)]">
                         <Sparkles className="w-6 h-6 text-indigo-400" />
@@ -52,9 +55,10 @@ export default function AuthPage() {
                 <p className="text-zinc-500 text-sm font-medium">Your personal AI Life Operating System</p>
             </div>
 
-            {/* Card */}
-            <div className="relative z-10 w-full max-w-md">
-                <div className="bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+                    </div>
+
+                    {/* Card */}
+                    <div className="bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
                     {/* Tab toggle */}
                     <div className="relative flex p-1.5 bg-zinc-950/60 rounded-[1.5rem] border border-white/5 mb-7">
@@ -133,12 +137,14 @@ export default function AuthPage() {
                     </form>
                 </div>
 
-                <p className="text-center text-zinc-600 text-xs font-medium mt-6">
-                    By continuing, you agree to our{' '}
-                    <span className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Terms</span>
-                    {' & '}
-                    <span className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
-                </p>
+                        <p className="text-center text-zinc-600 text-xs font-medium mt-6">
+                            By continuing, you agree to our{' '}
+                            <span className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Terms</span>
+                            {' & '}
+                            <span className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
