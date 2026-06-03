@@ -55,8 +55,6 @@ export default function AuthPage() {
                 <p className="text-zinc-500 text-sm font-medium">Your personal AI Life Operating System</p>
             </div>
 
-                    </div>
-
                     {/* Card */}
                     <div className="bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
@@ -146,6 +144,5 @@ export default function AuthPage() {
                     </div>
                 </div>
             </div>
-        </div>
     );
 }
