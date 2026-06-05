@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const webpush = require('web-push');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/auth.middleware');
 const User = require('../models/User');
 
-webpush.setVapidDetails(
-  'mailto:admin@mindwave.app',
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    'mailto:admin@mindwave.app',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+} else {
+  console.warn('VAPID keys are not defined in environment variables. Push notifications will be disabled.');
+}
 
 // Get VAPID public key
 router.get('/vapidPublicKey', (req, res) => {
