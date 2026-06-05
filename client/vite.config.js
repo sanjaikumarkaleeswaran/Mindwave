@@ -12,6 +12,7 @@ export default defineConfig({
 
       // ── Offline caching strategy ──────────────────────────────────────────
       workbox: {
+        importScripts: ['/push-sw.js'],
         // Pre-cache all build output (JS, CSS, HTML)
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
 

@@ -198,8 +198,8 @@ This application is ready for production deployment:
 - [x] **Compact 8-item Bottom Nav** with scrollable strip
 - [x] **dvh-based modal heights** for iOS/Android browser chrome
 - [x] **Reverted to classic centered modal UX** for Goals, Activity, AI Chat
-- [ ] Backend-driven Push Notifications (Web Push API)
-- [ ] Integration with External Calendars (Google/Outlook)
+- [x] Backend-driven Push Notifications (Web Push API)
+- [x] Integration with External Calendars (Google/Outlook)
 
 ---
 

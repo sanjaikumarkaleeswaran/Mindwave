@@ -77,6 +77,8 @@ app.use('/api/expenses', require('./routes/expense.routes'));
 app.use('/api/search', require('./routes/search.routes'));
 app.use('/api/events', require('./routes/event.routes'));
 app.use('/api/ai', require('./routes/ai.routes'));
+app.use('/api/notifications', require('./routes/notification.routes'));
+app.use('/api/calendar', require('./routes/calendar.routes'));
 
 console.log('All routes loaded.');
 

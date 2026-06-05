@@ -13,6 +13,15 @@ const UserSchema = new mongoose.Schema({
     productivityTarget: { type: Number, default: 75 }
   },
   lastNotificationCheck: { type: Date, default: Date.now },
+  pushSubscriptions: [{
+    endpoint: String,
+    expirationTime: Date,
+    keys: {
+      p256dh: String,
+      auth: String
+    }
+  }],
+  calendarSyncToken: { type: String, unique: true, sparse: true },
   createdAt: { type: Date, default: Date.now },
   resetPasswordToken: String,
   resetPasswordExpire: Date,

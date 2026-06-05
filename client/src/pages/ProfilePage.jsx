@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Helmet } from 'react-helmet-async';
-import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X, FileDown, CheckCircle, Calendar, Database } from 'lucide-react';
+import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X, FileDown, CheckCircle, Calendar, Database, Bell, Link } from 'lucide-react';
 import api from '../lib/axios';
 
 export default function ProfilePage() {
@@ -26,6 +26,54 @@ export default function ProfilePage() {
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [deleteError, setDeleteError] = useState('');
     const [message, setMessage] = useState({ type: '', text: '' });
+
+    // --- Integrations ---
+    const [pushStatus, setPushStatus] = useState('default');
+    const [calendarUrl, setCalendarUrl] = useState('');
+
+    const handleSubscribePush = async () => {
+        setPushStatus('loading');
+        try {
+            const { data: { publicKey } } = await api.get('/notifications/vapidPublicKey');
+            const registration = await navigator.serviceWorker.ready;
+            
+            const padding = '='.repeat((4 - publicKey.length % 4) % 4);
+            const base64 = (publicKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: outputArray
+            });
+
+            await api.post('/notifications/subscribe', subscription);
+            setPushStatus('subscribed');
+            setMessage({ type: 'success', text: 'Successfully subscribed to push notifications!' });
+        } catch (err) {
+            console.error('Push error:', err);
+            setPushStatus('error');
+            setMessage({ type: 'error', text: 'Failed to subscribe to notifications. Please ensure notifications are allowed in your browser.' });
+        }
+    };
+
+    const handleGenerateCalendar = async () => {
+        try {
+            const { data } = await api.get('/calendar/sync-url');
+            setCalendarUrl(data.url);
+        } catch (err) {
+            console.error(err);
+            setMessage({ type: 'error', text: 'Failed to generate calendar URL.' });
+        }
+    };
+    
+    const handleCopyCalendarUrl = () => {
+        navigator.clipboard.writeText(calendarUrl);
+        setMessage({ type: 'success', text: 'Calendar URL copied to clipboard!' });
+    };
 
     // --- Drag Range Slider ---
     const trackRef = useRef(null);
@@ -829,6 +877,71 @@ export default function ProfilePage() {
                         </button>
                     </div>
 
+                </div>
+            </div>
+
+            {/* Integrations */}
+            <div className="md:col-span-1 lg:col-span-3">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-5">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <Link className="w-5 h-5 text-indigo-400" />
+                        Integrations & Notifications
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Push Notifications Card */}
+                        <div className="bg-zinc-800/40 border border-zinc-700/40 rounded-xl p-5 flex flex-col justify-between">
+                            <div>
+                                <h4 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                                    <Bell className="w-4 h-4 text-emerald-400" /> Push Notifications
+                                </h4>
+                                <p className="text-sm text-zinc-400 mb-4">
+                                    Get real-time browser notifications for overdue goals, habits, and reminders.
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleSubscribePush}
+                                disabled={pushStatus === 'loading' || pushStatus === 'subscribed'}
+                                className="w-full py-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 rounded-lg transition-colors text-sm font-medium border border-emerald-500/20 flex items-center justify-center gap-2"
+                            >
+                                {pushStatus === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
+                                {pushStatus === 'subscribed' ? 'Subscribed' : 'Enable Notifications'}
+                            </button>
+                        </div>
+
+                        {/* Calendar Sync Card */}
+                        <div className="bg-zinc-800/40 border border-zinc-700/40 rounded-xl p-5 flex flex-col justify-between">
+                            <div>
+                                <h4 className="text-lg font-semibold text-white flex items-center gap-2 mb-2">
+                                    <Calendar className="w-4 h-4 text-purple-400" /> Calendar Sync
+                                </h4>
+                                <p className="text-sm text-zinc-400 mb-4">
+                                    Sync your goals and events to Google Calendar, Apple Calendar, or Outlook via ICS feed.
+                                </p>
+                            </div>
+                            
+                            {!calendarUrl ? (
+                                <button
+                                    onClick={handleGenerateCalendar}
+                                    className="w-full py-2 bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 rounded-lg transition-colors text-sm font-medium border border-purple-500/20"
+                                >
+                                    Generate Sync URL
+                                </button>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="bg-zinc-950/50 border border-zinc-700 rounded-lg p-2 text-xs text-zinc-300 break-all font-mono">
+                                        {calendarUrl}
+                                    </div>
+                                    <button
+                                        onClick={handleCopyCalendarUrl}
+                                        className="w-full py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors text-sm font-medium"
+                                    >
+                                        Copy URL
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
