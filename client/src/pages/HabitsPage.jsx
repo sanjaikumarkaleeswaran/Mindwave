@@ -134,21 +134,21 @@ function MobileHabitCard({ habit, handleToggleDate, handleDelete, getWeeklyProgr
             )}
             
             <div className="flex justify-between items-center mb-5 relative z-10">
-                <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-inner ${
+                <div className="flex items-center gap-3 md:gap-4 w-full">
+                    <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 shadow-inner ${
                         isDoneToday 
                             ? 'bg-white/20 scale-110 shadow-white/30' 
                             : 'bg-zinc-800 shadow-black/50'
                     }`}>
-                        {isDoneToday ? <Check className="w-7 h-7 text-white" strokeWidth={3} /> : <div className="w-4 h-4 rounded-full bg-zinc-600"></div>}
+                        {isDoneToday ? <Check className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={3} /> : <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-zinc-600"></div>}
                     </div>
-                    <div>
-                        <h3 className={`font-bold text-xl leading-tight tracking-tight ${isDoneToday ? 'text-white' : 'text-zinc-100'}`}>
+                    <div className="min-w-0 flex-1 pr-10">
+                        <h3 className={`font-bold text-lg md:text-xl leading-tight tracking-tight truncate ${isDoneToday ? 'text-white' : 'text-zinc-100'}`}>
                             {habit.name}
                         </h3>
-                        <div className={`flex items-center gap-1.5 text-sm font-semibold mt-1.5 tracking-wide ${isDoneToday ? 'text-indigo-100' : 'text-zinc-500'}`}>
-                            <Flame className={`w-4 h-4 ${isDoneToday ? 'text-orange-300' : 'text-orange-500'}`} />
-                            {habit.streak} day streak
+                        <div className={`flex items-center gap-1.5 text-xs md:text-sm font-semibold mt-1 md:mt-1.5 tracking-wide ${isDoneToday ? 'text-indigo-100' : 'text-zinc-500'}`}>
+                            <Flame className={`w-3.5 h-3.5 md:w-4 md:h-4 shrink-0 ${isDoneToday ? 'text-orange-300' : 'text-orange-500'}`} />
+                            <span className="truncate">{habit.streak} day streak</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@ function MobileHabitView({ habits, handleToggleDate, handleDelete, getWeeklyProg
     const todayDone = habits.filter(h => h.completedDates.some(d => isSameDay(d, new Date()))).length;
 
     return (
-        <div className="flex flex-col gap-2 pb-16">
+        <div className="flex flex-col gap-2">
             <div 
                 className="bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-3 mb-6 sticky z-20 backdrop-blur-xl shadow-2xl shadow-black/50"
                 style={{ top: 'calc(var(--header-h) + 0.5rem)' }}
@@ -470,7 +470,7 @@ export default function HabitsPage() {
     const tableDates = getLast7Days();
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad pb-24 md:pb-8 overflow-x-hidden">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 md:space-y-10 relative mobile-page-pad overflow-x-hidden">
             <Helmet>
                 <title>Habit Tracker | Life OS</title>
             </Helmet>
