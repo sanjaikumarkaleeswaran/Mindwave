@@ -219,7 +219,7 @@ export default function CalendarPage() {
         .flatMap(([,v]) => v);
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 mobile-page-pad">
             <Helmet><title>Calendar | Life OS</title></Helmet>
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

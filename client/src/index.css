@@ -184,9 +184,9 @@ body {
   }
 }
 
-/* Page content padding for mobile bottom nav */
+/* Page content padding for mobile bottom nav is already handled by Layout main. Here we just add extra space */
 .mobile-page-pad {
-  padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+  padding-bottom: 1.5rem;
 }
 
 @media (min-width: 768px) {
@@ -195,12 +195,8 @@ body {
   }
 }
 
-/* Prevent block-level elements from causing horizontal scroll, but don't restrict flex/grid children */
 @media (max-width: 767px) {
-  body, main, section, article, aside, header, footer, nav, div:not([class*="flex"]):not([class*="grid"]) {
-    max-width: 100%;
-  }
-  /* Specifically cap the root layout */
+  /* Specifically cap the root layout to prevent horizontal scroll */
   #root {
     max-width: 100vw;
     overflow-x: hidden;

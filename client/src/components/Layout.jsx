@@ -13,11 +13,8 @@ import clsx from 'clsx';
 const BOTTOM_NAV = [
     { icon: Home,         label: 'Home',    path: '/',        end: true  },
     { icon: MessageSquare,label: 'Chat',    path: '/chat',    end: false },
-    { icon: Zap,          label: 'Focus',   path: '/focus',   end: false },
     { icon: CheckCircle,  label: 'Habits',  path: '/habits',  end: false },
-    { icon: Target,       label: 'Goals',   path: '/goals',   end: false },
     { icon: CalendarDays, label: 'Calendar',path: '/calendar',end: false },
-    { icon: Wallet,       label: 'Money',   path: '/expenses',end: false },
     { icon: BookOpen,     label: 'Journal', path: '/journal', end: false },
 ];
 
