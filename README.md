@@ -205,6 +205,12 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### June 6, 2026 — Mobile UI Responsiveness & Layout Fixes
+- 📱 **Bottom Navigation Optimization** — Reduced the mobile bottom navigation bar from 8 items down to 5 essential modules (Home, Chat, Habits, Calendar, Journal) to prevent horizontal scrolling and squished icons on narrow screens.
+- 🛡️ **CSS Layout Hardening** — Removed an overly aggressive `max-width: 100%` wildcard rule that was breaking absolute/flex positioning across mobile viewports, while preserving horizontal scroll protection on `#root`.
+- 📐 **Padding Unification** — Fixed a major issue where page content received double bottom-padding (from both the `Layout` wrapper and individual pages). The `.mobile-page-pad` utility now only applies the necessary inner spacing.
+- 📅 **Calendar Consistency** — Applied consistent bottom padding to the Calendar page to ensure it isn't hidden behind the mobile bottom navigation bar.
+
 ### May 3, 2026 — Modal UX Revert (Classic Style)
 - 🔄 **GoalsPage Header** — restored the original inline header layout with title on the left and compact action buttons (Ask AI + New Goal) on the right. Removed the sticky full-width 2-column action bar grid.
 - 🪟 **GoalFormModal** — removed the mobile-only bottom-sheet slide-up pattern; now uses a single unified centered scale-in modal on all screen sizes.
