@@ -64,11 +64,11 @@ export default function Layout() {
     }, []);
 
     return (
-        <div className="flex bg-black min-h-screen min-h-[100dvh] text-white">
+        <div className="flex bg-black min-h-screen min-h-[100dvh] text-white overflow-x-hidden w-full max-w-full">
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
             {/* Main content area — shifts right on desktop to avoid sidebar overlap */}
-            <div className="flex-1 flex flex-col min-h-screen min-h-[100dvh] md:ml-64 transition-all duration-300 relative">
+            <div className="flex-1 flex flex-col min-h-screen min-h-[100dvh] md:ml-64 transition-all duration-300 relative w-full max-w-full">
                 {/* Sticky Top Header */}
                 <header 
                     className="flex items-center justify-between px-4 glass sticky top-0 z-30 border-b border-white/5"
@@ -108,7 +108,7 @@ export default function Layout() {
                 </header>
 
                 {/* Page content */}
-                <main className="flex-1 relative pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px))] md:pb-0">
+                <main className="flex-1 relative pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+1rem)] md:pb-0 w-full max-w-full overflow-x-hidden">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={location.pathname}
@@ -126,20 +126,20 @@ export default function Layout() {
 
             {/* ── Mobile Bottom Navigation Bar ── */}
             <nav
-                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/90 backdrop-blur-2xl border-t border-white/5 overflow-x-auto hide-scrollbar"
+                className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-zinc-950/90 backdrop-blur-2xl border-t border-white/5"
                 style={{
                     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                     height: 'calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px))'
                 }}
             >
-                <div className="flex items-stretch min-w-full h-full px-1">
+                <div className="flex items-center justify-around w-full h-full px-2">
                     {BOTTOM_NAV.map(({ icon: Icon, label, path, end }) => (
                         <NavLink
                             key={path}
                             to={path}
                             end={end}
                             className={({ isActive }) => clsx(
-                                'flex flex-col items-center justify-center gap-0.5 py-1 px-1.5 min-w-[48px] flex-1 relative transition-all active:scale-90 shrink-0',
+                                'flex flex-col items-center justify-center gap-1 py-1 px-1 flex-1 relative transition-all active:scale-90',
                                 isActive ? 'text-indigo-400' : 'text-zinc-500 hover:text-zinc-300'
                             )}
                             aria-label={label}

@@ -205,6 +205,11 @@ This application is ready for production deployment:
 
 ## 📋 Changelog
 
+### June 7, 2026 — Advanced Mobile Viewport Refinements
+- 📱 **Navigation Bar De-crowding** — Adjusted the mobile bottom navigation to use `justify-around` and proper flex constraints, ensuring all 5 nav items distribute evenly without horizontal overflow or squished labels on narrow 320px screens.
+- 🛡️ **Horizontal Overflow Elimination** — Addressed persistent horizontal scrolling issues by replacing hardcoded `100vw` widths with `max-w-full` and adding explicit `overflow-x-hidden` directly on the main application layout wrapper and individual page components (like the Chat page).
+- 📐 **Padding Adjustments** — Refined the dynamic bottom padding `pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+1rem)]` on the main layout to ensure consistent and correct spacing above the mobile navigation bar across all pages.
+
 ### June 6, 2026 — Mobile UI Responsiveness & Layout Fixes
 - 📱 **Bottom Navigation Optimization** — Reduced the mobile bottom navigation bar from 8 items down to 5 essential modules (Home, Chat, Habits, Calendar, Journal) to prevent horizontal scrolling and squished icons on narrow screens.
 - 🛡️ **CSS Layout Hardening** — Removed an overly aggressive `max-width: 100%` wildcard rule that was breaking absolute/flex positioning across mobile viewports, while preserving horizontal scroll protection on `#root`.
