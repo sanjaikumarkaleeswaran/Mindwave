@@ -4,7 +4,7 @@ import GlobalSearch from './GlobalSearch';
 import NotificationBell from './NotificationBell';
 
 import { useState, useEffect } from 'react';
-import { Menu, Search, Home, MessageSquare, Zap, CheckCircle, Target, CalendarDays, BookOpen, Wallet } from 'lucide-react';
+import { Menu, Search, Home, MessageSquare, Zap, CheckCircle, Target, CalendarDays, BookOpen, Wallet, Library } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../lib/axios';
 import clsx from 'clsx';
@@ -16,6 +16,7 @@ const BOTTOM_NAV = [
     { icon: CheckCircle,  label: 'Habits',  path: '/habits',  end: false },
     { icon: CalendarDays, label: 'Calendar',path: '/calendar',end: false },
     { icon: BookOpen,     label: 'Journal', path: '/journal', end: false },
+    { icon: Library,      label: 'Library', path: '/library', end: false },
 ];
 
 export default function Layout() {

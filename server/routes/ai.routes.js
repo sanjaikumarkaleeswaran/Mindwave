@@ -157,4 +157,36 @@ User's active goals: ${goals.map(g => g.title).join(', ') || 'none yet'}
     }
 });
 
+// ── POST /api/ai/book-recommendations ─────────────────────────────────────────────
+// Returns AI-suggested books based on user prompt (genre, idea, journal mood)
+router.post('/book-recommendations', auth, async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        
+        const context = `User's idea/genre/mood: "${prompt}"`;
+
+        const completion = await getGroq().chat.completions.create({
+            model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a highly knowledgeable librarian. Based on the user\'s input, recommend 3 excellent books. Return ONLY a JSON array of objects with "title", "author", and a 1-sentence "reason" (why they should read it). Do not include any other text or markdown formatting.'
+                },
+                { role: 'user', content: context }
+            ],
+            max_tokens: 400,
+            temperature: 0.7,
+        });
+
+        const raw = completion.choices[0]?.message?.content || '[]';
+        const jsonMatch = raw.match(/\[[\s\S]*\]/);
+        const suggestions = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+
+        res.json({ suggestions });
+    } catch (err) {
+        console.error('Book Recommendations Error:', err.message);
+        res.status(500).json({ msg: 'Failed to generate recommendations', suggestions: [] });
+    }
+});
+
 module.exports = router;
