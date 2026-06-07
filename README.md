@@ -39,6 +39,12 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
+### 📚 Library & Reading Tracker
+- **Smart Book Auto-Fill** — seamlessly integrates with the **OpenLibrary API**. Just type a title and it instantly fetches the author, total pages, and high-quality cover art.
+- **AI Personal Librarian** — powered by Groq (Llama 3). Ask for recommendations based on mood or genre, and instantly add the AI's suggestions directly to your tracker.
+- **Built-in PDF Reader** — upload your own PDF books. The backend automatically extracts the exact page count, and the frontend provides a distraction-free, full-screen PDF viewer with quick-save progress tracking.
+- **Progress Tracking** — elegant status management (Want to Read, Reading, Finished) with visual progress bars and dynamic UI updates as you read.
+
 ### 💰 Financial OS (Expense Tracker)
 - **Bento Grid Dashboard** — a world-class financial command center featuring modular cards for balance tracking, spending analytics, and category distribution.
 - **Smart Categorization** — dynamic, type-aware selection logic that filters categories based on Income vs. Expense; includes full localized **INR (₹)** support.
