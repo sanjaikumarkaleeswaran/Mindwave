@@ -60,22 +60,6 @@ router.post('/', auth, upload.single('pdf'), async (req, res) => {
             });
             const filename = req.file.filename;
             
-            try {
-                if (!totalPages) {
-                    const dataBuffer = fs.readFileSync(req.file.path);
-                    const data = await pdfParse(dataBuffer);
-                    if (data && data.numpages) {
-                        totalPages = data.numpages;
-                    }
-                    if (data && data.text) {
-                        ingestDocument(req.user.id, null, `Book: ${title}`, data.text)
-                            .catch(err => console.error("Vector ingestion error:", err));
-                    }
-                }
-            } catch (err) {
-                console.error("PDF Parse error:", err);
-            }
-
             // Upload to GridFS
             const uploadStream = bucket.openUploadStream(filename, {
                 contentType: 'application/pdf'
@@ -86,9 +70,6 @@ router.post('/', auth, upload.single('pdf'), async (req, res) => {
                     .on('error', reject)
                     .on('finish', resolve);
             });
-            
-            // Delete temp file
-            fs.unlinkSync(req.file.path);
             
             pdfUrl = `/api/books/pdf/${filename}`;
         }
@@ -105,6 +86,28 @@ router.post('/', auth, upload.single('pdf'), async (req, res) => {
 
         const book = await newBook.save();
         res.json(book);
+
+        // --- BACKGROUND PROCESSING FOR PDF ---
+        if (req.file) {
+            (async () => {
+                try {
+                    const dataBuffer = fs.readFileSync(req.file.path);
+                    const data = await pdfParse(dataBuffer);
+                    
+                    if (!totalPages && data && data.numpages) {
+                        await Book.findByIdAndUpdate(book._id, { totalPages: data.numpages });
+                    }
+                    
+                    if (data && data.text) {
+                        await ingestDocument(req.user.id, null, `Book: ${title}`, data.text);
+                    }
+                } catch (err) {
+                    console.error("Background PDF Parse error:", err);
+                } finally {
+                    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+                }
+            })();
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -132,22 +135,6 @@ router.put('/:id', auth, upload.single('pdf'), async (req, res) => {
             });
             const filename = req.file.filename;
 
-            try {
-                if (!totalPages && !book.totalPages) {
-                    const dataBuffer = fs.readFileSync(req.file.path);
-                    const data = await pdfParse(dataBuffer);
-                    if (data && data.numpages) {
-                        book.totalPages = data.numpages;
-                    }
-                    if (data && data.text) {
-                        ingestDocument(req.user.id, null, `Book: ${book.title}`, data.text)
-                            .catch(err => console.error("Vector ingestion error:", err));
-                    }
-                }
-            } catch (err) {
-                console.error("PDF Parse error:", err);
-            }
-
             // Upload to GridFS
             const uploadStream = bucket.openUploadStream(filename, {
                 contentType: 'application/pdf'
@@ -158,9 +145,6 @@ router.put('/:id', auth, upload.single('pdf'), async (req, res) => {
                     .on('error', reject)
                     .on('finish', resolve);
             });
-            
-            // Delete temp file
-            fs.unlinkSync(req.file.path);
             
             book.pdfUrl = `/api/books/pdf/${filename}`;
         }
@@ -184,6 +168,28 @@ router.put('/:id', auth, upload.single('pdf'), async (req, res) => {
 
         await book.save();
         res.json(book);
+
+        // --- BACKGROUND PROCESSING FOR PDF ---
+        if (req.file) {
+            (async () => {
+                try {
+                    const dataBuffer = fs.readFileSync(req.file.path);
+                    const data = await pdfParse(dataBuffer);
+                    
+                    if (!totalPages && !book.totalPages && data && data.numpages) {
+                        await Book.findByIdAndUpdate(book._id, { totalPages: data.numpages });
+                    }
+                    
+                    if (data && data.text) {
+                        await ingestDocument(req.user.id, null, `Book: ${book.title}`, data.text);
+                    }
+                } catch (err) {
+                    console.error("Background PDF Parse error:", err);
+                } finally {
+                    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+                }
+            })();
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

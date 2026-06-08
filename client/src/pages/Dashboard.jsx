@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2, Bot } from 'lucide-react';
+import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2, Bot, Library as LibraryIcon, BookOpen } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
@@ -17,6 +17,7 @@ export default function Dashboard() {
     const [chats, setChats] = useState([]);
     const [journals, setJournals] = useState([]);
     const [goals, setGoals] = useState([]);
+    const [books, setBooks] = useState([]);
     const [quote, setQuote] = useState("");
     const [loading, setLoading] = useState(true);
     const [dailyBrief, setDailyBrief] = useState(null);
@@ -52,18 +53,20 @@ export default function Dashboard() {
 
         const fetchData = async () => {
             try {
-                const [habitsRes, chatsRes, journalsRes, statsRes, goalsRes] = await Promise.all([
+                const [habitsRes, chatsRes, journalsRes, statsRes, goalsRes, booksRes] = await Promise.all([
                     api.get('/habits'),
                     api.get('/chat/conversations'),
                     api.get('/journal'),
                     api.get('/search/stats'),
                     api.get('/goals'),
+                    api.get('/books')
                 ]);
                 setHabits(Array.isArray(habitsRes.data) ? habitsRes.data : []);
                 setChats(Array.isArray(chatsRes.data) ? chatsRes.data.slice(0, 3) : []);
                 setJournals(Array.isArray(journalsRes.data) ? journalsRes.data : []);
                 setStats(statsRes.data || null);
                 setGoals(Array.isArray(goalsRes.data) ? goalsRes.data.filter(g => g.status === 'active').slice(0, 4) : []);
+                setBooks(Array.isArray(booksRes.data) ? booksRes.data : []);
             } catch (err) {
                 console.error("Dashboard Fetch Error", err);
             } finally {
@@ -220,6 +223,7 @@ export default function Dashboard() {
                     {[
                         { label: 'New Habit', icon: <Activity className="w-4 h-4" />, color: 'text-green-400', bg: 'bg-green-500/10', link: '/habits' },
                         { label: 'Chat AI', icon: <MessageSquare className="w-4 h-4" />, color: 'text-indigo-400', bg: 'bg-indigo-500/10', link: '/chat' },
+                        { label: 'Library', icon: <LibraryIcon className="w-4 h-4" />, color: 'text-orange-400', bg: 'bg-orange-500/10', link: '/library' },
                         { label: 'New Goal', icon: <Target className="w-4 h-4" />, color: 'text-emerald-400', bg: 'bg-emerald-500/10', link: '/goals' },
                         { label: 'Journal', icon: <Book className="w-4 h-4" />, color: 'text-pink-400', bg: 'bg-pink-500/10', link: '/journal' },
                         { label: 'Focus Timer', icon: <Timer className="w-4 h-4" />, color: 'text-purple-400', bg: 'bg-purple-500/10', link: '/focus' },
@@ -301,6 +305,55 @@ export default function Dashboard() {
                     <Book className="absolute -right-4 -bottom-4 w-24 h-24 text-pink-500/5 opacity-10 transition-all group-hover:scale-125" />
                 </Link>
             </div>
+
+            {/* ── Currently Reading ── */}
+            {books.filter(b => b.status === 'reading').length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-orange-500/15 rounded-lg"><LibraryIcon className="w-4 h-4 text-orange-400"/></div>
+                            <h3 className="text-lg font-bold text-white">Currently Reading</h3>
+                        </div>
+                        <Link to="/library" className="text-xs text-orange-400 hover:text-orange-300 flex items-center gap-1 transition-colors">
+                            View library <ArrowRight className="w-3 h-3"/>
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {books.filter(b => b.status === 'reading').map(book => {
+                            const progress = book.totalPages > 0 ? Math.round(((book.currentPage || 0) / book.totalPages) * 100) : 0;
+                            return (
+                                <Link key={book._id} to="/library" className="group relative bg-zinc-900/60 border border-white/5 hover:border-white/10 rounded-2xl p-4 overflow-hidden transition-all flex gap-4">
+                                    <div className="w-16 h-24 rounded-lg bg-zinc-800 shrink-0 overflow-hidden shadow-md border border-white/10">
+                                        {book.coverUrl ? (
+                                            <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex flex-col items-center justify-center text-zinc-600 bg-zinc-800/50 p-2 text-center">
+                                                <BookOpen className="w-6 h-6 mb-1 opacity-50" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0 py-1 flex flex-col justify-between">
+                                        <div>
+                                            <h4 className="font-bold text-white text-sm leading-tight line-clamp-2 mb-1">{book.title}</h4>
+                                            <p className="text-xs text-zinc-400 line-clamp-1">{book.author}</p>
+                                        </div>
+                                        
+                                        <div className="mt-3">
+                                            <div className="flex justify-between items-end mb-1.5">
+                                                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Progress</span>
+                                                <span className="text-xs font-bold text-orange-400">{progress}%</span>
+                                            </div>
+                                            <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                                <div className="h-full bg-orange-500 rounded-full transition-all" style={{width: `${progress}%`}} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* ── Stats Panel ── */}
             {stats && (

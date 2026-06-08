@@ -221,4 +221,77 @@ router.post('/book-summary', auth, async (req, res) => {
     }
 });
 
+// ── POST /api/ai/page-summary ────────────────────────────────────────────────
+// Extracts text from a specific page in a GridFS PDF and summarizes it
+router.post('/page-summary', auth, async (req, res) => {
+    try {
+        const { filename, pageNumber, bookTitle } = req.body;
+        
+        if (!filename || !pageNumber) {
+            return res.status(400).json({ msg: 'Filename and pageNumber are required' });
+        }
+
+        const mongoose = require('mongoose');
+        const bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'pdfs' });
+        
+        // Download PDF to buffer
+        const downloadStream = bucket.openDownloadStreamByName(filename);
+        const chunks = [];
+        for await (const chunk of downloadStream) {
+            chunks.push(chunk);
+        }
+        const pdfBuffer = Buffer.concat(chunks);
+
+        // Parse the specific page
+        const pdfParse = require('pdf-parse');
+        let extractedText = '';
+        const options = {
+            max: pageNumber,
+            pagerender: function(pageData) {
+                // pageIndex is 0-indexed
+                if (pageData.pageIndex === parseInt(pageNumber) - 1) {
+                    return pageData.getTextContent().then(textContent => {
+                        let text = '';
+                        for (let item of textContent.items) {
+                            text += item.str + ' ';
+                        }
+                        extractedText = text;
+                        return text;
+                    });
+                }
+                return '';
+            }
+        };
+
+        await pdfParse(pdfBuffer, options);
+
+        if (!extractedText || extractedText.trim().length === 0) {
+            return res.status(400).json({ msg: 'Could not extract text from this page. It might be an image.' });
+        }
+
+        // Send to Groq for summarization
+        const completion = await getGroq().chat.completions.create({
+            model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are an expert reading assistant. You are given the text of a single page from a book. Provide a concise, insightful summary of what is happening on this page. Highlight key points, character actions, or important concepts. Format your response beautifully using markdown.'
+                },
+                { 
+                    role: 'user', 
+                    content: `Book Title: ${bookTitle || 'Unknown'}\nPage ${pageNumber} Text:\n\n${extractedText.substring(0, 4000)}` 
+                }
+            ],
+            max_tokens: 800,
+            temperature: 0.7,
+        });
+
+        const summary = completion.choices[0]?.message?.content || 'Unable to generate summary.';
+        res.json({ summary, extractedText: extractedText.substring(0, 200) + '...' });
+    } catch (err) {
+        console.error('Page Summary Error:', err.message);
+        res.status(500).json({ msg: 'Failed to generate page summary', error: err.message });
+    }
+});
+
 module.exports = router;

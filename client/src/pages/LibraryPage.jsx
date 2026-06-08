@@ -15,7 +15,8 @@ import {
     Sparkles,
     Upload,
     FileText,
-    Star
+    Star,
+    Bot
 } from 'lucide-react';
 import api from '../lib/axios';
 import clsx from 'clsx';
@@ -67,6 +68,7 @@ const LibraryPage = () => {
     });
 
     const [readingPdf, setReadingPdf] = useState(null);
+    const [aiPageTarget, setAiPageTarget] = useState('');
 
     useEffect(() => {
         fetchBooks();
@@ -218,6 +220,31 @@ const LibraryPage = () => {
         } catch (error) {
             console.error('Error generating summary:', error);
             setCurrentSummary('Failed to generate summary.');
+        } finally {
+            setIsSummarizing(false);
+        }
+    };
+
+    const handleSummarizePage = async () => {
+        if (!readingPdf || !readingPdf.pdfUrl) return;
+        
+        const pageNum = aiPageTarget || progressData.currentPage || readingPdf.currentPage || 1;
+        
+        setSummaryBookTitle(`${readingPdf.title} (Page ${pageNum})`);
+        setSummaryModalOpen(true);
+        setCurrentSummary('');
+        setIsSummarizing(true);
+        try {
+            const filename = readingPdf.pdfUrl.split('/').pop();
+            const res = await api.post('/ai/page-summary', { 
+                filename,
+                pageNumber: pageNum,
+                bookTitle: readingPdf.title
+            });
+            setCurrentSummary(res.data.summary);
+        } catch (error) {
+            console.error('Error generating page summary:', error);
+            setCurrentSummary('Failed to generate summary for this page. Make sure the page contains readable text and not just images.');
         } finally {
             setIsSummarizing(false);
         }
@@ -709,7 +736,24 @@ const LibraryPage = () => {
                             </h3>
                             <div className="flex items-center gap-4 flex-shrink-0">
                                 <div className="hidden sm:flex items-center gap-2">
-                                    <span className="text-gray-400 text-sm">Save Progress:</span>
+                                    <div className="flex items-center bg-slate-800 rounded-lg p-1 border border-indigo-500/30">
+                                        <input
+                                            type="number"
+                                            value={aiPageTarget}
+                                            onChange={e => setAiPageTarget(e.target.value)}
+                                            placeholder="Page"
+                                            className="w-16 px-2 py-1 bg-transparent text-white text-sm focus:outline-none"
+                                        />
+                                        <button
+                                            onClick={handleSummarizePage}
+                                            disabled={isSummarizing}
+                                            className="px-3 py-1 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-purple-500/20 disabled:opacity-50"
+                                        >
+                                            <Bot className="w-4 h-4" />
+                                            AI Explain
+                                        </button>
+                                    </div>
+                                    <span className="text-gray-400 text-sm ml-2">Save Progress:</span>
                                     <input
                                         type="number"
                                         value={progressData.currentPage}
@@ -734,6 +778,23 @@ const LibraryPage = () => {
                         </div>
                         {/* Mobile quick save bar */}
                         <div className="sm:hidden p-3 bg-slate-800 border-b border-white/5 flex gap-2">
+                            <div className="flex items-center bg-slate-900 border border-indigo-500/30 rounded-lg">
+                                <input
+                                    type="number"
+                                    value={aiPageTarget}
+                                    onChange={e => setAiPageTarget(e.target.value)}
+                                    placeholder="Pg"
+                                    className="w-12 px-2 py-1 bg-transparent text-white text-sm focus:outline-none"
+                                />
+                                <button
+                                    onClick={handleSummarizePage}
+                                    disabled={isSummarizing}
+                                    className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-r-lg flex items-center justify-center disabled:opacity-50 h-full"
+                                    title="AI Explain Page"
+                                >
+                                    <Bot className="w-4 h-4" />
+                                </button>
+                            </div>
                             <input
                                 type="number"
                                 value={progressData.currentPage}
