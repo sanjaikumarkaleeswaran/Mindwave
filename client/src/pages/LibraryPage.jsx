@@ -753,7 +753,7 @@ const LibraryPage = () => {
                         </div>
                         <div className="flex-1 w-full h-full bg-[#323639]">
                             <iframe
-                                src={`${getBaseUrl()}${readingPdf.pdfUrl}`}
+                                src={`${getBaseUrl()}${readingPdf.pdfUrl}#page=${readingPdf.currentPage || 1}`}
                                 className="w-full h-full border-none"
                                 title="PDF Reader"
                             />
