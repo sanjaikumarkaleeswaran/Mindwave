@@ -102,9 +102,15 @@ const LibraryPage = () => {
             const data = await res.json();
             if (data.docs && data.docs.length > 0) {
                 const book = data.docs[0];
+                
+                const isIsbnSearch = /^\d+$/.test(queryToSearch.replace(/[- ]/g, ''));
+                const formatTitleCase = (str) => {
+                    return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                };
+
                 setFormData(prev => ({
                     ...prev,
-                    title: book.title || prev.title,
+                    title: isIsbnSearch ? (book.title || prev.title) : (formatTitleCase(queryToSearch) || book.title || prev.title),
                     author: book.author_name ? book.author_name[0] : prev.author,
                     totalPages: book.number_of_pages_median || prev.totalPages,
                     coverUrl: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg` : prev.coverUrl

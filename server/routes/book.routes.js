@@ -94,7 +94,7 @@ router.post('/', auth, upload.single('pdf'), async (req, res) => {
 // @route   PUT /api/books/:id
 // @desc    Update book progress or details
 // @access  Private
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, upload.single('pdf'), async (req, res) => {
     try {
         const { currentPage, status, notes, rating, title, author, coverUrl, totalPages } = req.body;
         
