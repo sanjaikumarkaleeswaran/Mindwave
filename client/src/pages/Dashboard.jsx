@@ -245,7 +245,7 @@ export default function Dashboard() {
             </div>
 
             {/* Main Details Grid - Stacked on mobile like Habits page */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+            <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
                 {/* 1. Ask AI Card */}
                 <Link to="/chat" className="relative min-h-[110px] overflow-hidden glass-card p-5 transition-all active:scale-[0.98] group flex items-center">
                     <div className="flex items-center gap-3 relative z-10 w-full text-left">
