@@ -336,7 +336,7 @@ export default function ChatPage() {
                         </p>
 
                         {/* Suggestions - Swipeable on mobile */}
-                        <div className="flex md:grid md:grid-cols-2 gap-2 md:gap-3 w-full max-w-full md:max-w-lg mb-6 md:mb-8 overflow-x-auto snap-x snap-mandatory px-5 md:px-0 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                        <div className="flex md:grid md:grid-cols-2 gap-2 md:gap-3 w-full max-w-full md:max-w-lg overflow-x-auto snap-x snap-mandatory px-5 md:px-0 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                             {suggestions.map((s, i) => (
                                 <button
                                     key={i}
@@ -348,63 +348,6 @@ export default function ChatPage() {
                                 </button>
                             ))}
                         </div>
-
-                        <form onSubmit={handleSend} className="w-full max-w-lg relative">
-                            {file && (
-                                <div className="absolute -top-14 left-0 bg-zinc-800/90 text-zinc-300 px-3 py-2 rounded-xl text-xs flex items-center gap-3 border border-zinc-700/50 shadow-lg font-medium">
-                                    {file.type.startsWith('image/') ? (
-                                        <img src={URL.createObjectURL(file)} alt="preview" className="w-8 h-8 rounded shrink-0 object-cover border border-zinc-700" />
-                                    ) : (
-                                        <div className="w-8 h-8 rounded bg-zinc-700/50 flex items-center justify-center shrink-0 border border-zinc-600">
-                                            <Paperclip className="w-4 h-4 text-zinc-400" />
-                                        </div>
-                                    )}
-                                    <span className="truncate max-w-[150px]">{file.name}</span>
-                                    <button type="button" onClick={() => setFile(null)} className="p-1 hover:bg-zinc-700 rounded-full transition-colors ml-1"><X className="w-3.5 h-3.5" /></button>
-                                </div>
-                            )}
-                            <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx,image/*" />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="absolute left-3 top-3 text-zinc-500 hover:text-white transition-colors"
-                            >
-                                <Paperclip className="w-5 h-5" />
-                            </button>
-                            <textarea
-                                autoFocus
-                                rows={1}
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleSend(e);
-                                    }
-                                }}
-                                placeholder="Message Life OS or upload a file..."
-                                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-11 pr-24 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
-                                style={{ maxHeight: '200px' }}
-                            />
-                            <button
-                                type="submit"
-                                disabled={sendMutation.isPending || (!input.trim() && !file)}
-                                className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50"
-                            >
-                                <Send className="w-5 h-5" />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={toggleListening}
-                                className={`absolute right-12 top-2 p-2 rounded-lg transition-all ${
-                                    isListening 
-                                    ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
-                                    : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700'
-                                }`}
-                            >
-                                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                            </button>
-                        </form>
                     </div>
                 ) : (
                     <>
@@ -496,68 +439,68 @@ export default function ChatPage() {
                                 )}
                             </div>
                         </div>
-
-                        <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800 relative">
-                            <div className="relative max-w-5xl mx-auto">
-                                {file && (
-                                    <div className="absolute -top-14 left-0 bg-zinc-800/90 text-zinc-300 px-3 py-2 rounded-xl text-xs flex items-center gap-3 border border-zinc-700/50 shadow-lg font-medium backdrop-blur-md">
-                                        {file.type.startsWith('image/') ? (
-                                            <img src={URL.createObjectURL(file)} alt="preview" className="w-8 h-8 rounded shrink-0 object-cover border border-zinc-600" />
-                                        ) : (
-                                            <div className="w-8 h-8 rounded bg-zinc-700/50 flex items-center justify-center shrink-0 border border-zinc-600">
-                                                <Paperclip className="w-4 h-4 text-zinc-400" />
-                                            </div>
-                                        )}
-                                        <span className="truncate max-w-[150px]">{file.name}</span>
-                                        <button type="button" onClick={() => setFile(null)} className="p-1 hover:bg-zinc-700 rounded-full transition-colors ml-1"><X className="w-3.5 h-3.5" /></button>
-                                    </div>
-                                )}
-                                <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx,image/*" />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="absolute left-3 top-3 text-zinc-500 hover:text-indigo-400 transition-colors z-10"
-                                >
-                                    <Paperclip className="w-5 h-5" />
-                                </button>
-                                <textarea
-                                    autoFocus
-                                    rows={1}
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.shiftKey) {
-                                            e.preventDefault();
-                                            handleSend(e);
-                                        }
-                                    }}
-                                    placeholder="Message Life OS or upload a file..."
-                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-11 pr-24 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
-                                    style={{ maxHeight: '200px' }}
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={sendMutation.isPending || (!input.trim() && !file)}
-                                    className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20 z-10"
-                                >
-                                    <Send className="w-5 h-5" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={toggleListening}
-                                    className={`absolute right-12 top-2 p-2 rounded-lg transition-all z-10 ${
-                                        isListening 
-                                        ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
-                                        : 'bg-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-600'
-                                    }`}
-                                >
-                                    {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                                </button>
-                            </div>
-                        </form>
-                    </>
+                    </div>
                 )
             }
+
+            <form onSubmit={handleSend} className="p-4 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800 relative mt-auto shrink-0 w-full z-10">
+                <div className="relative max-w-5xl mx-auto">
+                    {file && (
+                        <div className="absolute -top-14 left-0 bg-zinc-800/90 text-zinc-300 px-3 py-2 rounded-xl text-xs flex items-center gap-3 border border-zinc-700/50 shadow-lg font-medium backdrop-blur-md">
+                            {file.type.startsWith('image/') ? (
+                                <img src={URL.createObjectURL(file)} alt="preview" className="w-8 h-8 rounded shrink-0 object-cover border border-zinc-600" />
+                            ) : (
+                                <div className="w-8 h-8 rounded bg-zinc-700/50 flex items-center justify-center shrink-0 border border-zinc-600">
+                                    <Paperclip className="w-4 h-4 text-zinc-400" />
+                                </div>
+                            )}
+                            <span className="truncate max-w-[150px]">{file.name}</span>
+                            <button type="button" onClick={() => setFile(null)} className="p-1 hover:bg-zinc-700 rounded-full transition-colors ml-1"><X className="w-3.5 h-3.5" /></button>
+                        </div>
+                    )}
+                    <input type="file" ref={fileInputRef} onChange={(e) => e.target.files[0] && setFile(e.target.files[0])} className="hidden" accept=".pdf,.txt,.js,.json,.jsx,image/*" />
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute left-3 top-3 text-zinc-500 hover:text-indigo-400 transition-colors z-10"
+                    >
+                        <Paperclip className="w-5 h-5" />
+                    </button>
+                    <textarea
+                        autoFocus
+                        rows={1}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSend(e);
+                            }
+                        }}
+                        placeholder="Message Life OS or upload a file..."
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-11 pr-24 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium resize-none min-h-[56px] custom-scrollbar"
+                        style={{ maxHeight: '200px' }}
+                    />
+                    <button
+                        type="submit"
+                        disabled={sendMutation.isPending || (!input.trim() && !file)}
+                        className="absolute right-2 top-2 p-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20 z-10"
+                    >
+                        <Send className="w-5 h-5" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={toggleListening}
+                        className={`absolute right-12 top-2 p-2 rounded-lg transition-all z-10 ${
+                            isListening 
+                            ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                            : 'bg-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-600'
+                        }`}
+                    >
+                        {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    </button>
+                </div>
+            </form>
         </div >
     );
 }
