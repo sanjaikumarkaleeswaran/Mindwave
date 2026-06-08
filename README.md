@@ -7,8 +7,8 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 ![Lines of Code](https://tokei.rs/b1/github/sanjaikumarkaleeswaran/Mindwave)
 
 ## 📸 Screenshots
-![Dashboard](./docs/screenshots/dashboard.png)
-![Mobile View](./docs/screenshots/mobile.png)
+![Dashboard](dashboard.png)
+![Mobile View](mobile.jpeg)
 
 ---
 
