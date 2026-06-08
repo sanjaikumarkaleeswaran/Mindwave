@@ -4,11 +4,11 @@ MindWave is a full-stack personal productivity app I built solo, combining AI ch
 
 A self-hosted, private **"digital brain"** that organizes your entire life. MindWave combines intelligent AI chat, habit tracking, smart goal planning, journaling, focus tools, and a financial OS into a single, cohesive operating system for your daily routine — fully optimized for both desktop and mobile.
 
-![Lines of Code](https://tokei.rs/b1/github/sanjaikumarkaleeswaran/Mindwave)
+
 
 ## 📸 Screenshots
 ![Dashboard](dashboard.png)
-![Mobile View](mobile.jpeg)
+
 
 ---
 
