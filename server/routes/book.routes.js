@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
+const { ingestDocument } = require('../utils/vectorStore');
 
 const bookUploadDir = path.join(__dirname, '../uploads/books');
 if (!fs.existsSync(bookUploadDir)) {
@@ -55,12 +56,16 @@ router.post('/', auth, upload.single('pdf'), async (req, res) => {
         if (req.file) {
             pdfUrl = `/uploads/books/${req.file.filename}`;
             try {
-                // Extract total pages from PDF if not manually provided
                 if (!totalPages) {
                     const dataBuffer = fs.readFileSync(req.file.path);
                     const data = await pdfParse(dataBuffer);
                     if (data && data.numpages) {
                         totalPages = data.numpages;
+                    }
+                    if (data && data.text) {
+                        // Background ingestion for Vector RAG
+                        ingestDocument(req.user.id, null, `Book: ${title}`, data.text)
+                            .catch(err => console.error("Vector ingestion error:", err));
                     }
                 }
             } catch (err) {
@@ -109,6 +114,11 @@ router.put('/:id', auth, async (req, res) => {
                     const data = await pdfParse(dataBuffer);
                     if (data && data.numpages) {
                         book.totalPages = data.numpages;
+                    }
+                    if (data && data.text) {
+                        // Background ingestion for Vector RAG
+                        ingestDocument(req.user.id, null, `Book: ${book.title}`, data.text)
+                            .catch(err => console.error("Vector ingestion error:", err));
                     }
                 }
             } catch (err) {

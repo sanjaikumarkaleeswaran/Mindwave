@@ -31,6 +31,8 @@ app.use(cors({
     },
     credentials: true
 })); // Enable CORS
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve static files BEFORE Helmet to avoid X-Frame-Options blocking iframes
+
 app.use(require('helmet')({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading resources (images) from different origins/ports
 }));
@@ -40,8 +42,6 @@ app.use(require('hpp')()); // Prevent HTTP Parameter Pollution
 
 const { limiter } = require('./config/rateLimit');
 app.use('/api', limiter); // Rate limiting
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // DB Connection
 const connectDB = async () => {

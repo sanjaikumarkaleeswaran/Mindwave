@@ -14,10 +14,18 @@ import {
     Search,
     Sparkles,
     Upload,
-    FileText
+    FileText,
+    Star
 } from 'lucide-react';
 import api from '../lib/axios';
 import clsx from 'clsx';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+const getBaseUrl = () => {
+    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL.replace('/api', '');
+    return import.meta.env.PROD ? '' : 'http://localhost:5000';
+};
 
 const LibraryPage = () => {
     const [books, setBooks] = useState([]);
@@ -32,8 +40,18 @@ const LibraryPage = () => {
         totalPages: '',
         coverUrl: '',
         status: 'want_to_read',
-        pdfFile: null
+        pdfFile: null,
+        rating: 0,
+        notes: ''
     });
+
+    const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+    const [currentSummary, setCurrentSummary] = useState('');
+    const [isSummarizing, setIsSummarizing] = useState(false);
+    const [summaryBookTitle, setSummaryBookTitle] = useState('');
+
+    const [bookToDelete, setBookToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -67,7 +85,7 @@ const LibraryPage = () => {
     };
 
     const resetForm = () => {
-        setFormData({ title: '', author: '', totalPages: '', coverUrl: '', status: 'want_to_read', pdfFile: null });
+        setFormData({ title: '', author: '', totalPages: '', coverUrl: '', status: 'want_to_read', pdfFile: null, rating: 0, notes: '' });
         setSearchQuery('');
         setIsCreating(false);
         setEditingId(null);
@@ -129,6 +147,8 @@ const LibraryPage = () => {
             data.append('totalPages', parseInt(formData.totalPages) || 0);
             data.append('coverUrl', formData.coverUrl);
             data.append('status', formData.status);
+            data.append('rating', formData.rating);
+            data.append('notes', formData.notes);
             if (formData.pdfFile) {
                 data.append('pdf', formData.pdfFile);
             }
@@ -151,14 +171,18 @@ const LibraryPage = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this book?')) return;
+    const confirmDelete = async () => {
+        if (!bookToDelete) return;
+        setIsDeleting(true);
         try {
-            await api.delete(`/books/${id}`);
+            await api.delete(`/books/${bookToDelete._id}`);
+            setBookToDelete(null);
             fetchBooks();
         } catch (error) {
             console.error('Error deleting book:', error);
             alert('Failed to delete book');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -170,6 +194,26 @@ const LibraryPage = () => {
         } catch (error) {
             console.error('Error updating progress:', error);
             alert('Failed to update progress');
+        }
+    };
+
+    const handleGenerateSummary = async (book) => {
+        setSummaryBookTitle(book.title);
+        setSummaryModalOpen(true);
+        setCurrentSummary('');
+        setIsSummarizing(true);
+        try {
+            const res = await api.post('/ai/book-summary', { 
+                title: book.title, 
+                author: book.author,
+                notes: book.notes || '' 
+            });
+            setCurrentSummary(res.data.summary);
+        } catch (error) {
+            console.error('Error generating summary:', error);
+            setCurrentSummary('Failed to generate summary.');
+        } finally {
+            setIsSummarizing(false);
         }
     };
 
@@ -410,6 +454,35 @@ const LibraryPage = () => {
                                         </div>
                                         <p className="text-xs text-gray-500 mt-1">Total pages will be auto-calculated!</p>
                                     </div>
+                                    {editingId && (
+                                        <>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-2">Rating</label>
+                                                <div className="flex gap-2">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <button
+                                                            key={star}
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, rating: star })}
+                                                            className="focus:outline-none transition-transform hover:scale-110 active:scale-95"
+                                                        >
+                                                            <Star className={`w-6 h-6 ${formData.rating >= star ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-gray-300 mb-2">Personal Notes / Review</label>
+                                                <textarea
+                                                    value={formData.notes}
+                                                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                                    rows={3}
+                                                    className="w-full px-4 py-3 bg-slate-900/50 border border-indigo-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
+                                                    placeholder="What did you think of the book?"
+                                                />
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                                 <div className="flex gap-3 pt-6">
                                     <motion.button
@@ -479,7 +552,7 @@ const LibraryPage = () => {
                                     transition={{ delay: index * 0.05 }}
                                     className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-indigo-500/20 shadow-xl relative group flex flex-col h-full"
                                 >
-                                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute top-4 right-4 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-30">
                                         <button
                                             onClick={() => {
                                                 setEditingId(book._id);
@@ -488,7 +561,9 @@ const LibraryPage = () => {
                                                     author: book.author,
                                                     totalPages: book.totalPages || '',
                                                     coverUrl: book.coverUrl || '',
-                                                    status: book.status
+                                                    status: book.status,
+                                                    rating: book.rating || 0,
+                                                    notes: book.notes || ''
                                                 });
                                                 setIsCreating(true);
                                             }}
@@ -497,7 +572,7 @@ const LibraryPage = () => {
                                             <Edit3 className="w-4 h-4" />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(book._id)}
+                                            onClick={() => setBookToDelete(book)}
                                             className="p-1.5 bg-red-500/20 text-red-300 rounded hover:bg-red-500/30 transition-all"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -581,6 +656,18 @@ const LibraryPage = () => {
                                         </div>
                                     )}
 
+                                    {(book.status === 'finished' || book.status === 'reading') && (
+                                        <div className="mt-4 pt-4 border-t border-white/5">
+                                            <button
+                                                onClick={() => handleGenerateSummary(book)}
+                                                className="w-full py-2 bg-gradient-to-r from-pink-500/10 to-rose-500/10 text-pink-400 rounded-xl font-medium text-sm hover:from-pink-500/20 hover:to-rose-500/20 transition-all border border-pink-500/20 flex items-center justify-center gap-2"
+                                            >
+                                                <Sparkles className="w-4 h-4" />
+                                                Generate AI Summary
+                                            </button>
+                                        </div>
+                                    )}
+
                                     {book.status === 'want_to_read' && (
                                         <div className="mt-6 pt-4 border-t border-white/5">
                                             <button
@@ -660,11 +747,112 @@ const LibraryPage = () => {
                         </div>
                         <div className="flex-1 w-full h-full bg-[#323639]">
                             <iframe
-                                src={`http://localhost:5000${readingPdf.pdfUrl}`}
+                                src={`${getBaseUrl()}${readingPdf.pdfUrl}`}
                                 className="w-full h-full border-none"
                                 title="PDF Reader"
                             />
                         </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* AI Summary Modal */}
+            <AnimatePresence>
+                {summaryModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4"
+                        onClick={() => setSummaryModalOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-slate-900 border border-pink-500/20 rounded-2xl p-6 shadow-2xl shadow-pink-500/10 max-w-2xl w-full max-h-[80vh] flex flex-col relative"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setSummaryModalOpen(false)}
+                                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                            
+                            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 pr-8 flex items-center gap-2">
+                                <Sparkles className="w-6 h-6 text-pink-400" />
+                                AI Summary: {summaryBookTitle}
+                            </h2>
+
+                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                {isSummarizing ? (
+                                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                                        <div className="w-12 h-12 border-4 border-pink-500/20 border-t-pink-500 rounded-full animate-spin mb-4" />
+                                        <p className="text-pink-400 font-medium animate-pulse">Reading the book...</p>
+                                        <p className="text-gray-500 text-sm mt-2">Generating your personalized summary</p>
+                                    </div>
+                                ) : (
+                                    <div className="prose prose-invert prose-pink max-w-none text-sm md:text-base leading-relaxed">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {currentSummary}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {bookToDelete && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4"
+                        onClick={() => setBookToDelete(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-slate-900 border border-red-500/20 rounded-2xl p-6 shadow-2xl shadow-red-500/10 max-w-sm w-full relative"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-red-500/10 rounded-xl">
+                                    <Trash2 className="w-6 h-6 text-red-500" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-white">Delete Book?</h2>
+                                    <p className="text-sm text-gray-400">This action cannot be undone.</p>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-slate-800/50 p-4 rounded-xl border border-white/5 mb-6">
+                                <p className="text-gray-300 font-medium truncate">"{bookToDelete.title}"</p>
+                                <p className="text-gray-500 text-sm truncate">by {bookToDelete.author}</p>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setBookToDelete(null)}
+                                    className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-xl text-sm font-medium transition-all active:scale-95"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    disabled={isDeleting}
+                                    className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    {isDeleting ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

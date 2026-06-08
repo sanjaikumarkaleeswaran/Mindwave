@@ -189,4 +189,36 @@ router.post('/book-recommendations', auth, async (req, res) => {
     }
 });
 
+// ── POST /api/ai/book-summary ────────────────────────────────────────────────
+// Generates a summary for a specific book using AI
+router.post('/book-summary', auth, async (req, res) => {
+    try {
+        const { title, author, notes } = req.body;
+        
+        let context = `Book: "${title}" by ${author}.`;
+        if (notes) {
+            context += `\nUser's notes/thoughts on the book: "${notes}"`;
+        }
+
+        const completion = await getGroq().chat.completions.create({
+            model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are an expert literary analyst and book summarizer. Provide a concise but comprehensive summary of the book provided. Highlight the main themes, key takeaways, and a brief conclusion. If the user provided their own notes, incorporate an analysis of their thoughts into your summary. Format your response beautifully using markdown with clear headings and bullet points.'
+                },
+                { role: 'user', content: context }
+            ],
+            max_tokens: 1000,
+            temperature: 0.7,
+        });
+
+        const summary = completion.choices[0]?.message?.content || 'Unable to generate summary.';
+        res.json({ summary });
+    } catch (err) {
+        console.error('Book Summary Error:', err.message);
+        res.status(500).json({ msg: 'Failed to generate summary', error: err.message });
+    }
+});
+
 module.exports = router;
