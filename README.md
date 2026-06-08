@@ -40,10 +40,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
 ### 📚 Library & Reading Tracker
-- **Smart Book Auto-Fill** — seamlessly integrates with the **OpenLibrary API**. Just type a title and it instantly fetches the author, total pages, and high-quality cover art.
-- **AI Personal Librarian** — powered by Groq (Llama 3). Ask for recommendations based on mood or genre, and instantly add the AI's suggestions directly to your tracker.
-- **Built-in PDF Reader** — upload your own PDF books. The backend automatically extracts the exact page count, and the frontend provides a distraction-free, full-screen PDF viewer with quick-save progress tracking.
-- **Progress Tracking** — elegant status management (Want to Read, Reading, Finished) with visual progress bars and dynamic UI updates as you read.
+- **Smart Book Auto-Fill** — seamlessly integrates with the **OpenLibrary API** while intelligently preserving your custom title formatting. Just type a title and it instantly fetches the author, total pages, and high-quality cover art.
+- **AI Personal Librarian & Summaries** — powered by Groq (Llama 3.3). Ask for recommendations based on mood or genre, or instantly generate comprehensive markdown summaries of any book in your library (incorporating your personal notes!).
+- **Built-in PDF Reader with Cross-Device Sync** — upload your own PDF books. The backend extracts the exact page count. When you save your progress on one device, opening the book on another device automatically jumps the viewer to your exact page number.
+- **Persistent Cloud Storage (GridFS)** — PDFs are securely streamed directly into MongoDB via GridFS, bypassing ephemeral hosting limitations (like Render) without needing external services like AWS S3.
+- **True Vector RAG Integration** — when a PDF is uploaded, it is automatically chunked and ingested into the vector database in the background, making your entire library semantically searchable via the global AI Chat.
 
 ### 💰 Financial OS (Expense Tracker)
 - **Bento Grid Dashboard** — a world-class financial command center featuring modular cards for balance tracking, spending analytics, and category distribution.
@@ -215,7 +216,7 @@ This application is ready for production deployment:
 - [x] **Reverted to classic centered modal UX** for Goals, Activity, AI Chat
 - [x] Backend-driven Push Notifications (Web Push API)
 - [x] Integration with External Calendars (Google/Outlook)
-- [ ] **Library & Reading Tracker** (Bookshelf, Progress, AI Summaries)
+- [x] **Library & Reading Tracker** (Bookshelf, Progress, AI Summaries, GridFS)
 - [ ] **Advanced Data Visualizations** (Year-in-Review, Custom Dashboards)
 - [ ] **Offline First Mode** (Local caching, Background Sync)
 
