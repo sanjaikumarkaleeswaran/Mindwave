@@ -240,6 +240,8 @@ router.get('/pdf/:filename', async (req, res) => {
 
         res.set('Content-Type', 'application/pdf');
         res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.removeHeader('X-Frame-Options');
+        res.removeHeader('Content-Security-Policy');
         
         const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
         downloadStream.pipe(res);
