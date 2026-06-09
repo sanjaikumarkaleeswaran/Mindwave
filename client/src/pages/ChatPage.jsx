@@ -177,7 +177,10 @@ export default function ChatPage() {
     // Auto-scroll logic
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
         }
     }, [messages]);
 
@@ -470,11 +473,16 @@ export default function ChatPage() {
                         autoFocus
                         rows={1}
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                        onChange={(e) => {
+                            setInput(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSend(e);
+                                e.target.style.height = 'auto';
                             }
                         }}
                         placeholder="Message Life OS or upload a file..."
