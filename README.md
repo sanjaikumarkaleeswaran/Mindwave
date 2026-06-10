@@ -63,10 +63,15 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Smart Notification Bell** — real-time alerts for overdue milestones, habits at risk of losing streaks, and daily reminders.
 - **Global Semantic Search** — one search bar to find anything across goals, habits, and journals. Includes **vector-search** for content *inside* your uploaded PDFs.
 
-### 📊 Personalized Productivity & Quick Actions
+### 📊 Personalized Analytics & Insights
+- **Year-in-Review Dashboard** — a dedicated Analytics page featuring high-quality Recharts components (Area charts for habits, Bar charts for cash flow, and Donut charts for goals).
 - **Interactive Productivity Targets** — set your own daily/weekly goals (0–100%) via a high-performance range slider on the dashboard.
 - **Horizontal Quick Action Slider** — a touch-optimized scrolling strip for mobile that provides one-tap access to your most-used tools.
 - **Dynamic 7-Day Activity Chart** — a glow-accented bar chart visualizing habit completion rates with live status indicators and historical averages.
+
+### 📶 Offline-First Architecture
+- **PWA Background Sync** — utilizes Workbox Background Sync so that if you lose internet connection, your actions (logging habits, expenses, etc.) are queued up and automatically retried once connection is restored.
+- **Network-First Caching** — aggressively caches API requests and static assets so you can view your dashboard and historical data without an internet connection.
 
 ### 📱 Mobile Experience
 - **Compact 8-Item Bottom Navigation** — all core modules accessible via a scrollable bottom nav bar with spring-animated active indicators.
@@ -217,8 +222,9 @@ This application is ready for production deployment:
 - [x] Backend-driven Push Notifications (Web Push API)
 - [x] Integration with External Calendars (Google/Outlook)
 - [x] **Library & Reading Tracker** (Bookshelf, Progress, AI Summaries, GridFS)
-- [ ] **Advanced Data Visualizations** (Year-in-Review, Custom Dashboards)
-- [ ] **Offline First Mode** (Local caching, Background Sync)
+- [x] **Advanced Data Visualizations** (Year-in-Review, Custom Dashboards)
+- [x] **Offline First Mode** (Local caching, Background Sync)
+- [x] **Performance Optimization** (useMemo, useCallback render optimizations)
 
 ---
 
