@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -195,28 +195,35 @@ export default function CalendarPage() {
         } catch (err) { console.error(err); }
     };
 
-    const eventMap = buildEventMap(goals, customEvents);
+    const eventMap = useMemo(() => buildEventMap(goals, customEvents), [goals, customEvents]);
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const cells = [];
-    for (let i = 0; i < firstDay; i++) cells.push(null);
-    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-    while (cells.length % 7 !== 0) cells.push(null);
+    
+    const cells = useMemo(() => {
+        const arr = [];
+        for (let i = 0; i < firstDay; i++) arr.push(null);
+        for (let d = 1; d <= daysInMonth; d++) arr.push(d);
+        while (arr.length % 7 !== 0) arr.push(null);
+        return arr;
+    }, [firstDay, daysInMonth]);
 
-    const prevMonth = () => { if (month === 0) { setMonth(11); setYear(y => y-1); } else setMonth(m => m-1); };
-    const nextMonth = () => { if (month === 11) { setMonth(0); setYear(y => y+1); } else setMonth(m => m+1); };
-    const todayStr = toYMD(today);
+    const prevMonth = useCallback(() => { if (month === 0) { setMonth(11); setYear(y => y-1); } else setMonth(m => m-1); }, [month]);
+    const nextMonth = useCallback(() => { if (month === 11) { setMonth(0); setYear(y => y+1); } else setMonth(m => m+1); }, [month]);
+    const todayStr = useMemo(() => toYMD(today), [today]);
 
-    const allEvents = Object.values(eventMap).flat();
-    const doneMs = allEvents.filter(e => e.completed).length;
-    const overdueMs = allEvents.filter(e => {
-        if (e.completed) return false;
-        const dateKey = Object.keys(eventMap).find(k => eventMap[k].includes(e));
-        return dateKey && new Date(dateKey) < today;
-    }).length;
-    const thisMonthEvents = Object.entries(eventMap)
-        .filter(([k]) => { const d = new Date(k); return d.getFullYear() === year && d.getMonth() === month; })
-        .flatMap(([,v]) => v);
+    const { allEvents, doneMs, overdueMs, thisMonthEvents } = useMemo(() => {
+        const events = Object.values(eventMap).flat();
+        const done = events.filter(e => e.completed).length;
+        const overdue = events.filter(e => {
+            if (e.completed) return false;
+            const dateKey = Object.keys(eventMap).find(k => eventMap[k].includes(e));
+            return dateKey && new Date(dateKey) < today;
+        }).length;
+        const thisMonth = Object.entries(eventMap)
+            .filter(([k]) => { const d = new Date(k); return d.getFullYear() === year && d.getMonth() === month; })
+            .flatMap(([,v]) => v);
+        return { allEvents: events, doneMs: done, overdueMs: overdue, thisMonthEvents: thisMonth };
+    }, [eventMap, today, year, month]);
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 mobile-page-pad">

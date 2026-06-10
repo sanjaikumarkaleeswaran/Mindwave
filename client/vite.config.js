@@ -18,20 +18,22 @@ export default defineConfig({
 
         // Runtime caching rules
         runtimeCaching: [
-          // 1. API calls — NetworkFirst: try live, fall back to cache (30-second timeout)
+          // 1. API calls (GET) — NetworkFirst: try live, fall back to cache
           {
             urlPattern: /^https?:\/\/.*\/api\//,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'mindwave-api-cache',
               networkTimeoutSeconds: 30,
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [0, 200] },
+              // Enable Background Sync for failed mutations (POST/PUT/DELETE)
+              backgroundSync: {
+                name: 'mindwave-sync-queue',
+                options: {
+                  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
+                }
+              }
             },
           },
           // 2. Google Fonts — CacheFirst (fonts rarely change)

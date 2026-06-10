@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, Activity, Zap, MessageSquare, CheckCircle2, ArrowRight, Book, Target, TrendingUp, Award, Brain, Calendar, Flag, Plus, Droplets, Timer, Settings2, Loader2, Bot, Library as LibraryIcon, BookOpen } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -91,24 +91,24 @@ export default function Dashboard() {
     }, []);
 
     // Helper for Local Date String (YYYY-MM-DD)
-    const getLocalDateString = (date) => {
+    const getLocalDateString = useCallback((date) => {
         const d = new Date(date);
         const offset = d.getTimezoneOffset() * 60000;
         return new Date(d.getTime() - offset).toISOString().split('T')[0];
-    };
+    }, []);
 
-    const greeting = time < 12 ? 'Good morning' : time < 18 ? 'Good afternoon' : 'Good evening';
+    const greeting = useMemo(() => (time < 12 ? 'Good morning' : time < 18 ? 'Good afternoon' : 'Good evening'), [time]);
 
     // Calculate Habit Progress
-    const todayStr = getLocalDateString(new Date());
-    const completedToday = habits.filter(h =>
+    const todayStr = useMemo(() => getLocalDateString(new Date()), [getLocalDateString]);
+    const completedToday = useMemo(() => habits.filter(h =>
         h.completedDates.some(d => getLocalDateString(d) === todayStr)
-    ).length;
+    ).length, [habits, getLocalDateString, todayStr]);
+
     const progress = habits.length > 0 ? (completedToday / habits.length) * 100 : 0;
 
     // Calculate Last 7 Days Data for Chart
-    // Calculate Last 7 Days Data for Chart
-    const chartData = Array.from({ length: 7 }, (_, i) => {
+    const chartData = useMemo(() => Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i)); // Order: -6, -5, ... 0 (Today)
         return d;
@@ -128,9 +128,9 @@ export default function Dashboard() {
             fullDate: dateStr,
             value: Math.round((completedCount / habits.length) * 100)
         };
-    });
+    }), [habits, getLocalDateString]);
 
-    const isChartEmpty = chartData.every(d => d.value === 0);
+    const isChartEmpty = useMemo(() => chartData.every(d => d.value === 0), [chartData]);
 
     return (
         <div className="p-4 md:p-8 space-y-5 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">

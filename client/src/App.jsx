@@ -22,6 +22,7 @@ const GoalsPage = React.lazy(() => import('./pages/GoalsPage'));
 const CalendarPage = React.lazy(() => import('./pages/CalendarPage'));
 const ExpensesPage = React.lazy(() => import('./pages/ExpensesPage'));
 const LibraryPage = React.lazy(() => import('./pages/LibraryPage'));
+const AnalyticsPage = React.lazy(() => import('./pages/AnalyticsPage'));
 
 
 
@@ -106,6 +107,11 @@ function App() {
             <Route path="library" element={
               <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Library...</div>}>
                 <LibraryPage />
+              </Suspense>
+            } />
+            <Route path="analytics" element={
+              <Suspense fallback={<div className="flex-1 flex items-center justify-center text-white h-full">Loading Analytics...</div>}>
+                <AnalyticsPage />
               </Suspense>
             } />
           </Route>

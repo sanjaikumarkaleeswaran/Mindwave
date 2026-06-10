@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home, MessageSquare, CheckCircle, LogOut, Plus, Trash2, Zap, User, BookOpen, Target, CalendarDays, Wallet, Library } from 'lucide-react';
+import { Home, MessageSquare, CheckCircle, LogOut, Plus, Trash2, Zap, User, BookOpen, Target, CalendarDays, Wallet, Library, BarChart2 } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -63,6 +63,7 @@ export default function Sidebar({ isOpen, onClose }) {
         { icon: Target,       label: 'Goals',    path: '/goals'    },
         { icon: CalendarDays, label: 'Calendar', path: '/calendar' },
         { icon: Wallet,       label: 'Expenses', path: '/expenses' },
+        { icon: BarChart2,    label: 'Analytics',path: '/analytics' },
         { icon: BookOpen,     label: 'Journal',  path: '/journal'  },
         { icon: Library,      label: 'Library',  path: '/library'  },
     ];
