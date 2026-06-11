@@ -15,6 +15,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 ## 🌟 Key Features
 
 ### 🤖 Intelligent AI Assistant
+- **Custom AI Personas** — Select your preferred AI personality (e.g., "Tough Love Coach", "Gentle Therapist", "Minimalist") from your profile settings to dynamically alter the system prompt and tone of responses.
 - **Granular Model Selection** — toggle between **Llama 3.3 70B** (Smartest), **DeepSeek R1 70B** (Reasoning), **Llama 3 70B** (Fast), or **Gemma 2 9B** directly from the chat interface. Preferences are saved to your profile.
 - **Multimodal Vision AI** — upload images including **Strava activity screenshots** for performance analysis. The backend automatically switches to **Llama 4 Scout** (`meta-llama/llama-4-scout-17b-16e-instruct`) — Groq's latest multimodal vision model — to analyze your data visually.
 - **True Vector RAG (Document Intelligence)** — upload PDFs, TXT, or JSON files. The local Node.js server automatically chunks documents, generates 384-dimensional mathematical embeddings using `@xenova/transformers` (`all-MiniLM-L6-v2`), and retrieves relevant context using cosine similarity.
@@ -36,6 +37,8 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Premium Mobile Cards** — mobile users automatically receive a highly optimized native-app experience with touch-friendly cards featuring 7-day mini-heatmaps and glowing completion effects.
 
 ### ✍️ Intelligent Journaling
+- **End-to-End Encryption (E2EE)** — Your journals are encrypted locally via `crypto-js` using a custom Vault Password before transmission. The server only stores unreadable ciphertexts.
+- **Secure AI Analysis** — The client securely decrypts the entry locally and sends only transient plaintext in the payload for AI analysis, preserving E2EE while still providing insights.
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
@@ -225,6 +228,8 @@ This application is ready for production deployment:
 - [x] **Advanced Data Visualizations** (Year-in-Review, Custom Dashboards)
 - [x] **Offline First Mode** (Local caching, Background Sync)
 - [x] **Performance Optimization** (useMemo, useCallback render optimizations)
+- [x] **Custom AI Personas** (Dynamic System Prompts)
+- [x] **End-to-End Encryption (E2EE)** for Journal Entries
 
 ---
 
