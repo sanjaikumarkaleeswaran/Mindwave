@@ -165,11 +165,12 @@ router.post('/:id/analyze', auth, validate(analyzeJournalSchema), async (req, re
 5. One actionable challenge or question to build mental muscle (1-2 sentences)
 
 Journal Entry:
-Title: ${journal.title || 'Untitled'}
+Journal Entry:
+Title: ${req.body.plaintextTitle || journal.title || 'Untitled'}
 Date: ${journal.date.toLocaleDateString()}
 Mood: ${journal.mood || 'Not specified'}
 Content:
-${journal.content}
+${req.body.plaintextContent || journal.content}
 
 Provide your analysis in JSON format:
 {

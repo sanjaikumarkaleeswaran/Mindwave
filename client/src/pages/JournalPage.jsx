@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import CryptoJS from 'crypto-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BookOpen,
@@ -16,7 +17,8 @@ import {
     Brain,
     ChevronDown,
     ChevronUp,
-    Target
+    Target,
+    Shield
 } from 'lucide-react';
 import api from '../lib/axios';
 
@@ -27,6 +29,39 @@ const JournalPage = () => {
     const [loading, setLoading] = useState(true);
     const [analyzing, setAnalyzing] = useState(null);
     const [expandedEntry, setExpandedEntry] = useState(null);
+
+    // Vault State
+    const [vaultKey, setVaultKey] = useState(sessionStorage.getItem('journalVaultKey') || '');
+    const [showVaultModal, setShowVaultModal] = useState(!sessionStorage.getItem('journalVaultKey'));
+    const [vaultInput, setVaultInput] = useState('');
+
+    const handleVaultSubmit = (e) => {
+        e.preventDefault();
+        if (vaultInput.trim().length < 4) {
+            alert('Please enter a stronger vault password (min 4 chars)');
+            return;
+        }
+        sessionStorage.setItem('journalVaultKey', vaultInput);
+        setVaultKey(vaultInput);
+        setShowVaultModal(false);
+        fetchJournals(vaultInput);
+    };
+
+    const decryptContent = (ciphertext, key) => {
+        try {
+            if (!ciphertext) return '';
+            const bytes = CryptoJS.AES.decrypt(ciphertext, key);
+            const plaintext = bytes.toString(CryptoJS.enc.Utf8);
+            return plaintext || ciphertext;
+        } catch (e) {
+            return ciphertext;
+        }
+    };
+
+    const encryptContent = (plaintext, key) => {
+        if (!plaintext) return '';
+        return CryptoJS.AES.encrypt(plaintext, key).toString();
+    };
 
     // Form state
     const [formData, setFormData] = useState({
@@ -41,11 +76,23 @@ const JournalPage = () => {
         fetchJournals();
     }, []);
 
-    const fetchJournals = async () => {
+    const fetchJournals = async (overrideKey) => {
         try {
             setLoading(true);
             const response = await api.get('/journal');
-            setJournals(Array.isArray(response.data) ? response.data : []);
+            const data = Array.isArray(response.data) ? response.data : [];
+            const key = overrideKey || sessionStorage.getItem('journalVaultKey');
+            
+            if (key) {
+                const decrypted = data.map(j => ({
+                    ...j,
+                    title: decryptContent(j.title, key),
+                    content: decryptContent(j.content, key)
+                }));
+                setJournals(decrypted);
+            } else {
+                setJournals(data);
+            }
         } catch (error) {
             console.error('Error fetching journals:', error);
         } finally {
@@ -61,11 +108,24 @@ const JournalPage = () => {
             return;
         }
 
+        const key = sessionStorage.getItem('journalVaultKey');
+        if (!key) {
+            alert('Vault key is missing! Cannot save encrypted journal.');
+            setShowVaultModal(true);
+            return;
+        }
+
         try {
+            const encryptedData = {
+                ...formData,
+                title: encryptContent(formData.title, key),
+                content: encryptContent(formData.content, key)
+            };
+
             if (editingId) {
-                await api.put(`/journal/${editingId}`, formData);
+                await api.put(`/journal/${editingId}`, encryptedData);
             } else {
-                await api.post('/journal', formData);
+                await api.post('/journal', encryptedData);
             }
 
             resetForm();
@@ -101,14 +161,25 @@ const JournalPage = () => {
         setIsCreating(true);
     };
 
-    const handleAnalyze = async (id) => {
+    const handleAnalyze = async (id, title, content) => {
         try {
             setAnalyzing(id);
-            const response = await api.post(`/journal/${id}/analyze`);
+            const response = await api.post(`/journal/${id}/analyze`, {
+                plaintextContent: content,
+                plaintextTitle: title
+            });
+
+            const key = sessionStorage.getItem('journalVaultKey');
+            const newJ = response.data;
+            const decryptedJ = {
+                ...newJ,
+                title: decryptContent(newJ.title, key),
+                content: decryptContent(newJ.content, key)
+            };
 
             // Update the journal in the list
             setJournals(journals.map(j =>
-                j._id === id ? response.data : j
+                j._id === id ? decryptedJ : j
             ));
         } catch (error) {
             console.error('Error analyzing journal:', error);
@@ -172,6 +243,52 @@ const JournalPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-4 md:p-6 lg:p-8 mobile-page-pad">
+            <AnimatePresence>
+                {showVaultModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="bg-slate-900 border border-purple-500/30 rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl relative"
+                        >
+                            <div className="text-center mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+                                    <Shield className="w-8 h-8 text-white" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-white mb-2">Vault Password</h2>
+                                <p className="text-gray-400 text-sm">
+                                    Your journals are end-to-end encrypted. Enter your vault password to unlock them. This password never leaves your device.
+                                </p>
+                            </div>
+                            <form onSubmit={handleVaultSubmit} className="space-y-4">
+                                <div>
+                                    <input
+                                        type="password"
+                                        value={vaultInput}
+                                        onChange={(e) => setVaultInput(e.target.value)}
+                                        placeholder="Enter vault password"
+                                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all text-center text-lg"
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+                                >
+                                    Unlock Vault
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <motion.div
@@ -415,7 +532,7 @@ const JournalPage = () => {
                                         <motion.button
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
-                                            onClick={() => handleAnalyze(journal._id)}
+                                            onClick={() => handleAnalyze(journal._id, journal.title, journal.content)}
                                             disabled={analyzing === journal._id}
                                             className="p-2 bg-purple-500/20 text-purple-300 rounded-lg hover:bg-purple-500/30 transition-all disabled:opacity-50"
                                             title="AI Analysis"

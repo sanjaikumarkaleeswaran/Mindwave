@@ -39,6 +39,10 @@ const analyzeJournalSchema = z.object({
     params: z.object({
         id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Journal ID'),
     }),
+    body: z.object({
+        plaintextContent: z.string().optional(),
+        plaintextTitle: z.string().optional(),
+    }).strict().optional(),
 });
 
 const batchAnalyzeSchema = z.object({

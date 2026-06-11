@@ -7,6 +7,7 @@ const Habit = require('../models/Habit');
 const Goal = require('../models/Goal');
 const Expense = require('../models/Expense');
 const Budget = require('../models/Budget');
+const User = require('../models/User');
 const { getGroqCompletion } = require('../utils/llmCache');
 const multer = require('multer');
 const fs = require('fs');
@@ -169,6 +170,7 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
 
 
         // 2. Fetch Context (RAG - Vector Search)
+        const user = await User.findById(req.user.id);
         const habits = await Habit.find({ userId: req.user.id });
         const recentHistory = await ChatHistory.find({ conversationId })
             .sort({ timestamp: -1 })
@@ -191,7 +193,17 @@ router.post('/send', auth, upload.single('file'), validate(sendChatSchema), asyn
         }
 
         // 3. Construct System Prompt
-        const systemPrompt = `You are a personal AI Life OS assistant.
+        const aiTone = user?.preferences?.aiTone || 'helpful';
+        let personaIntro = "You are a personal AI Life OS assistant.";
+        if (aiTone === 'tough_love') {
+            personaIntro = "You are a 'Tough Love Coach'. You are direct, no-nonsense, and push the user to be their best. You don't accept excuses. Use tough love.";
+        } else if (aiTone === 'gentle_therapist') {
+            personaIntro = "You are a 'Gentle Therapist'. You are extremely empathetic, soft-spoken, and validate the user's feelings. Your tone is warm and therapeutic.";
+        } else if (aiTone === 'minimalist') {
+            personaIntro = "You are a 'Minimalist Assistant'. Your responses are extremely brief, efficient, and to the point. No fluff, no emojis unless absolutely necessary.";
+        }
+
+        const systemPrompt = `${personaIntro}
         
         USER CONTEXT:
         - Habits: ${habits.map(h => `${h.name} (ID: ${h._id}, Streak: ${h.streak})`).join(', ') || 'None'}

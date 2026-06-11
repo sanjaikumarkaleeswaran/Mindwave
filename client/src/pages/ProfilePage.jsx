@@ -5,14 +5,15 @@ import { User, Mail, Shield, Save, Camera, LogOut, Loader2, AlertTriangle, X, Fi
 import api from '../lib/axios';
 
 export default function ProfilePage() {
-    const { user, logout, updateProfile, uploadAvatar, deleteAccount } = useAuth();
+    const { user, logout, updateProfile, updatePreferences, uploadAvatar, deleteAccount } = useAuth();
     const fileInputRef = useRef(null);
 
     // Initialize form with safe defaults
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
-        avatar: user?.avatar || ''
+        avatar: user?.avatar || '',
+        aiTone: user?.preferences?.aiTone || 'helpful'
     });
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -171,6 +172,9 @@ export default function ProfilePage() {
             await updateProfile({
                 name: formData.name,
                 avatar: formData.avatar
+            });
+            await updatePreferences({
+                aiTone: formData.aiTone
             });
             setMessage({ type: 'success', text: 'Profile updated successfully' });
         } catch (err) {
@@ -484,6 +488,32 @@ export default function ProfilePage() {
                                     <p className="text-xs text-zinc-500 pl-1">
                                         Or click the profile picture on the left to upload an image.
                                     </p>
+                                </div>
+
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-sm font-medium text-zinc-400">AI Assistant Persona</label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                        {[
+                                            { value: 'helpful', label: 'Helpful Assistant', desc: 'Balanced, friendly, and standard AI.' },
+                                            { value: 'tough_love', label: 'Tough Love Coach', desc: 'Direct, no-nonsense accountability.' },
+                                            { value: 'gentle_therapist', label: 'Gentle Therapist', desc: 'Empathetic, validating, and soft.' },
+                                            { value: 'minimalist', label: 'Minimalist', desc: 'Brief, efficient, no fluff.' }
+                                        ].map(persona => (
+                                            <button
+                                                key={persona.value}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, aiTone: persona.value })}
+                                                className={`p-3 rounded-xl border text-left transition-all ${
+                                                    formData.aiTone === persona.value
+                                                        ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-lg'
+                                                        : 'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-800'
+                                                }`}
+                                            >
+                                                <div className="font-medium text-sm mb-1">{persona.label}</div>
+                                                <div className="text-xs opacity-70 leading-snug">{persona.desc}</div>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
