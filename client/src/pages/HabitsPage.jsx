@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import api from '../lib/axios';
-import { Plus, Check, Flame, Trash2, TrendingUp, Calendar, GripVertical, Pencil, History, Sparkles, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Check, Flame, Trash2, TrendingUp, Calendar, GripVertical, Pencil, History, Sparkles, X, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import confetti from 'canvas-confetti';
 import {
@@ -262,6 +262,43 @@ export default function HabitsPage() {
     const [currentDate] = useState(new Date());
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
+    const [showTemplates, setShowTemplates] = useState(false);
+    const [isApplying, setIsApplying] = useState(false);
+
+    const TEMPLATES = [
+        {
+            name: "75 Hard Challenge",
+            description: "The mental toughness program by Andy Frisella.",
+            habits: ["Drink 1 Gallon Water", "Read 10 Pages Non-Fiction", "45 Min Indoor Workout", "45 Min Outdoor Workout", "Follow Diet", "No Alcohol/Cheat Meals", "Take Progress Picture"]
+        },
+        {
+            name: "Miracle Morning",
+            description: "Start your day right based on Hal Elrod's SAVERS.",
+            habits: ["Silence (Meditation)", "Affirmations", "Visualization", "Exercise", "Reading", "Scribing (Journaling)"]
+        },
+        {
+            name: "Deep Work Pack",
+            description: "Maximize your productivity and focus.",
+            habits: ["Plan Day Before", "2 Hours Deep Work", "Inbox Zero", "Review Goals"]
+        }
+    ];
+
+    const handleApplyTemplate = async (template) => {
+        setIsApplying(true);
+        try {
+            for (const habitName of template.habits) {
+                await api.post('/habits', { name: habitName });
+            }
+            queryClient.invalidateQueries(['habits']);
+            setShowTemplates(false);
+            alert(`${template.name} applied successfully!`);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to apply template.");
+        } finally {
+            setIsApplying(false);
+        }
+    };
 
     // Update viewMode on window resize — keep table unless user explicitly changes it
     // (no auto-switch on resize, user controls it)
@@ -495,6 +532,14 @@ export default function HabitsPage() {
                     >
                         <Sparkles className="w-3 h-3" />
                         {isAnalyzing ? '...' : 'Insights'}
+                    </button>
+
+                    <button
+                        onClick={() => setShowTemplates(true)}
+                        className="flex-none px-3 py-2 bg-zinc-800/80 hover:bg-zinc-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-[11px] uppercase tracking-wider border border-white/5 shadow-xl"
+                    >
+                        <Copy className="w-3 h-3 text-emerald-400" />
+                        <span>Templates</span>
                     </button>
 
                     <button
@@ -962,6 +1007,50 @@ export default function HabitsPage() {
                     </div>
                 )
             }
+
+            {/* Templates Modal */}
+            {showTemplates && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in" onClick={() => setShowTemplates(false)}>
+                    <div className="bg-zinc-900 border border-zinc-700/50 rounded-2xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                                <Copy className="w-6 h-6 text-emerald-400" />
+                                Habit Packs
+                            </h2>
+                            <button onClick={() => setShowTemplates(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-zinc-400">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <p className="text-zinc-400 mb-6">Instantly populate your habit tracker with these proven routines.</p>
+                        <div className="grid gap-4">
+                            {TEMPLATES.map((tpl, i) => (
+                                <div key={i} className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-5 hover:border-emerald-500/30 transition-all">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-white">{tpl.name}</h3>
+                                            <p className="text-sm text-zinc-500 mt-1">{tpl.description}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleApplyTemplate(tpl)}
+                                            disabled={isApplying}
+                                            className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg font-bold hover:bg-emerald-500/30 transition-all disabled:opacity-50"
+                                        >
+                                            {isApplying ? 'Applying...' : 'Apply Pack'}
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-4">
+                                        {tpl.habits.map((h, idx) => (
+                                            <span key={idx} className="text-xs font-medium px-2 py-1 bg-zinc-800 rounded-md text-zinc-300 border border-zinc-700">
+                                                {h}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 }

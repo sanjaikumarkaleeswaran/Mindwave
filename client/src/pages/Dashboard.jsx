@@ -132,6 +132,32 @@ export default function Dashboard() {
 
     const isChartEmpty = useMemo(() => chartData.every(d => d.value === 0), [chartData]);
 
+    // Calculate Life Score
+    const lifeScore = useMemo(() => {
+        let score = 0;
+        
+        // 1. Habit Completion (max 40 points)
+        if (habits.length > 0) {
+            score += (completedToday / habits.length) * 40;
+        } else {
+            score += 20; // Default
+        }
+
+        // 2. Goals Progress (max 30 points)
+        if (goals.length > 0) {
+            const avgGoalsProgress = goals.reduce((s, g) => s + g.progress, 0) / goals.length;
+            score += (avgGoalsProgress / 100) * 30;
+        } else {
+            score += 15;
+        }
+
+        // 3. Streak consistency (max 30 points)
+        const bestStreak = stats?.habits?.bestStreak || 0;
+        score += Math.min((bestStreak / 30) * 30, 30);
+        
+        return Math.round(score);
+    }, [habits, completedToday, goals, stats]);
+
     return (
         <div className="p-4 md:p-8 space-y-5 md:space-y-8 max-w-7xl mx-auto mobile-page-pad overflow-x-hidden">
             <Helmet>
@@ -358,48 +384,39 @@ export default function Dashboard() {
             {/* ── Stats Panel ── */}
             {stats && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {/* Productivity Score */}
+                    {/* Life Score */}
                     <div className="relative glass-card p-5 overflow-hidden group/prod">
                         <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl" />
                         <div className="relative">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <Brain className="w-3.5 h-3.5 text-indigo-400" />
-                                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Productivity</span>
-                                </div>
-                                <div className={`transition-opacity duration-300 ${isSavingTarget ? 'opacity-100' : 'opacity-0'}`}>
-                                    <Loader2 className="w-3 h-3 text-indigo-500 animate-spin" />
+                                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter">Life Score</span>
                                 </div>
                             </div>
                             
                             <div className="flex items-baseline gap-1">
-                                <div className="text-3xl font-bold text-white tabular-nums">{stats.productivityScore}</div>
-                                <div className="text-xs font-bold text-zinc-500">of {localTarget} target</div>
+                                <div className="text-3xl font-bold text-white tabular-nums">{lifeScore}</div>
+                                <div className="text-xs font-bold text-zinc-500">/ 100</div>
                             </div>
 
                             {/* Score Bar */}
                             <div className="mt-3 w-full bg-zinc-800/50 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${Math.min(100, (stats.productivityScore / localTarget) * 100)}%` }} />
+                                <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000" style={{ width: `${lifeScore}%` }} />
                             </div>
 
-                             {/* Target Slider (Item #1) */}
+                             {/* Info text */}
                             <div className="mt-4 pt-4 border-t border-white/[0.03] space-y-4">
-                                <div className="flex items-center justify-between text-[11px] font-black text-zinc-500 uppercase tracking-widest">
-                                    <span>Goal Target</span>
-                                    <span className="text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">{localTarget}%</span>
-                                </div>
-                                <div className="relative h-6 flex items-center group/slider">
-                                    <input 
-                                        type="range" 
-                                        min="1" 
-                                        max="100" 
-                                        value={localTarget} 
-                                        onChange={(e) => setLocalTarget(parseInt(e.target.value))}
-                                        onMouseUp={(e) => handleTargetChange(parseInt(e.target.value))}
-                                        onTouchEnd={(e) => handleTargetChange(parseInt(e.target.value))}
-                                        className="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-indigo-500"
-                                    />
-                                    {/* Subtle tooltips or markers could be added here if needed */}
+                                <div className="flex flex-col text-[10px] font-bold text-zinc-500">
+                                    <div className="flex justify-between mb-1">
+                                        <span>Habits</span> <span className="text-indigo-400">40 pts</span>
+                                    </div>
+                                    <div className="flex justify-between mb-1">
+                                        <span>Goals</span> <span className="text-indigo-400">30 pts</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Consistency</span> <span className="text-indigo-400">30 pts</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

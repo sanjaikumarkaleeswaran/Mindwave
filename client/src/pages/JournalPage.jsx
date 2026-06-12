@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import CryptoJS from 'crypto-js';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BiometricAuth } from '@aparajita/capacitor-biometric-auth';
+import { Capacitor } from '@capacitor/core';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import {
     BookOpen,
     Plus,
@@ -34,14 +37,63 @@ const JournalPage = () => {
     const [vaultKey, setVaultKey] = useState(sessionStorage.getItem('journalVaultKey') || '');
     const [showVaultModal, setShowVaultModal] = useState(!sessionStorage.getItem('journalVaultKey'));
     const [vaultInput, setVaultInput] = useState('');
+    const [biometryAvailable, setBiometryAvailable] = useState(false);
 
-    const handleVaultSubmit = (e) => {
+    useEffect(() => {
+        const checkBiometry = async () => {
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const info = await BiometricAuth.checkBiometry();
+                    setBiometryAvailable(info.isAvailable);
+                } catch (e) {
+                    console.log('Biometry check failed', e);
+                }
+            }
+        };
+        checkBiometry();
+    }, []);
+
+    const handleBiometricAuth = async () => {
+        try {
+            const result = await BiometricAuth.authenticate({
+                reason: 'Unlock Journal Vault',
+                cancelTitle: 'Cancel',
+                fallbackTitle: 'Use Passcode'
+            });
+            if (result.hasAuthenticated) {
+                const { value } = await SecureStoragePlugin.get({ key: 'journalVaultKey' });
+                if (value) {
+                    sessionStorage.setItem('journalVaultKey', value);
+                    setVaultKey(value);
+                    setShowVaultModal(false);
+                    fetchJournals(value);
+                } else {
+                    alert('Vault password not found. Please enter it manually first to enable Biometrics.');
+                }
+            }
+        } catch (e) {
+            console.error('Biometric auth error:', e);
+            alert('Failed to unlock using Biometrics.');
+        }
+    };
+
+    const handleVaultSubmit = async (e) => {
         e.preventDefault();
         if (vaultInput.trim().length < 4) {
             alert('Please enter a stronger vault password (min 4 chars)');
             return;
         }
+        
         sessionStorage.setItem('journalVaultKey', vaultInput);
+        
+        if (Capacitor.isNativePlatform()) {
+            try {
+                await SecureStoragePlugin.set({ key: 'journalVaultKey', value: vaultInput });
+            } catch (err) {
+                console.log('Could not save to secure storage', err);
+            }
+        }
+        
         setVaultKey(vaultInput);
         setShowVaultModal(false);
         fetchJournals(vaultInput);
@@ -273,16 +325,28 @@ const JournalPage = () => {
                                         onChange={(e) => setVaultInput(e.target.value)}
                                         placeholder="Enter vault password"
                                         className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all text-center text-lg"
-                                        required
+                                        required={!biometryAvailable}
                                         autoFocus
                                     />
                                 </div>
-                                <button
-                                    type="submit"
-                                    className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
-                                >
-                                    Unlock Vault
-                                </button>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+                                    >
+                                        Unlock Vault
+                                    </button>
+                                    {biometryAvailable && (
+                                        <button
+                                            type="button"
+                                            onClick={handleBiometricAuth}
+                                            className="w-full py-3 bg-slate-800 text-white border border-slate-600 rounded-xl font-semibold hover:bg-slate-700 transition-all flex justify-center items-center gap-2"
+                                        >
+                                            <Shield className="w-5 h-5" />
+                                            Use Biometrics
+                                        </button>
+                                    )}
+                                </div>
                             </form>
                         </motion.div>
                     </motion.div>
