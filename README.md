@@ -35,9 +35,11 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **AI Habit Insights** — ask for a performance report; the AI analyzes your data to provide qualitative feedback and actionable weekly challenges.
 - **Table View by Default** — the habit tracker defaults to a scrollable table with sticky habit names, showing the last 7 days at a glance on desktop.
 - **Premium Mobile Cards** — mobile users automatically receive a highly optimized native-app experience with touch-friendly cards featuring 7-day mini-heatmaps and glowing completion effects.
+- **Routine Templates & Habit Packs** — 1-click modal to instantly populate your tracker with proven presets like the "75 Hard Challenge", "Miracle Morning", or "Deep Work Pack".
 
 ### ✍️ Intelligent Journaling
 - **End-to-End Encryption (E2EE)** — Your journals are encrypted locally via `crypto-js` using a custom Vault Password before transmission. The server only stores unreadable ciphertexts.
+- **Biometric Vault Security** — natively integrates with FaceID/Fingerprint scanners via Capacitor to seamlessly retrieve the vault password from secure Keychain/Keystore storage.
 - **Secure AI Analysis** — The client securely decrypts the entry locally and sends only transient plaintext in the payload for AI analysis, preserving E2EE while still providing insights.
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
@@ -68,6 +70,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 
 ### 📊 Personalized Analytics & Insights
 - **Year-in-Review Dashboard** — a dedicated Analytics page featuring high-quality Recharts components (Area charts for habits, Bar charts for cash flow, and Donut charts for goals).
+- **Algorithmic Life Score Widget** — dynamic 0-100 gamification score based on habit completion ratios, goal milestones progress, and historical streak consistency.
 - **Interactive Productivity Targets** — set your own daily/weekly goals (0–100%) via a high-performance range slider on the dashboard.
 - **Horizontal Quick Action Slider** — a touch-optimized scrolling strip for mobile that provides one-tap access to your most-used tools.
 - **Dynamic 7-Day Activity Chart** — a glow-accented bar chart visualizing habit completion rates with live status indicators and historical averages.
@@ -77,6 +80,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 - **Network-First Caching** — aggressively caches API requests and static assets so you can view your dashboard and historical data without an internet connection.
 
 ### 📱 Mobile Experience
+- **Native App Compilation (Capacitor)** — The project is fully configured with Capacitor to generate native `.apk` (Android) and `.ipa` (iOS) binaries.
 - **Compact 8-Item Bottom Navigation** — all core modules accessible via a scrollable bottom nav bar with spring-animated active indicators.
 - **Centered Modal System** — all modals (Goals, Activity Log, Delete Confirm, AI Chat) use a clean centered scale-in animation on all screen sizes.
 - **Safe Area Inset Support** — proper padding for iPhone notches, Dynamic Island, and home indicator bars using `env(safe-area-inset-*)`.
@@ -97,6 +101,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19, Vite, Tailwind CSS v3, Framer Motion, Lucide Icons |
+| **Mobile App** | Capacitor v7, Capacitor Biometric Auth, Secure Storage |
 | **Charts** | Recharts (Bento-style analytics) |
 | **State / Routing** | React Context, React Router v7, React Query (TanStack) |
 | **PWA** | Vite PWA Plugin, Web App Manifest, Service Worker |
@@ -230,6 +235,10 @@ This application is ready for production deployment:
 - [x] **Performance Optimization** (useMemo, useCallback render optimizations)
 - [x] **Custom AI Personas** (Dynamic System Prompts)
 - [x] **End-to-End Encryption (E2EE)** for Journal Entries
+- [x] **Advanced Life Score Gamification** (Algorithmic Dashboard Widget)
+- [x] **Routine Templates & Habit Packs** (Auto-populate trackers)
+- [x] **Native Mobile App Wrappers** (Capacitor iOS & Android)
+- [x] **Biometric Vault Security** (FaceID/Fingerprint via Keychain/Keystore)
 
 ---
 
