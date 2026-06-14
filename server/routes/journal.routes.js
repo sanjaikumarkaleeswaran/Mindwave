@@ -242,24 +242,36 @@ Provide your analysis in JSON format:
 // Get AI insights for multiple entries (weekly/monthly summary)
 router.post('/analyze/batch', auth, validate(batchAnalyzeSchema), async (req, res) => {
     try {
-        const { startDate, endDate } = req.body;
+        const { startDate, endDate, decryptedEntries } = req.body;
 
-        const journals = await Journal.find({
-            userId: req.user.id,
-            date: {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate)
+        let combinedContent = '';
+        let entryCount = 0;
+
+        if (decryptedEntries && decryptedEntries.length > 0) {
+            // Client provided the decrypted entries
+            entryCount = decryptedEntries.length;
+            combinedContent = decryptedEntries.map(j =>
+                `Date: ${new Date(j.date).toLocaleDateString()}\nMood: ${j.mood || 'N/A'}\n${j.content}`
+            ).join('\n\n---\n\n');
+        } else {
+            // Fallback (for older clients or unencrypted journals)
+            const journals = await Journal.find({
+                userId: req.user.id,
+                date: {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate)
+                }
+            }).sort({ date: 1 });
+
+            if (journals.length === 0) {
+                return res.status(404).json({ error: 'No journal entries found in this period' });
             }
-        }).sort({ date: 1 });
-
-        if (journals.length === 0) {
-            return res.status(404).json({ error: 'No journal entries found in this period' });
+            
+            entryCount = journals.length;
+            combinedContent = journals.map(j =>
+                `Date: ${j.date.toLocaleDateString()}\nMood: ${j.mood || 'N/A'}\n${j.content}`
+            ).join('\n\n---\n\n');
         }
-
-        // Combine all entries for batch analysis
-        const combinedContent = journals.map(j =>
-            `Date: ${j.date.toLocaleDateString()}\nMood: ${j.mood || 'N/A'}\n${j.content}`
-        ).join('\n\n---\n\n');
 
         const prompt = `You are an AI life coach analyzing multiple journal entries over a period. Provide:
 1. Overall summary of the period
@@ -316,7 +328,7 @@ Provide analysis in JSON format:
             period: {
                 start: startDate,
                 end: endDate,
-                entryCount: journals.length
+                entryCount: entryCount
             },
             analysis
         });

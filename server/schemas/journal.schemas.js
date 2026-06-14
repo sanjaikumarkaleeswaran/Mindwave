@@ -49,6 +49,11 @@ const batchAnalyzeSchema = z.object({
     body: z.object({
         startDate: z.string(),
         endDate: z.string(),
+        decryptedEntries: z.array(z.object({
+            date: z.string(),
+            mood: z.string().optional(),
+            content: z.string()
+        })).optional()
     }).strict(),
 });
 
