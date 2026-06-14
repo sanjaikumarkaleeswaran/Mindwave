@@ -40,7 +40,7 @@ A self-hosted, private **"digital brain"** that organizes your entire life. Mind
 ### ✍️ Intelligent Journaling
 - **End-to-End Encryption (E2EE)** — Your journals are encrypted locally via `crypto-js` using a custom Vault Password before transmission. The server only stores unreadable ciphertexts.
 - **Biometric Vault Security** — natively integrates with FaceID/Fingerprint scanners via Capacitor to seamlessly retrieve the vault password from secure Keychain/Keystore storage.
-- **Secure AI Analysis** — The client securely decrypts the entry locally and sends only transient plaintext in the payload for AI analysis, preserving E2EE while still providing insights.
+- **Secure AI Analysis (Single & Batch)** — The client securely decrypts entries locally and sends only transient plaintext payloads for AI analysis (both individual entry deep dives and multi-day batch summaries), preserving E2EE while still providing rich insights.
 - **Sentiment & Topic Analysis** — instant AI analysis on every entry that identifies your mood, key topics, and provides wellbeing suggestions.
 - **Privacy-First Storage** — all journals are stored securely in your MongoDB instance, never used for training external models.
 
