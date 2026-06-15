@@ -9,7 +9,7 @@ import clsx from 'clsx';
 const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#14b8a6', '#f59e0b', '#3b82f6'];
 
 export default function AnalyticsPage() {
-    const [timeRange, setTimeRange] = useState('year'); // 'month', 'year', 'all'
+    const [timeRange, setTimeRange] = useState('week'); // 'week', 'month', 'year', 'all'
 
     const { data: habits = [], isLoading: hLoad } = useQuery({
         queryKey: ['habits'],
@@ -32,23 +32,56 @@ export default function AnalyticsPage() {
     const { habitStats, goalStats, expenseStats } = useMemo(() => {
         if (isLoading) return { habitStats: [], goalStats: [], expenseStats: [] };
 
-        // 1. Habit Completion Over Time (mocked aggregated data for demonstration)
-        const last12Months = Array.from({ length: 12 }).map((_, i) => {
-            const d = new Date();
-            d.setMonth(d.getMonth() - (11 - i));
-            return {
-                name: d.toLocaleString('default', { month: 'short' }),
-                completions: 0,
-                year: d.getFullYear(),
-                month: d.getMonth()
-            };
-        });
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
+        // 1. Habit Completion Over Time
+        let habitStatsMap = [];
+        
+        if (timeRange === 'week') {
+            habitStatsMap = Array.from({ length: 7 }).map((_, i) => {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                return {
+                    name: d.toLocaleString('default', { weekday: 'short' }),
+                    completions: 0,
+                    dateString: d.toDateString()
+                };
+            });
+        } else if (timeRange === 'month') {
+            habitStatsMap = Array.from({ length: 30 }).map((_, i) => {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (29 - i));
+                return {
+                    name: `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`,
+                    completions: 0,
+                    dateString: d.toDateString()
+                };
+            });
+        } else {
+            const monthsCount = timeRange === 'all' ? 24 : 12;
+            habitStatsMap = Array.from({ length: monthsCount }).map((_, i) => {
+                const d = new Date();
+                d.setMonth(d.getMonth() - ((monthsCount - 1) - i));
+                return {
+                    name: `${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear().toString().slice(2)}`,
+                    completions: 0,
+                    year: d.getFullYear(),
+                    month: d.getMonth()
+                };
+            });
+        }
 
         habits.forEach(habit => {
             habit.history?.forEach(record => {
                 const date = new Date(record.date);
-                const stat = last12Months.find(m => m.month === date.getMonth() && m.year === date.getFullYear());
-                if (stat) stat.completions += 1;
+                if (timeRange === 'week' || timeRange === 'month') {
+                    const stat = habitStatsMap.find(m => m.dateString === date.toDateString());
+                    if (stat) stat.completions += 1;
+                } else {
+                    const stat = habitStatsMap.find(m => m.month === date.getMonth() && m.year === date.getFullYear());
+                    if (stat) stat.completions += 1;
+                }
             });
         });
 
@@ -59,26 +92,47 @@ export default function AnalyticsPage() {
         });
         const goalStats = Object.keys(goalCategoryMap).map(k => ({ name: k, value: goalCategoryMap[k] }));
 
-        // 3. Expenses vs Income by Month
-        const expenseTrendMap = {};
-        expenses.forEach(tx => {
-            const d = new Date(tx.date);
-            const key = `${d.getFullYear()}-${d.getMonth()}`;
-            if (!expenseTrendMap[key]) {
-                expenseTrendMap[key] = {
-                    name: d.toLocaleString('default', { month: 'short' }),
-                    income: 0,
-                    expense: 0,
-                    sortOrder: d.getTime()
-                };
-            }
-            if (tx.type === 'income') expenseTrendMap[key].income += tx.amount;
-            else expenseTrendMap[key].expense += tx.amount;
-        });
-        const expenseStats = Object.values(expenseTrendMap).sort((a, b) => a.sortOrder - b.sortOrder).slice(-6); // Last 6 months
+        // 3. Expenses vs Income
+        let expenseTrendMap = {};
+        
+        if (timeRange === 'week') {
+            expenseTrendMap = Array.from({ length: 7 }).map((_, i) => {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                return { name: d.toLocaleString('default', { weekday: 'short' }), income: 0, expense: 0, dateString: d.toDateString() };
+            });
+        } else if (timeRange === 'month') {
+            expenseTrendMap = Array.from({ length: 30 }).map((_, i) => {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (29 - i));
+                return { name: `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`, income: 0, expense: 0, dateString: d.toDateString() };
+            });
+        } else {
+            const monthsCount = timeRange === 'all' ? 24 : 12;
+            expenseTrendMap = Array.from({ length: monthsCount }).map((_, i) => {
+                const d = new Date();
+                d.setMonth(d.getMonth() - ((monthsCount - 1) - i));
+                return { name: `${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear().toString().slice(2)}`, income: 0, expense: 0, year: d.getFullYear(), month: d.getMonth() };
+            });
+        }
 
-        return { habitStats: last12Months, goalStats, expenseStats };
-    }, [habits, goals, expenses, isLoading]);
+        expenses.forEach(tx => {
+            const date = new Date(tx.date);
+            let stat;
+            if (timeRange === 'week' || timeRange === 'month') {
+                stat = expenseTrendMap.find(m => m.dateString === date.toDateString());
+            } else {
+                stat = expenseTrendMap.find(m => m.month === date.getMonth() && m.year === date.getFullYear());
+            }
+
+            if (stat) {
+                if (tx.type === 'income') stat.income += tx.amount;
+                else stat.expense += tx.amount;
+            }
+        });
+
+        return { habitStats: habitStatsMap, goalStats, expenseStats: expenseTrendMap };
+    }, [habits, goals, expenses, isLoading, timeRange]);
 
     if (isLoading) {
         return (
@@ -95,12 +149,12 @@ export default function AnalyticsPage() {
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
-                        Year in Review
+                        {timeRange === 'week' ? 'Weekly Analysis' : timeRange === 'month' ? 'Monthly Review' : timeRange === 'all' ? 'All-Time Analytics' : 'Year in Review'}
                     </h1>
                     <p className="text-zinc-400">Deep-dive insights into your habits, goals, and finances.</p>
                 </div>
                 <div className="flex bg-zinc-900/50 p-1.5 rounded-xl border border-white/5 w-fit">
-                    {['month', 'year', 'all'].map(t => (
+                    {['week', 'month', 'year', 'all'].map(t => (
                         <button
                             key={t}
                             onClick={() => setTimeRange(t)}
@@ -148,7 +202,7 @@ export default function AnalyticsPage() {
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="glass-card p-6 flex flex-col h-[400px]">
                     <div className="flex items-center gap-2 mb-6">
                         <BarChart2 className="w-5 h-5 text-indigo-400" />
-                        <h2 className="text-lg font-bold text-white">Habit Consistency (12mo)</h2>
+                        <h2 className="text-lg font-bold text-white">Habit Consistency</h2>
                     </div>
                     <div className="flex-1 min-h-0 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -174,7 +228,7 @@ export default function AnalyticsPage() {
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="glass-card p-6 flex flex-col h-[400px]">
                     <div className="flex items-center gap-2 mb-6">
                         <TrendingUp className="w-5 h-5 text-emerald-400" />
-                        <h2 className="text-lg font-bold text-white">Cash Flow (Last 6 Months)</h2>
+                        <h2 className="text-lg font-bold text-white">Cash Flow</h2>
                     </div>
                     <div className="flex-1 min-h-0 w-full">
                         <ResponsiveContainer width="100%" height="100%">
